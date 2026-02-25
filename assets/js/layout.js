@@ -1,6 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
-
-  const currentPath = window.location.pathname.split("/").pop();
+document.addEventListener("DOMContentLoaded", function(){
 
   /* ================= HEADER ================= */
 
@@ -18,47 +16,50 @@ document.addEventListener("DOMContentLoaded", function () {
   </header>
   `;
 
-  const headerContainer = document.getElementById("globalHeader");
-  if(headerContainer){
-    headerContainer.innerHTML = headerHTML;
-  }
+  document.getElementById("globalHeader").innerHTML = headerHTML;
 
-  /* ================= FOOTER ================= */
 
-  const footerHTML = `
-  <nav class="app-footer-nav">
+  /* ================= SLIDE MENU ================= */
 
-    <a href="index.html" class="nav-item-modern ${currentPath === '' || currentPath === 'index.html' ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-house"></i></div>
-      Ana
-    </a>
+  const sideMenuHTML = `
+  <div class="overlay" id="overlay"></div>
 
-    <a href="sosyal.html" class="nav-item-modern ${currentPath === 'sosyal.html' ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-globe"></i></div>
-      Sosyal
-    </a>
-
-    <a href="ilanlar.html" class="nav-center-wrapper ${currentPath === 'ilanlar.html' || currentPath === 'ilan_detay.html' ? 'active' : ''}">
-      <div class="nav-center"><i class="fa-solid fa-bars"></i></div>
-      <div class="nav-center-label">İlanlar</div>
-    </a>
-
-    <a href="hizmetler.html" class="nav-item-modern ${currentPath === 'hizmetler.html' ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
-      Hizmetler
-    </a>
-
-    <a href="iletisim.html" class="nav-item-modern ${currentPath === 'iletisim.html' ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-envelope"></i></div>
-      İletişim
-    </a>
-
+  <nav class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <h2>MENÜ</h2>
+      <i class="fas fa-times" id="closeMenu"></i>
+    </div>
+    <ul>
+      <li><a href="index.html">Ana</a></li>
+      <li><a href="sosyal.html">Keşfet</a></li>
+      <li><a href="ilanlar.html">İlanlar</a></li>
+      <li><a href="hizmetler.html">Hizmetler</a></li>
+      <li><a href="iletisim.html">İletişim</a></li>
+    </ul>
   </nav>
   `;
 
-  const footerContainer = document.getElementById("globalFooter");
-  if(footerContainer){
-    footerContainer.innerHTML = footerHTML;
+  document.body.insertAdjacentHTML("afterbegin", sideMenuHTML);
+
+
+  /* ================= MENU EVENTS ================= */
+
+  const openBtn = document.getElementById("openMenu");
+  const closeBtn = document.getElementById("closeMenu");
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
+
+  openBtn.addEventListener("click", ()=>{
+    sideMenu.classList.add("active");
+    overlay.classList.add("active");
+  });
+
+  closeBtn.addEventListener("click", closeMenu);
+  overlay.addEventListener("click", closeMenu);
+
+  function closeMenu(){
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
   }
 
 });

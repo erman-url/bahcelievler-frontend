@@ -15,6 +15,21 @@
 
 <style>
 
+/* ===== SAFE AREA EKLENDİ ===== */
+
+body{
+  padding-top: env(safe-area-inset-top);
+}
+
+.page-wrapper{
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* Merkezi footer alanı için */
+#globalFooter{
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* ===== VİTRİN GRID ===== */
 
 .ads-grid{
@@ -96,7 +111,7 @@
 
 <div class="overlay" id="overlay"></div>
 
-<!-- SIDE MENU -->
+<!-- SIDE MENU (Aynen Korundu) -->
 <nav class="side-menu" id="sideMenu">
   <div class="side-menu-header">
     <h2>MENÜ</h2>
@@ -104,16 +119,15 @@
   </div>
   <ul>
     <li><a href="index.html">Ana</a></li>
-<li><a href="sosyal.html">Keşfet</a></li>
-<li><a href="ilanlar.html">İlanlar</a></li>
-<li><a href="hizmetler.html">Hizmetler</a></li>
-<li><a href="hizmetler.html">Pusula</a></li>
-<li><a href="hizmetler.html">Oyunlar</a></li>
-<li><a href="iletisim.html">İletişim</a></li>
+    <li><a href="sosyal.html">Keşfet</a></li>
+    <li><a href="ilanlar.html">İlanlar</a></li>
+    <li><a href="hizmetler.html">Hizmetler</a></li>
+    <li><a href="hizmetler.html">Pusula</a></li>
+    <li><a href="hizmetler.html">Oyunlar</a></li>
+    <li><a href="iletisim.html">İletişim</a></li>
   </ul>
 </nav>
 
-<!-- ✅ MERKEZİ HEADER -->
 <div id="globalHeader"></div>
 
 <div class="page-wrapper">
@@ -188,12 +202,10 @@ function goDetail(id){
 }
 </script>
 
-<!-- Script sırası önemli -->
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/menu.js"></script>
 <script src="assets/js/core.js" defer></script>
 
-<!-- MERKEZİ FOOTER -->
 <div id="globalFooter"></div>
 
 </body>
