@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="no-js">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>İlan Detayı | Bahçelievler Forum</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
 
 <style>
 
@@ -165,89 +168,24 @@ body{
   border-radius:8px;
 }
 
-/* ===== MODERN FOOTER (INDEX İLE AYNI) ===== */
-
-.app-footer-nav{
-  position:fixed;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  width:95%;
-  max-width:520px;
-  height:85px;
-  background:linear-gradient(145deg,#1a2f4f,#0f1f38);
-  border-radius:42px;
-  display:grid;
-  grid-template-columns:1fr 1fr 1.4fr 1fr 1fr;
-  align-items:center;
-  padding:0 10px;
-  box-shadow:0 25px 60px rgba(0,0,0,.45);
-  z-index:2000;
-}
-
-.nav-item-modern{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  font-size:.72rem;
-  font-weight:700;
-  color:rgba(255,255,255,0.7);
-  text-decoration:none;
-}
-
-.icon-wrap{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,0.08);
-}
-
-.nav-item-modern.active{
-  color:#fff;
-}
-
-.nav-center-wrapper{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  top:-22px;
-  text-decoration:none;
-  color:#fff;
-}
-
-.nav-center{
-  width:76px;
-  height:76px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#00c2ff,#0066ff);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 25px 60px rgba(0,0,0,.55);
-}
-
-.nav-center-label{
-  margin-top:6px;
-  font-size:.78rem;
-  font-weight:700;
-  color:#fff;
-}
-
-@media(min-width:1024px){
-  .app-footer-nav{display:none;}
-}
-
-
 </style>
 </head>
 
 <body>
+
+<div class="overlay" id="overlay"></div>
+
+<nav class="side-menu" id="sideMenu">
+  <div class="side-menu-header">
+    <h2>MENÜ</h2>
+    <i class="fas fa-times" id="closeMenu"></i>
+  </div>
+  <ul>
+    <li><a href="index.html">Ana</a></li>
+    <li><a href="ilanlar.html">İlanlar</a></li>
+    <li><a href="hizmetler.html">Hizmetler</a></li>
+  </ul>
+</nav>
 
 <div class="page-wrapper">
 
@@ -302,10 +240,6 @@ body{
 
 </div>
 
-<!-- FOOTER NAV -->
-
-
-
 <script>
 let index=0;
 function slide(dir){
@@ -315,33 +249,13 @@ function slide(dir){
   track.style.transform=`translateX(-${index*100}%)`;
 }
 </script>
-<nav class="app-footer-nav">
 
-<a href="/" class="nav-item-modern">
-<div class="icon-wrap"><i class="fa-solid fa-house"></i></div>
-Ana
-</a>
+<script src="assets/js/menu.js"></script>
+<script src="assets/js/core.js" defer></script>
 
-<a href="/sosyal.html" class="nav-item-modern">
-<div class="icon-wrap"><i class="fa-solid fa-globe"></i></div>
-Sosyal
-</a>
+<!-- MERKEZİ FOOTER -->
+<div id="globalFooter"></div>
+<script src="assets/js/layout.js"></script>
 
-<a href="/ilanlar.html" class="nav-center-wrapper active">
-<div class="nav-center"><i class="fa-solid fa-bars"></i></div>
-<div class="nav-center-label">İlanlar</div>
-</a>
-
-<a href="/hizmetler.html" class="nav-item-modern">
-<div class="icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
-Hizmetler
-</a>
-
-<a href="/iletisim.html" class="nav-item-modern">
-<div class="icon-wrap"><i class="fa-solid fa-envelope"></i></div>
-İletişim
-</a>
-
-</nav>
 </body>
 </html>
