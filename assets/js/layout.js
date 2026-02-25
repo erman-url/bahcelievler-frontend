@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function(){
       <li><a href="ilanlar.html">İlanlar</a></li>
       <li><a href="hizmetler.html">Hizmetler</a></li>
       <li><a href="pusula.html">Pusula</a></li>
-      <li><a href="games.html">Oyunlar</a></li>
+      <li><a href="oyunlar-muhur.html">Oyunlar</a></li>
      <li><a href="iletişim.html">İletişim</a></li>
     </ul>
   </nav>

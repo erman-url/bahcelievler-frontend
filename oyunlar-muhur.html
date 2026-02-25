@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="tr" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mühürlü Geçit | Bahçelievler Forum</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<style>
+
+/* SAFE AREA */
+body{
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Oyun alanı */
+.game-wrapper{
+  position:relative;
+  height:calc(100vh - 90px); /* header + footer düşüldü */
+  overflow:hidden;
+}
+
+/* Scene */
+.scene{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  background:#070a12;
+  font-family:"Cinzel",serif;
+}
+
+/* Door */
+.door{
+  position:relative;
+  max-width:90vw;
+  transition:transform .2s ease;
+}
+
+.door img{
+  width:100%;
+  border-radius:20px;
+  display:block;
+  box-shadow:
+    0 0 120px rgba(0,0,0,.9),
+    0 0 200px rgba(0,120,255,.15);
+}
+
+/* LOCK */
+.lock{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:320px;
+  max-width:65%;
+}
+
+.lock img{width:100%;display:block;}
+
+.code-ring{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:radial-gradient(circle,#000 0%,#111 60%,#000 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#e8c36a;
+  font-size:30px;
+  letter-spacing:12px;
+}
+
+/* Mobile Pad */
+.mobile-pad{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#0c0f18;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  padding:20px;
+  transform:translateY(100%);
+  transition:.3s ease;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+}
+
+.mobile-pad.open{transform:translateY(0);}
+
+.mobile-pad div{
+  background:#111;
+  color:#e8c36a;
+  font-size:22px;
+  padding:15px;
+  text-align:center;
+  border-radius:8px;
+}
+
+canvas{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="globalHeader"></div>
+
+<div class="game-wrapper">
+
+<div class="scene">
+
+<canvas id="orbs"></canvas>
+
+<div class="door" id="door">
+  <img src="door.JPG">
+  <div class="lock">
+    <img src="lock.PNG">
+    <div class="code-ring" id="display">----</div>
+  </div>
+</div>
+
+<div class="mobile-pad" id="mobilePad">
+  <div>1</div><div>2</div><div>3</div>
+  <div>4</div><div>5</div><div>6</div>
+  <div>7</div><div>8</div><div>9</div>
+  <div>C</div><div>0</div><div>OK</div>
+</div>
+
+</div>
+</div>
+
+<div id="globalFooterNav"></div>
+<div id="globalFooterLegal"></div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/footerNav.js"></script>
+<script src="assets/js/footerLegal.js"></script>
+<script src="assets/js/menu.js"></script>
+
+<script>
+/* Kod sistemi kısaltılmış örnek */
+
+let input="";
+const display=document.getElementById("display");
+
+function update(){ display.textContent=input.padEnd(4,"-"); }
+
+function check(){
+  input="";
+  update();
+}
+
+document.querySelectorAll("#mobilePad div").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    let val=btn.textContent;
+    if(val==="C"){input="";}
+    else if(val==="OK"){check();return;}
+    else if(input.length<4){input+=val;}
+    update();
+  });
+});
+</script>
+
+</body>
+</html>
