@@ -2,6 +2,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const currentPath = window.location.pathname.split("/").pop();
 
+  /* ================= HEADER ================= */
+
+  const headerHTML = `
+  <header class="top-header">
+    <div class="header-inner">
+      <div class="menu-btn" id="openMenu">
+        <i class="fas fa-bars"></i>
+      </div>
+      <div>
+        <div class="header-title">BAHÇELİEVLER FORUM</div>
+        <div class="header-sub">Semt • Bilgi • Yaşam Portalı</div>
+      </div>
+    </div>
+  </header>
+  `;
+
+  const headerContainer = document.getElementById("globalHeader");
+  if(headerContainer){
+    headerContainer.innerHTML = headerHTML;
+  }
+
+  /* ================= FOOTER ================= */
+
   const footerHTML = `
   <nav class="app-footer-nav">
 
@@ -33,15 +56,9 @@ document.addEventListener("DOMContentLoaded", function () {
   </nav>
   `;
 
-  document.getElementById("globalFooter").innerHTML = footerHTML;
-
-});
-
-document.addEventListener("click", function(e){
-  if(e.target.closest("a")){
-    const link = e.target.closest("a");
-    if(link.getAttribute("href") === currentPath){
-      e.preventDefault();
-    }
+  const footerContainer = document.getElementById("globalFooter");
+  if(footerContainer){
+    footerContainer.innerHTML = footerHTML;
   }
+
 });
