@@ -1,17 +1,36 @@
-const sideMenu=document.getElementById("sideMenu");
-const overlay=document.getElementById("overlay");
+document.addEventListener("DOMContentLoaded", function () {
 
-document.getElementById("openMenu").onclick=()=>{
-sideMenu.classList.add("active");
-overlay.classList.add("active");
-};
+  function bindMenu() {
 
-document.getElementById("closeMenu").onclick=()=>{
-sideMenu.classList.remove("active");
-overlay.classList.remove("active");
-};
+    const openBtn = document.getElementById("openMenu");
+    const closeBtn = document.getElementById("closeMenu");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
 
-overlay.onclick=()=>{
-sideMenu.classList.remove("active");
-overlay.classList.remove("active");
-};
+    if (!openBtn || !sideMenu || !overlay) return;
+
+    openBtn.addEventListener("click", function () {
+      sideMenu.classList.add("active");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        sideMenu.classList.remove("active");
+        overlay.classList.remove("active");
+        document.body.style.overflow = "";
+      });
+    }
+
+    overlay.addEventListener("click", function () {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+    });
+  }
+
+  // layout inject sonrası küçük gecikme
+  setTimeout(bindMenu, 50);
+
+});

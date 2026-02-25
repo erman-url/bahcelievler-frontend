@@ -24,3 +24,78 @@ text-align:center;
 backdrop-filter:blur(18px);
 box-shadow:0 15px 40px rgba(0,0,0,.08);
 }
+
+/* ===== ADS GRID ===== */
+
+.ads-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:16px;
+}
+
+.ad-card{
+  background:white;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 4px 15px rgba(0,0,0,0.06);
+  transition:0.2s ease;
+  cursor:pointer;
+}
+
+.ad-card:hover{
+  transform:translateY(-4px);
+}
+
+.ad-image{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  overflow:hidden;
+}
+
+.ad-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.price-badge{
+  position:absolute;
+  bottom:8px;
+  left:8px;
+  background:#111827;
+  color:white;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:0.8rem;
+  font-weight:700;
+}
+
+.ad-body{
+  padding:10px;
+}
+
+.ad-title{
+  font-size:0.85rem;
+  font-weight:600;
+  margin-bottom:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.ad-meta{
+  font-size:0.7rem;
+  color:#6b7280;
+  display:flex;
+  justify-content:space-between;
+}
+
+/* Desktop */
+
+@media(min-width:768px){
+  .ads-grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+}

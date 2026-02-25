@@ -1,3 +1,8 @@
+html, body{
+  width:100%;
+  overflow-x:hidden;
+}
+
 /* ======================================
    ROOT VARIABLES
 ====================================== */
@@ -39,15 +44,18 @@ body{
 }
 
 @media(min-width:1024px){
+
   body{
-    display:flex;
-    justify-content:center;
+    display:block; /* flex kaldırıldı */
   }
+
   .page-wrapper{
     max-width:1180px;
+    margin:0 auto; /* gerçek ortalama */
     width:100%;
     padding-bottom:0;
   }
+
 }
 
 /* ======================================
@@ -57,6 +65,7 @@ body{
 .top-header{
   position:sticky;
   top:0;
+  width:100%;
   background:linear-gradient(135deg,#1f6fd1,#0e4fa8);
   color:#fff;
   padding:var(--space-md);
@@ -66,6 +75,8 @@ body{
 
 .header-title{font-size:18px;font-weight:800;}
 .header-sub{font-size:13px;opacity:.85;}
+
+
 
 /* ======================================
    SIDE MENU (PRO DRAWER)
