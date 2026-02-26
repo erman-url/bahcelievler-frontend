@@ -5,11 +5,14 @@
 
 (function(){
 
+if(window.__BF_CORE__) return;
+window.__BF_CORE__ = true;
+
 /* ================= GLOBAL OBJECT ================= */
 
 window.BF = {
 
-    version: "1.2.0",
+    version: "1.3.0",
 
     config: {
         apiCacheMinutes: 30,
@@ -22,7 +25,8 @@ window.BF = {
     state: {
         isMobile: false,
         heroTimer: null,
-        newsTimer: null
+        newsTimer: null,
+        initialized: false
     },
 
     utils: {},
@@ -40,11 +44,17 @@ BF.utils.formatNumber = (num, digits = 2) =>
 
 BF.utils.storage = {
     set(key, value){
-        localStorage.setItem(key, JSON.stringify(value));
+        try{
+            localStorage.setItem(key, JSON.stringify(value));
+        }catch(e){}
     },
     get(key){
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : null;
+        try{
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        }catch(e){
+            return null;
+        }
     },
     remove(key){
         localStorage.removeItem(key);
@@ -52,8 +62,7 @@ BF.utils.storage = {
 };
 
 
-
-/* ================= PERFORMANCE HELPERS ================= */
+/* ================= PERFORMANCE ================= */
 
 BF.utils.debounce = function(func, delay){
     let timer;
@@ -62,7 +71,6 @@ BF.utils.debounce = function(func, delay){
         timer = setTimeout(()=>func.apply(this, arguments), delay);
     };
 };
-
 
 
 /* ================= CACHE SYSTEM ================= */
@@ -86,42 +94,139 @@ BF.cache.setCached = function(key, value, minutes){
 };
 
 
-/* ================= NAVIGATION ================= */
+/* ================= UI ENGINE ================= */
 
-BF.utils.setActiveNav = function(){
+/* -------- HEADER -------- */
+BF.ui = {};
 
-    const currentPath = window.location.pathname
-        .replace(/\/$/, "")
-        .toLowerCase();
+BF.ui.renderHeader = function(){
 
-    const navLinks = document.querySelectorAll(
-        ".nav-item-modern, .nav-center-wrapper"
-    );
+    const container = document.getElementById("globalHeader");
+    if(!container) return;
 
-    navLinks.forEach(link => {
-
-        const href = (link.getAttribute("href") || "")
-            .replace(/\/$/, "")
-            .toLowerCase();
-
-        if(!href) return;
-
-        if(currentPath === "" || currentPath === "/index.html"){
-            if(href === "/" || href === "/index.html"){
-                link.classList.add("active");
-            }
-            return;
-        }
-
-        if(currentPath === href || currentPath.startsWith(href + "/")){
-            link.classList.add("active");
-        }
-
-    });
+    container.innerHTML = `
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:12px">
+                <i id="menuBtn" class="fa-solid fa-bars" style="font-size:20px;cursor:pointer"></i>
+                <div>
+                    <div class="header-title">BAHÇELİEVLER FORUM</div>
+                    <div class="header-sub">Semt · Bilgi · Yaşam Portalı</div>
+                </div>
+            </div>
+        </div>
+    `;
 };
 
 
-/* ================= HERO SLIDER ================= */
+/* -------- FOOTER NAV -------- */
+BF.ui.renderFooterNav = function(){
+
+    if(document.querySelector(".app-footer-nav")) return;
+
+    const nav = document.createElement("nav");
+    nav.className = "app-footer-nav";
+
+    nav.innerHTML = `
+        <a href="index.html" class="nav-item-modern">
+            <i class="fa-solid fa-house"></i>
+            <span>Ana</span>
+        </a>
+
+        <a href="sosyal.html" class="nav-item-modern">
+            <i class="fa-solid fa-globe"></i>
+            <span>Sosyal</span>
+        </a>
+
+        <a href="ilanlar.html" class="nav-center-wrapper">
+            <i class="fa-solid fa-plus"></i>
+        </a>
+
+        <a href="hizmetler.html" class="nav-item-modern">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Hizmet</span>
+        </a>
+
+        <a href="iletisim.html" class="nav-item-modern">
+            <i class="fa-solid fa-envelope"></i>
+            <span>İletişim</span>
+        </a>
+    `;
+
+    document.body.appendChild(nav);
+};
+
+
+/* -------- SIDE MENU -------- */
+BF.ui.renderSideMenu = function(){
+
+    if(document.querySelector(".side-menu")) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+
+    const menu = document.createElement("div");
+    menu.className = "side-menu";
+
+    menu.innerHTML = `
+        <div class="side-menu-header">
+            <h2>MENÜ</h2>
+            <i id="closeMenu" class="fa-solid fa-xmark"></i>
+        </div>
+
+        <ul>
+            <li><a href="index.html">Ana</a></li>
+            <li><a href="sosyal.html">Keşfet</a></li>
+            <li><a href="ilanlar.html">İlanlar</a></li>
+            <li><a href="hizmetler.html">Hizmetler</a></li>
+            <li><a href="pusula.html">Pusula</a></li>
+            <li><a href="oyunlar.html">Oyunlar</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+        </ul>
+    `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(menu);
+};
+
+
+/* -------- MENU EVENTS -------- */
+BF.ui.bindMenuEvents = function(){
+
+    document.addEventListener("click", function(e){
+
+        if(e.target.id === "menuBtn"){
+            document.querySelector(".side-menu")?.classList.add("active");
+            document.querySelector(".overlay")?.classList.add("active");
+        }
+
+        if(e.target.id === "closeMenu" || e.target.classList.contains("overlay")){
+            document.querySelector(".side-menu")?.classList.remove("active");
+            document.querySelector(".overlay")?.classList.remove("active");
+        }
+
+    });
+
+};
+
+
+/* ================= NAV ACTIVE ================= */
+
+BF.utils.setActiveNav = function(){
+
+    const current = window.location.pathname.split("/").pop() || "index.html";
+
+    document.querySelectorAll(".app-footer-nav a").forEach(link=>{
+        const href = link.getAttribute("href");
+
+        if(href === current){
+            link.classList.add("active");
+        }
+    });
+
+};
+
+
+/* ================= HERO ================= */
 
 BF.utils.initHeroSlider = function(){
 
@@ -141,7 +246,7 @@ BF.utils.initHeroSlider = function(){
 };
 
 
-/* ================= NEWS SLIDER ================= */
+/* ================= NEWS ================= */
 
 BF.utils.initNewsSlider = function(){
 
@@ -164,11 +269,7 @@ BF.utils.initNewsSlider = function(){
 
     BF.state.newsTimer = setInterval(move, BF.config.newsInterval);
 
-    // Hover'da durdur (desktop UX)
-    track.addEventListener("mouseenter", ()=>{
-        clearInterval(BF.state.newsTimer);
-    });
-
+    track.addEventListener("mouseenter", ()=> clearInterval(BF.state.newsTimer));
     track.addEventListener("mouseleave", ()=>{
         BF.state.newsTimer = setInterval(move, BF.config.newsInterval);
     });
@@ -176,7 +277,7 @@ BF.utils.initNewsSlider = function(){
 };
 
 
-/* ================= RESPONSIVE UPDATE ================= */
+/* ================= RESPONSIVE ================= */
 
 BF.utils.handleResize = BF.utils.debounce(function(){
 
@@ -196,15 +297,11 @@ BF.utils.handleResize = BF.utils.debounce(function(){
 }, 300);
 
 
-
-/* ================= EVENT ENGINE ================= */
+/* ================= EVENT ================= */
 
 BF.utils.getRemainingTime = function(targetDate){
 
-    const now = Date.now();
-    const target = new Date(targetDate).getTime();
-    const diff = target - now;
-
+    const diff = new Date(targetDate).getTime() - Date.now();
     if(diff <= 0) return null;
 
     return {
@@ -216,14 +313,24 @@ BF.utils.getRemainingTime = function(targetDate){
 };
 
 
-/* ================= CORE INIT ================= */
+/* ================= INIT ================= */
 
 BF.init = function(){
+
+    if(BF.state.initialized) return;
+    BF.state.initialized = true;
 
     document.documentElement.classList.add("bf-loaded");
 
     BF.state.isMobile = window.innerWidth < 1024;
 
+    /* UI */
+    BF.ui.renderHeader();
+    BF.ui.renderFooterNav();
+    BF.ui.renderSideMenu();
+    BF.ui.bindMenuEvents();
+
+    /* Core Features */
     BF.utils.setActiveNav();
     BF.utils.initHeroSlider();
     BF.utils.initNewsSlider();
@@ -237,5 +344,6 @@ BF.init = function(){
 /* ================= SAFE START ================= */
 
 document.addEventListener("DOMContentLoaded", BF.init);
+window.addEventListener("load", BF.init);
 
 })();
