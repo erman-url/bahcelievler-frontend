@@ -32,39 +32,47 @@ body{
 
 /* ================= SCENE ================= */
 .scene{
+  position:relative;
   width:100%;
   height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
+  overflow:hidden;
   background:#070a12;
   font-family:"Cinzel",serif;
 }
 
 /* ================= DOOR ================= */
 .door{
-  position:relative;
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
 
 .door img{
   width:100%;
   height:100%;
   object-fit:cover;
+  position:absolute;
+  inset:0;
 }
 
 /* ================= LOCK ================= */
 .lock{
-  width:45vw;
-  max-width:260px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:clamp(180px, 28vw, 260px);
+  aspect-ratio:1/1;
+  z-index:5;
 }
 
-.lock img{width:100%;display:block;}
+.lock img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
 
 /* ================= CODE RING ================= */
 .code-ring{
@@ -72,8 +80,8 @@ body{
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:160px;
-  height:160px;
+  width:65%;
+  height:65%;
   border-radius:50%;
   background:radial-gradient(circle,#000 0%,#111 60%,#000 100%);
   display:flex;
@@ -81,14 +89,18 @@ body{
   justify-content:center;
   color:#e8c36a;
   text-shadow:0 0 15px rgba(255,200,100,.6);
-  gap:10px;
+  gap:8px;
+  z-index:10;
 }
 
 /* DIGITS */
 .digit{
-  width:35px;
-  font-size:34px;
+  width:25%;
+  text-align:center;
+  font-size:clamp(18px, 3vw, 34px);
   cursor:pointer;
+  user-select:none;
+  touch-action:none;
 }
 
 /* ================= METAL EFFECT ================= */
@@ -104,32 +116,6 @@ body{
   transition:.2s;
 }
 .lock:hover::after{opacity:.6;}
-
-/* ================= MOBILE PAD ================= */
-.mobile-pad{
-  position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:#0c0f18;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  padding:20px;
-  transform:translateY(100%);
-  transition:.3s ease;
-  border-top-left-radius:20px;
-  border-top-right-radius:20px;
-}
-.mobile-pad.open{transform:translateY(0);}
-.mobile-pad div{
-  background:#111;
-  color:#e8c36a;
-  font-size:22px;
-  padding:15px;
-  text-align:center;
-  border-radius:8px;
-}
 
 /* ================= CANVAS ================= */
 canvas{
@@ -155,7 +141,6 @@ canvas{
   <div class="lock" id="lock">
     <img src="assets/images/lock.png">
 
-    <!-- SWIPE CODE -->
     <div class="code-ring" id="display">
       <div class="digit">0</div>
       <div class="digit">0</div>
@@ -165,7 +150,6 @@ canvas{
 
   </div>
 </div>
-
 
 </div>
 </div>
@@ -224,55 +208,55 @@ function check(){
   }
 }
 
-/* ================= SWIPE CONTROL ================= */
+/* ================= INPUT CONTROL ================= */
 const isMobile = 'ontouchstart' in window;
 
 document.querySelectorAll(".digit").forEach((el,index)=>{
 
   let startY=0;
 
-   if(!isMobile) return;
-  el.addEventListener("touchstart",(e)=>{
-    startY=e.touches[0].clientY;
-  });
+  /* MOBILE SWIPE */
+  if(isMobile){
+    el.addEventListener("touchstart",(e)=>{
+      startY=e.touches[0].clientY;
+    });
 
- if(!isMobile) return;
-  el.addEventListener("touchmove",(e)=>{
-    let diff=e.touches[0].clientY-startY;
+    el.addEventListener("touchmove",(e)=>{
+      let diff=e.touches[0].clientY-startY;
 
-    if(Math.abs(diff)>25){
-      if(diff>0){
+      if(Math.abs(diff)>25){
+        if(diff>0){
+          code[index]=(code[index]+1)%10;
+        }else{
+          code[index]=(code[index]-1+10)%10;
+        }
+
+        basSound.currentTime=0;
+        basSound.play();
+
+        render();
+        startY=e.touches[0].clientY;
+      }
+    });
+  }
+
+  /* DESKTOP WHEEL */
+  if(!isMobile){
+    el.addEventListener("wheel",(e)=>{
+      e.preventDefault();
+      if(e.deltaY>0){
         code[index]=(code[index]+1)%10;
       }else{
         code[index]=(code[index]-1+10)%10;
       }
-
-      basSound.currentTime=0;
-      basSound.play();
-
       render();
-      startY=e.touches[0].clientY;
-    }
-  });
-
-  /* DESKTOP */
-if(isMobile) return;
-  el.addEventListener("wheel",(e)=>{
-    e.preventDefault();
-    if(e.deltaY>0){
-      code[index]=(code[index]+1)%10;
-    }else{
-      code[index]=(code[index]-1+10)%10;
-    }
-    render();
-  });
+    });
+  }
 
 });
 
 /* LOCK CLICK CHECK */
 document.getElementById("lock").addEventListener("click",check);
-
-
 
 /* ================= METAL EFFECT ================= */
 const lock=document.getElementById("lock");
