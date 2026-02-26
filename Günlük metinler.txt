@@ -1,20 +1,23 @@
 Bahçelievler.Forum projesine devam ediyoruz.
 
 Son durum:
+- Footer Menü merkezi olmalı ama sorun var her sayfada sabit ve aynı stilde kalmalı.
+- Genel kontrol yapılmalı
+
+Şu kod üzerinde devam:Bana uygulanacak kod satırlarını tam anlat.
+[ilgili kodu yapıştır]
+
+
+------------------------------------------------------------
+Bahçelievler.Forum projesine devam ediyoruz.
+
+Son durum:
 - Post listesi var
 - Firebase bağlı
 - Performans sorunu yaşıyorum
 
 Şu kod üzerinde devam:
 [ilgili kodu yapıştır]
-
-
-
-----------------------------------------------------------------------
-Footer Menü her koşulda ve her sayfada en üste yer almalıdır.
-Merkezi kontrol olmalıdır,
-
-
 
 
 -------------------------------------------------------------------
@@ -25,7 +28,7 @@ PROJE KURALLARI (ANAKOD):
 - Sıfır maliyet altyapı (CloudFlare DB vb.)
 - Veri toplama öncelikli, gelir modeli ikinci aşama
 - KVKK ve güvenlik öncelikli
-- Mobil-first (önce mobil performans)
+- Mobil-first (önce mobil performans) Web Master ve Girişimci gözü ile Premium stilde ve fonksiyonda bir web tabanlı uygulama üret.
 - SEO uyumlu yapı
 - Minimum sorgu, minimum render (performans kritik)
 - Ortak bileşenler merkezi yönetilecek
@@ -43,16 +46,12 @@ HEDEF:
 - Mobilde akıcı, premium hissi olan web app
 - Hızlı açılan sayfalar
 - Minimum CPU / RAM kullanımı
+- Gelir odaklı ama insanların sürekli kullanmak isteyeceği ihtiyaca yönelik bir yapı olmalı.
 
 MİMARİ YAPI:
 -Footer Menü her koşulda ve her sayfada en üstte olmalı, (merkezi kontrol)
 -Footer Bölümü merkezi kontrolü yapıda olmalı.
 
-ŞU ANKİ DURUM:
-[Buraya mevcut durumu yaz]
 
-SORUN / İSTEK:
-[Buraya ne istediğini yaz]
 
-KOD:
-[Buraya sadece ilgili kodu yapıştır]
+

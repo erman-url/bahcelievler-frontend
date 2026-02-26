@@ -12,7 +12,7 @@ window.__BF_CORE__ = true;
 
 window.BF = {
 
-    version: "1.3.0",
+    version: "1.3.1",
 
     config: {
         apiCacheMinutes: 30,
@@ -30,7 +30,8 @@ window.BF = {
     },
 
     utils: {},
-    cache: {}
+    cache: {},
+    ui: {}
 };
 
 
@@ -97,8 +98,6 @@ BF.cache.setCached = function(key, value, minutes){
 /* ================= UI ENGINE ================= */
 
 /* -------- HEADER -------- */
-BF.ui = {};
-
 BF.ui.renderHeader = function(){
 
     const container = document.getElementById("globalHeader");
@@ -189,17 +188,52 @@ BF.ui.renderSideMenu = function(){
 };
 
 
+/* -------- FOOTER -------- */
+BF.ui.renderFooter = function(){
+
+    const el = document.getElementById("globalFooter");
+    if(!el) return;
+
+    if(el.innerHTML.trim() !== "") return;
+
+    el.innerHTML = `
+        <footer class="corporate-footer">
+            <div class="footer-trust-area">
+                <span class="trust-badge">🛡️ KVKK Uyumlu</span>
+                <span class="trust-badge">🔐 Güvenli Veri</span>
+            </div>
+
+            <div class="footer-legal">
+                <a href="#">Gizlilik</a> • <a href="#">Koşullar</a>
+            </div>
+
+            <div class="footer-copyright">
+                © ${new Date().getFullYear()} Bahçelievler Forum
+            </div>
+        </footer>
+    `;
+};
+
+
 /* -------- MENU EVENTS -------- */
 BF.ui.bindMenuEvents = function(){
 
     document.addEventListener("click", function(e){
 
-        if(e.target.id === "menuBtn"){
+        // menu aç
+        if(e.target.closest("#menuBtn")){
             document.querySelector(".side-menu")?.classList.add("active");
             document.querySelector(".overlay")?.classList.add("active");
         }
 
-        if(e.target.id === "closeMenu" || e.target.classList.contains("overlay")){
+        // menu kapat
+        if(e.target.closest("#closeMenu") || e.target.classList.contains("overlay")){
+            document.querySelector(".side-menu")?.classList.remove("active");
+            document.querySelector(".overlay")?.classList.remove("active");
+        }
+
+        // linke basınca menü kapanır
+        if(e.target.closest(".side-menu a")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
@@ -213,7 +247,11 @@ BF.ui.bindMenuEvents = function(){
 
 BF.utils.setActiveNav = function(){
 
-    const current = window.location.pathname.split("/").pop() || "index.html";
+    let current = window.location.pathname.split("/").pop();
+
+    if(!current || current === ""){
+        current = "index.html";
+    }
 
     document.querySelectorAll(".app-footer-nav a").forEach(link=>{
         const href = link.getAttribute("href");
@@ -329,8 +367,9 @@ BF.init = function(){
     BF.ui.renderFooterNav();
     BF.ui.renderSideMenu();
     BF.ui.bindMenuEvents();
+    BF.ui.renderFooter();
 
-    /* Core Features */
+    /* Core */
     BF.utils.setActiveNav();
     BF.utils.initHeroSlider();
     BF.utils.initNewsSlider();

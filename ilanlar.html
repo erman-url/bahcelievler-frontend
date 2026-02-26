@@ -15,23 +15,22 @@
 
 <style>
 
-/* ===== SAFE AREA EKLENDİ ===== */
-
+/* SAFE AREA */
 body{
   padding-top: env(safe-area-inset-top);
 }
 
+/* CONTENT ALT BOŞLUK */
 .page-wrapper{
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
-/* Merkezi footer alanı için */
+/* FOOTER SAFE */
 #globalFooter{
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ===== VİTRİN GRID ===== */
-
+/* GRID */
 .ads-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -109,26 +108,8 @@ body{
 
 <body>
 
-<div class="overlay" id="overlay"></div>
+<div id="globalHeader"></div> 
 
-<!-- SIDE MENU (Aynen Korundu) -->
-<nav class="side-menu" id="sideMenu">
-  <div class="side-menu-header">
-    <h2>MENÜ</h2>
-    <i class="fas fa-times" id="closeMenu"></i>
-  </div>
-  <ul>
-    <li><a href="index.html">Ana</a></li>
-    <li><a href="sosyal.html">Keşfet</a></li>
-    <li><a href="ilanlar.html">İlanlar</a></li>
-    <li><a href="hizmetler.html">Hizmetler</a></li>
-    <li><a href="hizmetler.html">Pusula</a></li>
-    <li><a href="hizmetler.html">Oyunlar</a></li>
-    <li><a href="iletisim.html">İletişim</a></li>
-  </ul>
-</nav>
-
-<div id="globalHeader"></div>
 
 <div class="page-wrapper">
 
@@ -140,10 +121,12 @@ body{
     <i class="fas fa-layer-group"></i>
     <span>Kategori</span>
   </div>
+
   <div class="quick-card">
     <i class="fas fa-location-dot"></i>
     <span>Mahalle</span>
   </div>
+
   <div class="quick-card">
     <i class="fas fa-filter"></i>
     <span>Filtre</span>
@@ -195,6 +178,7 @@ body{
 
 </main>
 </div>
+
 
 <script>
 function goDetail(id){
