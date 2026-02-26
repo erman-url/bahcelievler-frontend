@@ -103,6 +103,15 @@ body{
   touch-action:none;
 }
 
+/* UX HINT */
+.digit::after{
+  content:"↕";
+  display:block;
+  font-size:10px;
+  opacity:0.25;
+  margin-top:-4px;
+}
+
 /* ================= METAL EFFECT ================= */
 .lock::after{
   content:"";
@@ -214,18 +223,25 @@ const isMobile = 'ontouchstart' in window;
 document.querySelectorAll(".digit").forEach((el,index)=>{
 
   let startY=0;
+  let moved=false;
 
-  /* MOBILE SWIPE */
   if(isMobile){
+
     el.addEventListener("touchstart",(e)=>{
       startY=e.touches[0].clientY;
-    });
+      moved=false;
+    },{passive:true});
 
     el.addEventListener("touchmove",(e)=>{
       let diff=e.touches[0].clientY-startY;
 
       if(Math.abs(diff)>25){
-        if(diff>0){
+
+        e.preventDefault();
+
+        moved=true;
+
+        if(diff<0){
           code[index]=(code[index]+1)%10;
         }else{
           code[index]=(code[index]-1+10)%10;
@@ -234,29 +250,55 @@ document.querySelectorAll(".digit").forEach((el,index)=>{
         basSound.currentTime=0;
         basSound.play();
 
+        if(navigator.vibrate) navigator.vibrate(10);
+
         render();
         startY=e.touches[0].clientY;
       }
-    });
-  }
+    },{passive:false});
 
-  /* DESKTOP WHEEL */
-  if(!isMobile){
+    el.addEventListener("touchend",()=>{
+      if(!moved){
+        code[index]=(code[index]+1)%10;
+
+        basSound.currentTime=0;
+        basSound.play();
+
+        if(navigator.vibrate) navigator.vibrate(10);
+
+        render();
+      }
+    });
+
+  }else{
+
     el.addEventListener("wheel",(e)=>{
       e.preventDefault();
+
       if(e.deltaY>0){
         code[index]=(code[index]+1)%10;
       }else{
         code[index]=(code[index]-1+10)%10;
       }
+
       render();
     });
+
   }
 
 });
 
-/* LOCK CLICK CHECK */
-document.getElementById("lock").addEventListener("click",check);
+/* LOCK CLICK FIX */
+let isDragging=false;
+
+document.querySelectorAll(".digit").forEach(el=>{
+  el.addEventListener("touchmove",()=>isDragging=true);
+  el.addEventListener("touchend",()=>setTimeout(()=>isDragging=false,50));
+});
+
+document.getElementById("lock").addEventListener("click",()=>{
+  if(!isDragging) check();
+});
 
 /* ================= METAL EFFECT ================= */
 const lock=document.getElementById("lock");
