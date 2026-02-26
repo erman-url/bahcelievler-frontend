@@ -1,38 +1,66 @@
-document.addEventListener("DOMContentLoaded", function(){
+(function(){
 
-  const current = window.location.pathname;
+  function init(){
 
-  const footerHTML = `
-  <nav class="app-footer-nav">
+    // Eğer nav varsa sil (her ihtimale karşı)
+    const old = document.querySelector(".app-footer-nav");
+    if(old) old.remove();
 
-    <a href="index.html" class="nav-item-modern ${current.includes('index') ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-house"></i></div>
-      Ana
-    </a>
+    const nav = document.createElement("nav");
+    nav.className = "app-footer-nav";
 
-    <a href="sosyal.html" class="nav-item-modern ${current.includes('sosyal') ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-globe"></i></div>
-      Sosyal
-    </a>
+    nav.innerHTML = `
+      <a href="index.html">
+        <i class="fa-solid fa-house"></i>
+        <span>Ana</span>
+      </a>
 
-    <a href="ilanlar.html" class="nav-center-wrapper ${current.includes('ilan') ? 'active' : ''}">
-      <div class="nav-center"><i class="fa-solid fa-bars"></i></div>
-      <div class="nav-center-label">İlanlar</div>
-    </a>
+      <a href="sosyal.html">
+        <i class="fa-solid fa-globe"></i>
+        <span>Sosyal</span>
+      </a>
 
-    <a href="hizmetler.html" class="nav-item-modern ${current.includes('hizmet') ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
-      Hizmetler
-    </a>
+      <a href="ilanlar.html" class="center">
+        <i class="fa-solid fa-plus"></i>
+      </a>
 
-    <a href="iletisim.html" class="nav-item-modern ${current.includes('iletisim') ? 'active' : ''}">
-      <div class="icon-wrap"><i class="fa-solid fa-envelope"></i></div>
-      İletişim
-    </a>
+      <a href="hizmetler.html">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Hizmet</span>
+      </a>
 
-  </nav>
-  `;
+      <a href="iletisim.html">
+        <i class="fa-solid fa-envelope"></i>
+        <span>İletişim</span>
+      </a>
+    `;
 
-  document.getElementById("globalFooterNav").innerHTML = footerHTML;
+    document.body.appendChild(nav);
 
-});
+    setActive(nav);
+  }
+
+  function setActive(nav){
+
+    let current = window.location.pathname.split("/").pop();
+
+    if(current === "" || current === "/"){
+      current = "index.html";
+    }
+
+    nav.querySelectorAll("a").forEach(link=>{
+      const href = link.getAttribute("href");
+
+      if(href === current){
+        link.classList.add("active");
+      }
+    });
+  }
+
+  // DOM hazır
+  document.addEventListener("DOMContentLoaded", init);
+
+  // fallback (geç yüklenen sayfalar için)
+  window.addEventListener("load", init);
+
+})();

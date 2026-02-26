@@ -34,3 +34,17 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(bindMenu, 50);
 
 });
+
+function openMenu(){
+  document.querySelector(".side-menu").classList.add("active");
+  document.querySelector(".overlay").classList.add("active");
+
+  document.body.style.overflow = "hidden";
+}
+
+function closeMenu(){
+  document.querySelector(".side-menu").classList.remove("active");
+  document.querySelector(".overlay").classList.remove("active");
+
+  document.body.style.overflow = "";
+}

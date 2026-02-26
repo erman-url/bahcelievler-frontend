@@ -9,21 +9,187 @@
 <title>Bahçelievler Forum | Yerel İlan ve Mahalle Platformu</title>
 <meta name="description" content="Bahçelievler’de ilanlar, mahalle duyuruları, radar ve yerel haberler.">
 <meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563eb">
+
+<link rel="icon" href="/favicon.ico">
+
+<!-- PERFORMANCE -->
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="dns-prefetch" href="https://images.unsplash.com">
+
+<link rel="preconnect" href="https://api.open-meteo.com">
+<link rel="dns-prefetch" href="https://api.open-meteo.com">
+
+<link rel="preconnect" href="https://api.frankfurter.app">
+<link rel="dns-prefetch" href="https://api.frankfurter.app">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
 <style>
 
-/* SAFE AREA GLOBAL */
+/* SAFE AREA */
 body{
   padding-top: env(safe-area-inset-top);
 }
 
+/* DESKTOP BODY */
+@media(min-width:1024px){
+  body{
+    padding-bottom:0;
+  }
+}
+
+/* PAGE CENTER */
 .page-wrapper{
+  max-width:1000px;
+  margin:0 auto;
+  width:100%;
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* HEADER CENTER */
+#globalHeader{
+  max-width:1000px;
+  margin:0 auto;
+}
+
+/* INFO BAR */
+.info-bar{
+  display:flex;
+  gap:10px;
+  padding:12px;
+}
+
+.info-card{
+  flex:1;
+  background:#fff;
+  border-radius:14px;
+  padding:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  min-height:60px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.info-title{
+  font-size:12px;
+  color:#777;
+}
+
+.info-value{
+  font-size:16px;
+  font-weight:700;
+  margin-top:4px;
+}
+
+/* LOADING */
+.loading{
+  opacity:0.6;
+}
+
+/* HERO */
+.hero-slider{
+  position:relative;
+  overflow:hidden;
+  height:220px; /* CLS FIX */
+}
+
+.hero-slide img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+}
+
+/* NEWS */
+.news-card img{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+  display:block;
+}
+
+/* MOBILE */
+@media (max-width:600px){
+  .info-bar{
+    flex-direction:column;
+  }
+}
+
+/* FOOTER */
+.corporate-footer{
+  text-align:center;
+  padding:30px 20px 120px;
+  background:linear-gradient(to top, #f8fafc, transparent);
+  max-width:900px;
+  margin:0 auto;
+}
+
+.footer-trust-area{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:15px;
+}
+
+.trust-badge{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-weight:600;
+}
+
+
+/* COOKIE */
+.cookie-bar{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  width:95%;
+  max-width:520px;
+  bottom:100px;
+  background:white;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  padding:12px;
+  z-index:900;
+}
+
+.cookie-inner{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.cookie-text{
+  flex:1;
+  font-size:12px;
+}
+
+.cookie-bar button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:12px;
+}
+
+/* COOKIE DESKTOP */
+@media(min-width:1024px){
+  .cookie-bar{
+    position:static;
+    transform:none;
+    margin:20px auto;
+  }
 }
 
 </style>
@@ -32,17 +198,32 @@ body{
 
 <body>
 
-<!-- ✅ HEADER MERKEZİ -->
 <div id="globalHeader"></div>
 
 <div class="page-wrapper">
 
 <main id="mainContent">
 
+<!-- DASHBOARD -->
+<section class="info-bar">
+
+  <div class="info-card">
+    <div class="info-title">🌤 Hava</div>
+    <div class="info-value loading" id="weatherBox">Yükleniyor...</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-title">💱 Döviz</div>
+    <div class="info-value loading" id="currencyBox">Yükleniyor...</div>
+  </div>
+
+</section>
+
+<!-- HERO -->
 <section class="hero-slider">
 
   <div class="hero-slide active">
-    <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad">
+    <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad" loading="eager">
     <div class="hero-overlay">
       <h1>Bahçelievler’de Yaşam Yeniden Şekilleniyor</h1>
       <p class="hero-sub">Mahalle gündemi, fiyat radarları ve ilanlar tek merkezde.</p>
@@ -50,7 +231,7 @@ body{
   </div>
 
   <div class="hero-slide">
-    <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7">
+    <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7" loading="lazy">
     <div class="hero-overlay">
       <h1>Mahallede Yeni Projeler Başladı</h1>
       <p class="hero-sub">Gelişmeleri tek merkezden takip edin.</p>
@@ -59,6 +240,7 @@ body{
 
 </section>
 
+<!-- NEWS -->
 <section class="news">
   <div class="news-bar">GÜNDEM & HABER</div>
 
@@ -66,17 +248,17 @@ body{
     <div class="news-track" id="newsTrack">
 
       <div class="news-card">
-        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156">
+        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156" loading="lazy">
         <div class="content">Semtte Yeni Park Açıldı</div>
       </div>
 
       <div class="news-card">
-        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee">
+        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" loading="lazy">
         <div class="content">Trafik Düzenlemesi Başladı</div>
       </div>
 
       <div class="news-card">
-        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" loading="lazy">
         <div class="content">Yeni Eğitim Merkezi Açılıyor</div>
       </div>
 
@@ -84,47 +266,78 @@ body{
   </div>
 </section>
 
+<!-- COUNTDOWN -->
 <section class="event-countdown">
-<h2 class="visually-hidden">TEST V5</h2>
-
 <div class="event-header">🌙 KADİR GECESİNE KALAN SÜRE</div>
-
 <div class="event-timer">
 <div class="time-box"><span id="days">0</span>Gün</div>
 <div class="time-box"><span id="hours">0</span>Saat</div>
 <div class="time-box"><span id="minutes">0</span>Dk</div>
 <div class="time-box"><span id="seconds">0</span>Sn</div>
 </div>
-
 </section>
 
+<!-- QUICK -->
 <section class="quick-grid">
-<div class="quick-card" onclick="location.href='duyurular.html'">
-<i class="fas fa-bolt"></i>
-<span>DUYURU</span>
-</div>
-
-<div class="quick-card" onclick="location.href='ilanlar.html'">
-<i class="fas fa-bullhorn"></i>
-<span>İLANLAR</span>
-</div>
-
-<div class="quick-card" onclick="location.href='radar.html'">
-<i class="fas fa-chart-line"></i>
-<span>RADAR</span>
-</div>
+<div class="quick-card" onclick="location.href='duyurular.html'">DUYURU</div>
+<div class="quick-card" onclick="location.href='ilanlar.html'">İLANLAR</div>
+<div class="quick-card" onclick="location.href='radar.html'">RADAR</div>
 </section>
 
 </main>
 </div>
 
-<!-- ✅ MERKEZİ FOOTER NAV -->
-<div id="globalFooterNav"></div>
 
-<!-- ✅ ALT FOOTER (YASAL) -->
-<div id="globalFooterLegal"></div>
+<footer class="corporate-footer">
+<div class="footer-trust-area">
+<span class="trust-badge">🛡️ KVKK Uyumlu</span>
+<span class="trust-badge">🔐 Güvenli Veri Yönetimi</span>
+<span class="trust-badge">✔ İçerik Kontrolü Sizde</span>
+</div>
 
-<!-- SCRIPT SIRASI ÇOK KRİTİK -->
+<div class="footer-legal">
+<a href="#">Gizlilik</a> • <a href="#">Koşullar</a>
+</div>
+
+<div class="footer-copyright">
+© 2026 Bahçelievler Forum
+</div>
+
+<div class="footer-motto">
+<span class="motto-heart">❤</span> BİRLİK'TE BAHÇELİEVLER
+</div>
+</footer>
+
+
+
+<!-- COOKIE -->
+<div id="cookie-bar" class="cookie-bar">
+<div class="cookie-inner">
+<i class="fa-solid fa-shield-halved"></i>
+<div class="cookie-text">
+<strong>Gizlilik Önceliğimizdir</strong>
+</div>
+<button onclick="acceptCookies()">Anladım</button>
+</div>
+</div>
+
+<script>
+function acceptCookies(){
+  const bar = document.getElementById("cookie-bar");
+  if(bar){
+    bar.style.display="none";
+    localStorage.setItem("cookieAccepted","1");
+  }
+}
+
+window.addEventListener("load",()=>{
+  const bar = document.getElementById("cookie-bar");
+  if(bar && localStorage.getItem("cookieAccepted")){
+    bar.style.display="none";
+  }
+});
+</script>
+
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/footerNav.js"></script>
 <script src="assets/js/footerLegal.js"></script>
@@ -133,7 +346,7 @@ body{
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/slider.js" defer></script>
 <script src="assets/js/countdown.js" defer></script>
-<script src="assets/js/weather.js" defer></script>
+<script src="assets/js/dashboard.js" defer></script>
 
 </body>
 </html>

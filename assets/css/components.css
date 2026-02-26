@@ -1,31 +1,133 @@
+/* =====================================
+   HERO (SENİN TASARIM + FIX)
+===================================== */
+
 .hero{
-margin:20px;
-border-radius:22px;
-overflow:hidden;
-position:relative;
-box-shadow:0 15px 35px rgba(0,0,0,.15);
-}
-.hero img{
-width:100%;
-height:260px;
-object-fit:cover;
-}
-.quick-grid{
-margin:20px;
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:16px;
-}
-.quick-card{
-background:rgba(255,255,255,.7);
-padding:28px;
-border-radius:26px;
-text-align:center;
-backdrop-filter:blur(18px);
-box-shadow:0 15px 40px rgba(0,0,0,.08);
+  margin:20px;
+  border-radius:22px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 15px 35px rgba(0,0,0,.15);
+
+  /* CLS fix */
+  min-height:220px;
 }
 
-/* ===== ADS GRID ===== */
+.hero img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  display:block;
+
+  /* performans */
+  will-change:transform;
+  transform:translateZ(0);
+}
+
+/* =====================================
+   QUICK GRID (TOUCH FIX)
+===================================== */
+
+.quick-grid{
+  margin:20px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.quick-card{
+  background:rgba(255,255,255,.7);
+  padding:28px;
+  border-radius:26px;
+  text-align:center;
+  backdrop-filter:blur(18px);
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+
+  /* performans */
+  will-change:transform;
+  transition:0.2s ease;
+}
+
+.quick-card:active{
+  transform:scale(0.97);
+}
+
+/* =====================================
+   DASHBOARD (HAVA + DÖVİZ)
+===================================== */
+
+.info-bar{
+  display:flex;
+  gap:12px;
+  padding:12px 20px;
+}
+
+.info-card{
+  flex:1;
+  background:rgba(255,255,255,.75);
+  border-radius:20px;
+  padding:14px;
+  backdrop-filter:blur(18px);
+  box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  min-height:64px;
+
+  /* performans */
+  will-change:transform;
+  transform:translateZ(0);
+}
+
+.info-title{
+  font-size:12px;
+  color:#6b7280;
+  font-weight:500;
+}
+
+.info-value{
+  font-size:17px;
+  font-weight:700;
+  margin-top:6px;
+}
+
+/* LOADING (skeleton) */
+.loading{
+  position:relative;
+  color:transparent !important;
+}
+
+.loading::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  width:70%;
+  height:12px;
+  transform:translateY(-50%);
+  border-radius:6px;
+
+  background:linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e5e7eb 37%,
+    #f0f0f0 63%
+  );
+
+  background-size:400% 100%;
+  animation:skeleton 1.2s infinite;
+}
+
+@keyframes skeleton{
+  0%{background-position:100% 50%;}
+  100%{background-position:0 50%;}
+}
+
+/* =====================================
+   ADS GRID (SENİN KOD + TOUCH)
+===================================== */
 
 .ads-grid{
   display:grid;
@@ -41,10 +143,16 @@ box-shadow:0 15px 40px rgba(0,0,0,.08);
   box-shadow:0 4px 15px rgba(0,0,0,0.06);
   transition:0.2s ease;
   cursor:pointer;
+
+  will-change:transform;
 }
 
 .ad-card:hover{
   transform:translateY(-4px);
+}
+
+.ad-card:active{
+  transform:scale(0.98);
 }
 
 .ad-image{
@@ -58,6 +166,7 @@ box-shadow:0 15px 40px rgba(0,0,0,.08);
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
 }
 
 .price-badge{
@@ -92,10 +201,93 @@ box-shadow:0 15px 40px rgba(0,0,0,.08);
   justify-content:space-between;
 }
 
-/* Desktop */
+/* =====================================
+   NEWS SLIDER FIX
+===================================== */
+
+.news-slider{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.news-track{
+  display:flex;
+  gap:10px;
+}
+
+.news-card{
+  min-width:200px;
+  flex-shrink:0;
+}
+
+.news-card img{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+  display:block;
+}
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media(max-width:600px){
+
+  .info-bar{
+    flex-direction:column;
+  }
+
+  .quick-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+/* =====================================
+   DESKTOP
+===================================== */
 
 @media(min-width:768px){
-  .ads-grid{
-    grid-template-columns:repeat(4,1fr);
+
+  .info-bar{
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .hero img{
+    height:320px;
+  }
+
+}
+
+/* =====================================
+   GLOBAL PERF
+===================================== */
+
+*{
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* FIX: NAV ALT MESAFE */
+.app-footer-nav{
+  bottom:10px !important;
+}
+
+/* FIX: COOKIE BAR */
+.cookie-bar{
+  bottom:110px !important;
+}
+
+/* DESKTOP: COOKIE NORMAL AKSIN */
+@media(min-width:1024px){
+  .cookie-bar{
+    position:static;
+    margin:20px auto;
+    max-width:900px;
   }
 }
