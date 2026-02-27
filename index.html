@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+,<!DOCTYPE html>
 <html lang="tr" class="no-js">
 <head>
 
@@ -96,7 +96,7 @@ body{
 .hero-slider{
   position:relative;
   overflow:hidden;
-  height:220px; /* CLS FIX */
+  height:220px;
 }
 
 .hero-slide img{
@@ -147,7 +147,6 @@ body{
   font-weight:600;
 }
 
-
 /* COOKIE */
 .cookie-bar{
   position:fixed;
@@ -183,7 +182,6 @@ body{
   font-size:12px;
 }
 
-/* COOKIE DESKTOP */
 @media(min-width:1024px){
   .cookie-bar{
     position:static;
@@ -199,8 +197,8 @@ body{
 <body>
 
 <div id="globalHeader"></div>
-<div class="page-wrapper">
 
+<div class="page-wrapper">
 
 <main id="mainContent">
 
@@ -262,6 +260,11 @@ body{
         <div class="content">Yeni Eğitim Merkezi Açılıyor</div>
       </div>
 
+      <div class="news-card">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" loading="lazy">
+        <div class="content">Ücretsiz Kurslar Başlıyor</div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -287,16 +290,11 @@ body{
 </main>
 </div>
 
-
 <footer class="corporate-footer">
 <div class="footer-trust-area">
 <span class="trust-badge">🛡️ KVKK Uyumlu</span>
 <span class="trust-badge">🔐 Güvenli Veri Yönetimi</span>
 <span class="trust-badge">✔ İçerik Kontrolü Sizde</span>
-</div>
-
-<div class="footer-legal">
-<a href="#">Gizlilik</a> • <a href="#">Koşullar</a>
 </div>
 
 <div class="footer-copyright">
@@ -307,8 +305,6 @@ body{
 <span class="motto-heart">❤</span> BİRLİK'TE BAHÇELİEVLER
 </div>
 </footer>
-
-
 
 <!-- COOKIE -->
 <div id="cookie-bar" class="cookie-bar">
@@ -338,12 +334,11 @@ window.addEventListener("load",()=>{
 });
 </script>
 
-<script src="assets/js/core.js"></script>
+<script src="assets/js/core.js" defer></script>
 <script src="assets/js/slider.js" defer></script>
 <script src="assets/js/countdown.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
-<script src="assets/js/footerLegal.js"></script>
-
+<script src="assets/js/footerLegal.js" defer></script>
 
 </body>
 </html>

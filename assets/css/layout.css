@@ -65,29 +65,72 @@ body{
   }
 }
 
-/* ======================================
-   HEADER
-====================================== */
+
+/* ================= HEADER PREMIUM ================= */
 
 .top-header{
   position:sticky;
   top:0;
   width:100%;
-  background:linear-gradient(135deg,#1f6fd1,#0e4fa8);
+  z-index:999;
+
+  /* Premium gradient */
+  background:linear-gradient(120deg,#0d2c54,#1f6fd1);
   color:#fff;
-  padding:var(--space-md);
-  border-radius:0 0 var(--radius-lg) var(--radius-lg);
-  z-index:500;
+
+  /* Daha kompakt */
+  padding:18px 18px;
+
+  /* Artık düz */
+  border-radius:0;
+
+  /* Premium hissi */
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+
+  box-shadow:0 4px 20px rgba(0,0,0,.15);
+
+  transition:all .25s ease;
 }
 
+/* Scroll'da küçülme */
+.top-header.scrolled{
+  padding:10px 16px;
+
+  background:rgba(13,44,84,.92);
+
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+
+  box-shadow:0 8px 30px rgba(0,0,0,.25);
+}
+
+/* İç hizalama */
+.header-inner{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+/* Başlık */
 .header-title{
-  font-size:18px;
+  font-size:16px;
   font-weight:800;
+  letter-spacing:.4px;
 }
 
+/* Alt başlık */
 .header-sub{
-  font-size:13px;
-  opacity:.85;
+  font-size:11px;
+  opacity:.7;
+  letter-spacing:.3px;
+}
+
+/* Menü ikon */
+#menuBtn{
+  font-size:20px;
+  cursor:pointer;
+  opacity:.9;
 }
 
 /* ======================================

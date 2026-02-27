@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr" class="no-js">
+<head>
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>İletişim | Bahçelievler Forum</title>
+
+<!-- INDEX İLE AYNI CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<style>
+
+/* SAFE AREA */
+body{
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* PAGE CENTER */
+.page-wrapper{
+  max-width:1000px;
+  margin:0 auto;
+  width:100%;
+}
+
+/* HEADER TEXT */
+.page-head{
+  padding:20px 16px;
+}
+
+.page-head h1{
+  font-size:22px;
+  font-weight:800;
+}
+
+.page-head p{
+  font-size:13px;
+  opacity:.7;
+}
+
+/* CARD */
+.contact-card{
+  margin:12px;
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* FORM */
+.form-group{
+  margin-bottom:10px;
+}
+
+input, textarea{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+textarea{
+  min-height:100px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:#fff;
+  font-weight:700;
+}
+
+/* STATUS */
+.status{
+  font-size:13px;
+  margin-top:10px;
+  display:none;
+}
+
+/* ACCORDION */
+.acc-item{
+  border-bottom:1px solid #eee;
+}
+
+.acc-title{
+  padding:10px 0;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.acc-content{
+  max-height:0;
+  overflow:hidden;
+  transition:.3s;
+  font-size:13px;
+  opacity:.8;
+}
+
+.acc-item.active .acc-content{
+  max-height:200px;
+}
+
+</style>
+
+</head>
+
+<body id="contactPage">
+
+<!-- GLOBAL HEADER -->
+<div id="globalHeader"></div>
+
+<!-- PAGE -->
+<div class="page-wrapper">
+
+  <section class="page-head">
+    <h1>İletişim & Bilgilendirme</h1>
+    <p>Bahçelievler Forum hakkında tüm detaylar</p>
+  </section>
+
+  <section class="contact-card">
+    <h2>Hakkımızda</h2>
+    <p>
+      Bahçelievler Forum, mahalle odaklı bilgi paylaşımı, yerel ilanlar ve topluluk etkileşimini
+      bir araya getiren dijital bir platformdur.
+    </p>
+    <p>
+      Amacımız; kullanıcıların güvenli, hızlı ve doğru bilgiye ulaşmasını sağlamak, yerel ekonomiyi
+      desteklemek ve mahalle kültürünü dijital ortamda sürdürülebilir hale getirmektir.
+    </p>
+  </section>
+
+  <section class="contact-card">
+    <h2>Sıkça Sorulan Sorular</h2>
+
+    <div class="acc-item">
+      <div class="acc-title">Bahçelievler Forum nedir?</div>
+      <div class="acc-content">Yerel ilan ve bilgi platformudur.</div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-title">İlan vermek ücretli mi?</div>
+      <div class="acc-content">Başlangıçta ücretsizdir.</div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-title">Üyelik gerekli mi?</div>
+      <div class="acc-content">Bazı özellikler için üyelik gerekebilir.</div>
+    </div>
+
+  </section>
+
+  <section class="contact-card">
+    <h2>İletişim Formu</h2>
+
+    <form id="contactForm" novalidate>
+
+      <div class="form-group">
+        <input type="text" id="name" placeholder="Adınız">
+      </div>
+
+      <div class="form-group">
+        <input type="email" id="email" placeholder="E-posta">
+      </div>
+
+      <div class="form-group">
+        <textarea id="message" placeholder="Mesajınız"></textarea>
+      </div>
+
+      <div class="checkbox">
+        <input type="checkbox" id="kvkk">
+        <label for="kvkk">KVKK onaylıyorum</label>
+      </div>
+
+      <!-- SPAM -->
+      <input type="text" id="website" style="display:none">
+
+      <button type="submit" id="submitBtn">Gönder</button>
+
+      <div id="status" class="status"></div>
+
+    </form>
+
+  </section>
+
+</div>
+
+<!-- GLOBAL FOOTER -->
+<div id="globalFooter"></div>
+
+<!-- SCRIPTS (INDEX İLE AYNI SIRADA) -->
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/menu.js"></script>
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/footerNav.js"></script>
+
+<!-- PAGE MODULE -->
+<script src="assets/js/modules/contact.js"></script>
+
+</body>
+</html>

@@ -12,7 +12,7 @@ window.__BF_CORE__ = true;
 
 window.BF = {
 
-    version: "1.3.1",
+    version: "1.4.0",
 
     config: {
         apiCacheMinutes: 30,
@@ -31,7 +31,30 @@ window.BF = {
 
     utils: {},
     cache: {},
-    ui: {}
+    ui: {},
+
+    /* 🔥 MODULE SYSTEM */
+    modules: {}
+};
+
+
+/* ================= MODULE SYSTEM ================= */
+
+BF.registerModule = function(name, init){
+    if(typeof init !== "function") return;
+    BF.modules[name] = init;
+};
+
+BF.runModules = function(){
+
+    Object.keys(BF.modules).forEach(name=>{
+        try{
+            BF.modules[name]();
+        }catch(e){
+            console.warn("Module error:", name, e);
+        }
+    });
+
 };
 
 
@@ -105,8 +128,8 @@ BF.ui.renderHeader = function(){
 
     container.innerHTML = `
         <div class="top-header">
-            <div style="display:flex;align-items:center;gap:12px">
-                <i id="menuBtn" class="fa-solid fa-bars" style="font-size:20px;cursor:pointer"></i>
+            <div class="header-inner">
+                <i id="menuBtn" class="fa-solid fa-bars"></i>
                 <div>
                     <div class="header-title">BAHÇELİEVLER FORUM</div>
                     <div class="header-sub">Semt · Bilgi · Yaşam Portalı</div>
@@ -220,19 +243,16 @@ BF.ui.bindMenuEvents = function(){
 
     document.addEventListener("click", function(e){
 
-        // menu aç
         if(e.target.closest("#menuBtn")){
             document.querySelector(".side-menu")?.classList.add("active");
             document.querySelector(".overlay")?.classList.add("active");
         }
 
-        // menu kapat
         if(e.target.closest("#closeMenu") || e.target.classList.contains("overlay")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
 
-        // linke basınca menü kapanır
         if(e.target.closest(".side-menu a")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
@@ -274,11 +294,9 @@ BF.utils.initHeroSlider = function(){
     let index = 0;
 
     BF.state.heroTimer = setInterval(()=>{
-
         slides[index].classList.remove("active");
         index = (index + 1) % slides.length;
         slides[index].classList.add("active");
-
     }, BF.config.heroInterval);
 
 };
@@ -376,8 +394,26 @@ BF.init = function(){
 
     window.addEventListener("resize", BF.utils.handleResize);
 
+    /* 🔥 MODULES RUN */
+    BF.runModules();
+
     console.log("BF Core Ready v" + BF.version);
 };
+
+
+/* HEADER SCROLL EFFECT */
+window.addEventListener("scroll", function(){
+
+  const header = document.querySelector(".top-header");
+  if(!header) return;
+
+  if(window.scrollY > 20){
+    header.classList.add("scrolled");
+  }else{
+    header.classList.remove("scrolled");
+  }
+
+});
 
 
 /* ================= SAFE START ================= */
