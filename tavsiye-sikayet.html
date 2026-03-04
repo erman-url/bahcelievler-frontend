@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Tavsiye & Şikayet | Bahçelievler Forum</title>
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* SAFE AREA */
+
+body{
+padding-top:env(safe-area-inset-top);
+}
+
+/* WRAPPER */
+
+.page-wrapper{
+max-width:1000px;
+margin:0 auto;
+padding-bottom:calc(120px + env(safe-area-inset-bottom));
+}
+
+/* PAGE TITLE */
+
+.page-title{
+font-size:20px;
+font-weight:700;
+margin:20px;
+}
+
+/* ACTION GRID */
+
+.action-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+padding:16px;
+}
+
+.action-card{
+
+background:#fff;
+
+border-radius:16px;
+
+padding:18px;
+
+box-shadow:0 6px 18px rgba(0,0,0,0.06);
+
+cursor:pointer;
+
+transition:.18s;
+
+}
+
+.action-card:hover{
+transform:translateY(-3px);
+box-shadow:0 12px 28px rgba(0,0,0,0.12);
+}
+
+.action-icon{
+font-size:24px;
+margin-bottom:8px;
+}
+
+.action-title{
+font-weight:700;
+font-size:15px;
+}
+
+.action-desc{
+font-size:12px;
+color:#666;
+margin-top:3px;
+}
+
+/* COLORS */
+
+.tavsiye{
+color:#10b981;
+}
+
+.sikayet{
+color:#ef4444;
+}
+
+/* FORM MODAL */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+
+background:rgba(0,0,0,0.5);
+
+display:none;
+
+align-items:center;
+justify-content:center;
+
+z-index:999;
+}
+
+.modal-box{
+
+background:#fff;
+
+width:92%;
+max-width:500px;
+
+border-radius:18px;
+
+padding:20px;
+
+}
+
+/* FORM */
+
+.form-group{
+margin-bottom:12px;
+}
+
+.form-group label{
+font-size:13px;
+display:block;
+margin-bottom:4px;
+}
+
+.form-group input,
+.form-group textarea{
+
+width:100%;
+
+padding:10px;
+
+border-radius:8px;
+
+border:1px solid #ddd;
+
+font-size:14px;
+
+}
+
+textarea{
+min-height:90px;
+resize:none;
+}
+
+/* STAR RATING */
+
+.star-rating{
+display:flex;
+gap:6px;
+font-size:20px;
+cursor:pointer;
+color:#ccc;
+}
+
+.star-rating .active{
+color:#f59e0b;
+}
+
+/* IMAGE UPLOAD */
+
+.image-upload{
+
+border:1px dashed #ccc;
+
+padding:10px;
+
+border-radius:8px;
+
+font-size:12px;
+
+text-align:center;
+
+}
+
+/* BUTTON */
+
+.submit-btn{
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:10px 16px;
+
+border-radius:10px;
+
+font-size:14px;
+
+cursor:pointer;
+
+width:100%;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="globalHeader"></div>
+
+<div class="page-wrapper">
+
+<h1 class="page-title">💬 Tavsiye & Şikayet</h1>
+
+<div class="action-grid">
+
+<div class="action-card" onclick="openForm('tavsiye')">
+
+<div class="action-icon tavsiye">
+<i class="fa-solid fa-star"></i>
+</div>
+
+<div class="action-title">Tavsiye Et</div>
+<div class="action-desc">İyi işletmeleri öner</div>
+
+</div>
+
+<div class="action-card" onclick="openForm('sikayet')">
+
+<div class="action-icon sikayet">
+<i class="fa-solid fa-triangle-exclamation"></i>
+</div>
+
+<div class="action-title">Şikayet Et</div>
+<div class="action-desc">Yaşadığın sorunu paylaş</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="formModal">
+
+<div class="modal-box">
+
+<h3 id="formTitle">Yeni Gönderi</h3>
+
+<div class="form-group">
+<label>Başlık</label>
+<input type="text" id="title">
+</div>
+
+<div class="form-group">
+<label>İşletme / Firma</label>
+<input type="text" id="business">
+</div>
+
+<div class="form-group">
+<label>Açıklama</label>
+<textarea id="content"></textarea>
+</div>
+
+<div class="form-group" id="ratingBox">
+
+<label>Puan</label>
+
+<div class="star-rating" id="stars">
+
+<i class="fa-solid fa-star" data-value="1"></i> <i class="fa-solid fa-star" data-value="2"></i> <i class="fa-solid fa-star" data-value="3"></i> <i class="fa-solid fa-star" data-value="4"></i> <i class="fa-solid fa-star" data-value="5"></i>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label>Fotoğraf (opsiyonel)</label>
+
+<div class="image-upload">
+Fotoğraf yükle
+</div>
+
+</div>
+
+<button class="submit-btn">
+Gönder
+</button>
+
+</div>
+
+</div>
+
+<script src="assets/js/core.js" defer></script>
+
+<script>
+
+let currentType="tavsiye"
+let rating=0
+
+function openForm(type){
+
+currentType=type
+
+document.getElementById("formModal").style.display="flex"
+
+const title=document.getElementById("formTitle")
+
+if(type==="tavsiye"){
+title.innerText="Tavsiye Et"
+document.getElementById("ratingBox").style.display="block"
+}
+
+if(type==="sikayet"){
+title.innerText="Şikayet Et"
+document.getElementById("ratingBox").style.display="none"
+}
+
+}
+
+/* STAR RATING */
+
+document.querySelectorAll("#stars i").forEach(star=>{
+
+star.addEventListener("click",()=>{
+
+rating=star.dataset.value
+
+document.querySelectorAll("#stars i").forEach(s=>{
+
+s.classList.remove("active")
+
+})
+
+for(let i=0;i<rating;i++){
+
+document.querySelectorAll("#stars i")[i].classList.add("active")
+
+}
+
+})
+
+})
+
+</script>
+
+</body>
+</html>
