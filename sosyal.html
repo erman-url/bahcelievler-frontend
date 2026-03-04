@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Sosyal | Bahçelievler Forum</title>
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<style>
+
+.page-wrapper{
+max-width:1000px;
+margin:0 auto;
+padding-bottom:120px;
+}
+
+/* PAGE TITLE */
+
+.page-title{
+font-size:22px;
+font-weight:700;
+margin:20px;
+}
+
+/* CATEGORY GRID */
+
+.social-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+padding:16px;
+}
+
+/* CARD */
+
+.social-card{
+background:#fff;
+border-radius:16px;
+padding:22px;
+box-shadow:0 6px 14px rgba(0,0,0,0.06);
+cursor:pointer;
+transition:.2s;
+}
+
+.social-card:hover{
+transform:translateY(-3px);
+}
+
+.social-icon{
+font-size:22px;
+margin-bottom:10px;
+color:#2563eb;
+}
+
+.social-title{
+font-size:16px;
+font-weight:700;
+}
+
+.social-desc{
+font-size:12px;
+color:#777;
+margin-top:4px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.social-grid{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="globalHeader"></div>
+
+<div class="page-wrapper">
+
+<h1 class="page-title">SOSYAL</h1>
+
+<div class="social-grid">
+
+<div class="social-card" onclick="location.href='duyurular.html'">
+<div class="social-icon">
+<i class="fa-solid fa-bullhorn"></i>
+</div>
+<div class="social-title">Duyurular</div>
+<div class="social-desc">Mahalle duyuruları ve önemli bilgilendirmeler</div>
+</div>
+
+<div class="social-card" onclick="location.href='firsatlar.html'">
+<div class="social-icon">
+<i class="fa-solid fa-tags"></i>
+</div>
+<div class="social-title">Fırsat & İndirim</div>
+<div class="social-desc">Yerel kampanya ve indirimler</div>
+</div>
+
+<div class="social-card" onclick="location.href='fiyat-dedektifi.html'">
+<div class="social-icon">
+<i class="fa-solid fa-magnifying-glass-dollar"></i>
+</div>
+<div class="social-title">Fiyat Dedektifi</div>
+<div class="social-desc">Market ve ürün fiyat karşılaştırma</div>
+</div>
+
+<div class="social-card" onclick="location.href='tavsiye-sikayet.html'">
+<div class="social-icon">
+<i class="fa-solid fa-comments"></i>
+</div>
+<div class="social-title">Tavsiye & Şikayet</div>
+<div class="social-desc">Deneyim paylaşımı ve öneriler</div>
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+<script src="assets/js/core.js" defer></script>
+
+</body>
+</html>

@@ -197,7 +197,7 @@ BF.ui.renderSideMenu = function(){
 
         <ul>
             <li><a href="index.html">Ana</a></li>
-            <li><a href="sosyal.html">Keşfet</a></li>
+            <li><a href="sosyal.html">Sosyal</a></li>
             <li><a href="ilanlar.html">İlanlar</a></li>
             <li><a href="hizmetler.html">Hizmetler</a></li>
             <li><a href="pusula.html">Pusula</a></li>
