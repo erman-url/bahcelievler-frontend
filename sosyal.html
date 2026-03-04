@@ -11,7 +11,11 @@
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
+
+/* PAGE WRAPPER */
 
 .page-wrapper{
 max-width:1000px;
@@ -22,50 +26,114 @@ padding-bottom:120px;
 /* PAGE TITLE */
 
 .page-title{
-font-size:22px;
+font-size:20px;
 font-weight:700;
 margin:20px;
+letter-spacing:0.3px;
 }
 
-/* CATEGORY GRID */
+/* GRID */
 
 .social-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:14px;
+gap:16px;
 padding:16px;
 }
 
 /* CARD */
 
 .social-card{
-background:#fff;
-border-radius:16px;
-padding:22px;
-box-shadow:0 6px 14px rgba(0,0,0,0.06);
+
+background:linear-gradient(145deg,#ffffff,#f3f6fb);
+
+border-radius:18px;
+
+padding:18px;
+
+display:flex;
+align-items:center;
+gap:14px;
+
+box-shadow:
+0 6px 18px rgba(0,0,0,0.06),
+0 1px 0 rgba(255,255,255,0.6) inset;
+
+transition:all .18s ease;
+
 cursor:pointer;
-transition:.2s;
+
+position:relative;
+
 }
 
-.social-card:hover{
-transform:translateY(-3px);
+/* TOUCH EFFECT */
+
+.social-card:active{
+transform:scale(.97);
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
+
+/* ICON BADGE */
 
 .social-icon{
-font-size:22px;
-margin-bottom:10px;
-color:#2563eb;
+
+width:46px;
+height:46px;
+
+border-radius:14px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:18px;
+
+color:white;
+
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+
+flex-shrink:0;
+
+}
+
+/* TEXT AREA */
+
+.social-text{
+flex:1;
 }
 
 .social-title{
-font-size:16px;
+font-size:15px;
 font-weight:700;
 }
 
 .social-desc{
 font-size:12px;
-color:#777;
-margin-top:4px;
+color:#6b7280;
+margin-top:3px;
+}
+
+/* RIGHT ARROW */
+
+.social-arrow{
+font-size:14px;
+color:#9ca3af;
+}
+
+/* HOVER DESKTOP */
+
+@media(min-width:900px){
+
+.social-card:hover{
+
+transform:translateY(-3px);
+
+box-shadow:
+0 10px 26px rgba(0,0,0,0.10);
+
+}
+
 }
 
 /* MOBILE */
@@ -92,43 +160,85 @@ grid-template-columns:1fr;
 
 <div class="social-grid">
 
+
 <div class="social-card" onclick="location.href='duyurular.html'">
+
 <div class="social-icon">
 <i class="fa-solid fa-bullhorn"></i>
 </div>
+
+<div class="social-text">
 <div class="social-title">Duyurular</div>
-<div class="social-desc">Mahalle duyuruları ve önemli bilgilendirmeler</div>
+<div class="social-desc">Mahalle duyuruları ve bilgilendirmeler</div>
 </div>
 
+<div class="social-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
+
+
 <div class="social-card" onclick="location.href='firsatlar.html'">
+
 <div class="social-icon">
 <i class="fa-solid fa-tags"></i>
 </div>
+
+<div class="social-text">
 <div class="social-title">Fırsat & İndirim</div>
 <div class="social-desc">Yerel kampanya ve indirimler</div>
 </div>
 
+<div class="social-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
+
+
 <div class="social-card" onclick="location.href='fiyat-dedektifi.html'">
+
 <div class="social-icon">
 <i class="fa-solid fa-magnifying-glass-dollar"></i>
 </div>
+
+<div class="social-text">
 <div class="social-title">Fiyat Dedektifi</div>
-<div class="social-desc">Market ve ürün fiyat karşılaştırma</div>
+<div class="social-desc">Market fiyat karşılaştırmaları</div>
 </div>
 
+<div class="social-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
+
+
 <div class="social-card" onclick="location.href='tavsiye-sikayet.html'">
+
 <div class="social-icon">
 <i class="fa-solid fa-comments"></i>
 </div>
+
+<div class="social-text">
 <div class="social-title">Tavsiye & Şikayet</div>
 <div class="social-desc">Deneyim paylaşımı ve öneriler</div>
 </div>
 
+<div class="social-arrow">
+<i class="fa-solid fa-chevron-right"></i>
 </div>
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+</div>
+
+</div>
 
 <script src="assets/js/core.js" defer></script>
 
