@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="tr">
 <head>
 
@@ -15,12 +16,19 @@
 
 <style>
 
-/* PAGE WRAPPER */
+/* SAFE AREA */
+
+body{
+padding-top: env(safe-area-inset-top);
+}
+
+/* WRAPPER */
 
 .page-wrapper{
 max-width:1000px;
 margin:0 auto;
-padding-bottom:120px;
+width:100%;
+padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
 /* PAGE TITLE */
@@ -29,7 +37,7 @@ padding-bottom:120px;
 font-size:20px;
 font-weight:700;
 margin:20px;
-letter-spacing:0.3px;
+letter-spacing:.3px;
 }
 
 /* GRID */
@@ -63,8 +71,6 @@ transition:all .18s ease;
 
 cursor:pointer;
 
-position:relative;
-
 }
 
 /* TOUCH EFFECT */
@@ -74,7 +80,7 @@ transform:scale(.97);
 box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* ICON BADGE */
+/* ICON */
 
 .social-icon{
 
@@ -97,7 +103,7 @@ flex-shrink:0;
 
 }
 
-/* TEXT AREA */
+/* TEXT */
 
 .social-text{
 flex:1;
@@ -114,24 +120,76 @@ color:#6b7280;
 margin-top:3px;
 }
 
-/* RIGHT ARROW */
+/* BADGE */
+
+.social-badge{
+
+background:#ef4444;
+color:white;
+
+font-size:11px;
+
+padding:4px 8px;
+
+border-radius:999px;
+
+margin-top:4px;
+
+display:inline-block;
+
+}
+
+/* ARROW */
 
 .social-arrow{
 font-size:14px;
 color:#9ca3af;
 }
 
-/* HOVER DESKTOP */
+/* TREND SECTION */
+
+.trend-section{
+padding:20px;
+}
+
+.trend-title{
+font-size:16px;
+font-weight:700;
+margin-bottom:10px;
+}
+
+.trend-feed{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.trend-card{
+
+background:white;
+
+border-radius:14px;
+
+padding:12px;
+
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
+
+font-size:13px;
+
+}
+
+.trend-user{
+font-weight:700;
+margin-bottom:4px;
+}
+
+/* HOVER */
 
 @media(min-width:900px){
 
 .social-card:hover{
-
 transform:translateY(-3px);
-
-box-shadow:
-0 10px 26px rgba(0,0,0,0.10);
-
+box-shadow:0 10px 26px rgba(0,0,0,0.10);
 }
 
 }
@@ -156,10 +214,9 @@ grid-template-columns:1fr;
 
 <div class="page-wrapper">
 
-<h1 class="page-title">SOSYAL</h1>
+<h1 class="page-title">SOSYAL PAYLAŞIMLAR</h1>
 
 <div class="social-grid">
-
 
 <div class="social-card" onclick="location.href='duyurular.html'">
 
@@ -168,8 +225,12 @@ grid-template-columns:1fr;
 </div>
 
 <div class="social-text">
+
 <div class="social-title">Duyurular</div>
-<div class="social-desc">Mahalle duyuruları ve bilgilendirmeler</div>
+<div class="social-desc">Mahalle bilgilendirmeleri</div>
+
+<span class="social-badge">12 yeni</span>
+
 </div>
 
 <div class="social-arrow">
@@ -177,8 +238,6 @@ grid-template-columns:1fr;
 </div>
 
 </div>
-
-
 
 <div class="social-card" onclick="location.href='firsatlar.html'">
 
@@ -187,8 +246,12 @@ grid-template-columns:1fr;
 </div>
 
 <div class="social-text">
+
 <div class="social-title">Fırsat & İndirim</div>
-<div class="social-desc">Yerel kampanya ve indirimler</div>
+<div class="social-desc">Yerel kampanyalar</div>
+
+<span class="social-badge">🔥 8 fırsat</span>
+
 </div>
 
 <div class="social-arrow">
@@ -196,8 +259,6 @@ grid-template-columns:1fr;
 </div>
 
 </div>
-
-
 
 <div class="social-card" onclick="location.href='fiyat-dedektifi.html'">
 
@@ -206,8 +267,10 @@ grid-template-columns:1fr;
 </div>
 
 <div class="social-text">
+
 <div class="social-title">Fiyat Dedektifi</div>
-<div class="social-desc">Market fiyat karşılaştırmaları</div>
+<div class="social-desc">Market fiyat karşılaştırma</div>
+
 </div>
 
 <div class="social-arrow">
@@ -215,8 +278,6 @@ grid-template-columns:1fr;
 </div>
 
 </div>
-
-
 
 <div class="social-card" onclick="location.href='tavsiye-sikayet.html'">
 
@@ -225,8 +286,12 @@ grid-template-columns:1fr;
 </div>
 
 <div class="social-text">
+
 <div class="social-title">Tavsiye & Şikayet</div>
-<div class="social-desc">Deneyim paylaşımı ve öneriler</div>
+<div class="social-desc">Deneyim paylaşımı</div>
+
+<span class="social-badge">34 yorum</span>
+
 </div>
 
 <div class="social-arrow">
@@ -235,8 +300,34 @@ grid-template-columns:1fr;
 
 </div>
 
+</div>
+
+<section class="trend-section">
+
+<div class="trend-title">
+🔥 Mahallede Konuşulanlar
+</div>
+
+<div class="trend-feed">
+
+<div class="trend-card">
+<div class="trend-user">Ahmet</div>
+Migros'ta yağ indirimi başlamış.
+</div>
+
+<div class="trend-card">
+<div class="trend-user">Zeynep</div>
+Şirinevler metro bugün çok kalabalık.
+</div>
+
+<div class="trend-card">
+<div class="trend-user">Mehmet</div>
+BİM'de süt fiyatı düşmüş.
+</div>
 
 </div>
+
+</section>
 
 </div>
 

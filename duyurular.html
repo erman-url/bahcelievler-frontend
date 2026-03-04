@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Duyurular | Bahçelievler Forum</title>
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body{
+padding-top: env(safe-area-inset-top);
+}
+
+.page-wrapper{
+max-width:1000px;
+margin:0 auto;
+padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+.page-title{
+font-size:20px;
+font-weight:700;
+margin:20px;
+}
+
+.duyuru-list{
+padding:16px;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.duyuru-card{
+
+background:white;
+border-radius:16px;
+padding:16px;
+
+box-shadow:0 6px 18px rgba(0,0,0,0.06);
+
+transition:.18s;
+
+}
+
+@media(min-width:900px){
+
+.duyuru-card:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 26px rgba(0,0,0,0.1);
+}
+
+}
+
+.duyuru-title{
+font-weight:700;
+font-size:15px;
+margin-bottom:6px;
+}
+
+.duyuru-text{
+font-size:13px;
+color:#555;
+line-height:1.5;
+}
+
+.duyuru-meta{
+
+display:flex;
+justify-content:space-between;
+
+margin-top:10px;
+
+font-size:11px;
+
+color:#888;
+
+}
+
+.duyuru-badge{
+
+background:#2563eb;
+
+color:white;
+
+padding:3px 8px;
+
+border-radius:999px;
+
+font-size:10px;
+
+}
+
+.empty-box{
+
+text-align:center;
+
+padding:60px 20px;
+
+color:#777;
+
+}
+
+.duyuru-image{
+
+width:100%;
+height:160px;
+
+object-fit:cover;
+
+border-radius:12px;
+
+margin-bottom:10px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="globalHeader"></div>
+
+<div class="page-wrapper">
+
+<h1 class="page-title">📢 Duyurular</h1>
+
+<div id="duyuruList" class="duyuru-list">
+
+<div class="empty-box">Duyurular yükleniyor...</div>
+
+</div>
+
+</div>
+
+<script src="assets/js/core.js" defer></script>
+
+<script src="assets/js/duyurular.js" defer></script>
+
+</body>
+</html>
