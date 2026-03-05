@@ -5,3 +5,7 @@ background:#f4f7fb;
 color:#1b2b45;
 overflow-x:hidden;
 }
+
+body{
+padding-top:env(safe-area-inset-top);
+}
