@@ -51,9 +51,28 @@ return
 
 container.innerHTML=""
 
+/* LOCAL TOKEN */
+
+const tokens = JSON.parse(localStorage.getItem("bf_tokens") || "{}")
+
 /* LOOP */
 
 data.forEach(item=>{
+
+let deleteBtn=""
+
+if(item.delete_token && tokens[item.delete_token]){
+
+deleteBtn = `
+<button class="ts-delete"
+onclick="deletePost('${item.id}','${item.delete_token}')">
+Gönderiyi Sil
+</button>
+`
+
+}
+
+
 
 /* SAFE DATA */
 
@@ -109,20 +128,16 @@ ${escapeHTML(title)}
 </div>
 
 ${business ? `
-
 <div class="ts-business">
 ${escapeHTML(business)}
 </div>
-
 ` : ""}
 
 ${image ? `
-
 <img class="ts-image"
 src="${image}"
 loading="lazy"
 alt="Gönderi görseli">
-
 ` : ""}
 
 <div class="ts-text">
@@ -130,11 +145,9 @@ ${escapeHTML(content)}
 </div>
 
 ${stars ? `
-
 <div class="ts-stars">
 ${stars}
 </div>
-
 ` : ""}
 
 <div class="ts-meta">
@@ -148,6 +161,8 @@ ${dateText}
 </span>
 
 </div>
+
+${deleteBtn}
 
 `
 
@@ -193,3 +208,47 @@ INIT
 ======================================= */
 
 document.addEventListener("DOMContentLoaded",loadTS)
+
+
+
+async function deletePost(id,token){
+
+if(!confirm("Gönderiyi silmek istiyor musunuz?")) return
+
+try{
+
+const res = await fetch(
+"https://bahcelievler-api.erman-urel.workers.dev/api/tavsiye-sikayet-delete",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+id:id,
+token:token
+})
+}
+)
+
+const data = await res.json()
+
+if(data.ok){
+
+alert("Gönderi silindi")
+
+loadTS()
+
+}else{
+
+alert("Silme başarısız")
+
+}
+
+}catch(e){
+
+alert("Silme hatası")
+
+}
+
+}

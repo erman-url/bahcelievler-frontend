@@ -23,6 +23,7 @@
 <div class="page-wrapper">
 
 <h1 class="page-title">💬 Tavsiye & Şikayet</h1>
+
 <div class="ts-filters">
 
 <button onclick="filterTS('all')" class="filter-btn active">
@@ -38,6 +39,8 @@ Tavsiyeler
 </button>
 
 </div>
+
+
 <div class="action-grid">
 
 <div class="action-card" onclick="openForm('tavsiye')">
@@ -50,6 +53,7 @@ Tavsiyeler
 <div class="action-desc">İyi işletmeleri öner</div>
 
 </div>
+
 
 <div class="action-card" onclick="openForm('sikayet')">
 
@@ -64,6 +68,7 @@ Tavsiyeler
 
 </div>
 
+
 <!-- FEED LIST -->
 
 <div id="tsList" class="ts-list">
@@ -75,6 +80,7 @@ Gönderiler yükleniyor...
 </div>
 
 </div>
+
 
 <!-- MODAL -->
 
@@ -88,20 +94,24 @@ Gönderiler yükleniyor...
 
 <h3 id="formTitle">Yeni Gönderi</h3>
 
+
 <div class="form-group">
 <label>Başlık</label>
 <input type="text" id="title" maxlength="80">
 </div>
+
 
 <div class="form-group">
 <label>İşletme / Firma</label>
 <input type="text" id="business" maxlength="120">
 </div>
 
+
 <div class="form-group">
 <label>Açıklama</label>
 <textarea id="content" maxlength="500"></textarea>
 </div>
+
 
 <div class="form-group" id="ratingBox">
 
@@ -119,19 +129,21 @@ Gönderiler yükleniyor...
 
 </div>
 
+
 <div class="form-group">
 
 <label>Fotoğraf (opsiyonel)</label>
 
 <label class="image-upload">
 
-<input type="file" id="image" accept="image/*" style="display:none">
+<input type="file" id="image" accept="image/*">
 
 Fotoğraf yükle
 
 </label>
 
 </div>
+
 
 <button class="submit-btn" onclick="submitPost()">
 Gönder
@@ -146,10 +158,12 @@ Gönder
 <script src="assets/js/moderation.js" defer></script>
 <script src="assets/js/tavsiye-sikayet.js" defer></script>
 
+
 <script>
 
 let currentType="tavsiye"
 let rating=0
+
 
 function openForm(type){
 
@@ -171,6 +185,8 @@ document.getElementById("ratingBox").style.display="none"
 
 }
 
+
+
 function closeForm(){
 
 document.getElementById("formModal").style.display="none"
@@ -188,11 +204,14 @@ s.classList.remove("active")
 
 }
 
+
+
 async function submitPost(){
 
 const title=document.getElementById("title").value.trim()
 const business=document.getElementById("business").value.trim()
 const content=document.getElementById("content").value.trim()
+const imageFile=document.getElementById("image").files[0]
 
 /* VALIDATION */
 
@@ -206,6 +225,14 @@ alert("Açıklama çok kısa")
 return
 }
 
+/* FOTO BOYUT KONTROL */
+
+if(imageFile && imageFile.size > 2*1024*1024){
+alert("Fotoğraf maksimum 2MB olabilir")
+return
+}
+
+
 /* SPAM FİLTRE */
 
 if(window.BFModeration){
@@ -218,6 +245,26 @@ return
 }
 
 }
+
+
+let imageBase64=null
+
+
+/* FOTOĞRAF BASE64 ÇEVİR */
+
+if(imageFile){
+
+const reader=new FileReader()
+
+imageBase64 = await new Promise(resolve=>{
+
+reader.onload=()=>resolve(reader.result)
+reader.readAsDataURL(imageFile)
+
+})
+
+}
+
 
 try{
 
@@ -233,13 +280,28 @@ type:currentType,
 title:title,
 business_name:business,
 content:content,
-rating:rating
+rating:rating,
+image:imageBase64
 })
 }
 )
 
 if(!res.ok){
 throw new Error("API hata")
+}
+
+const result = await res.json()
+
+/* LOCAL TOKEN SAKLA */
+
+if(result.delete_token){
+
+let tokens = JSON.parse(localStorage.getItem("bf_tokens") || "{}")
+
+tokens[result.delete_token] = true
+
+localStorage.setItem("bf_tokens", JSON.stringify(tokens))
+
 }
 
 alert("Gönderi başarıyla eklendi")
@@ -262,6 +324,8 @@ alert("Gönderi gönderilemedi")
 
 }
 
+
+
 /* MODAL DIŞINA BASINCA KAPAT */
 
 document.getElementById("formModal").addEventListener("click",function(e){
@@ -271,6 +335,8 @@ closeForm()
 }
 
 })
+
+
 
 /* STAR RATING */
 
@@ -293,6 +359,8 @@ document.querySelectorAll("#stars i")[i].classList.add("active")
 })
 
 })
+
+
 
 function filterTS(type){
 
