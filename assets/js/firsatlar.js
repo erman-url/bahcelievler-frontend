@@ -133,20 +133,10 @@ const store = item.store_name || ""
 const image = item.image_url || ""
 
 let domain = ""
-
-if(link){
-
-domain = getDomain(link)
-
-}
+if(link) domain = getDomain(link)
 
 let logo=""
-
-if(domain){
-
-logo = `https://logo.clearbit.com/${domain}`
-
-}
+if(domain) logo = `https://logo.clearbit.com/${domain}`
 
 let deleteBtn=""
 
@@ -176,10 +166,7 @@ el.dataset.type=type
 el.innerHTML=`
 
 <span class="deal-badge ${type==="online"?"badge-online":"badge-store"}">
-
-${type==="online"?"🔥 Online Fırsat":"📍 Esnaf Fırsatı"}
-
-</span>
+${type==="online"?"🔥 Online Fırsat":"📍 Esnaf Fırsatı"} </span>
 
 <div class="deal-title">
 ${escapeHTML(title)}
@@ -188,11 +175,8 @@ ${escapeHTML(title)}
 ${domain ? `
 
 <div class="deal-domain">
-
 <img src="${logo}" loading="lazy">
-
 <span>${domain}</span>
-
 </div>
 ` : ""}
 
@@ -273,63 +257,39 @@ const district=document.getElementById("district").value
 const imageFile=document.getElementById("dealImage").files[0]
 
 if(!validateNickname(nickname)){
-
-alert("Nickname 3-10 karakter olmalı. Harf, rakam, . ve - kullanılabilir.")
-
+alert("Nickname 3-10 karakter olmalı.")
 return
-
 }
 
 if(title.length<4){
-
 alert("Başlık çok kısa")
-
 return
-
 }
 
 if(content.length<10){
-
 alert("Açıklama çok kısa")
-
 return
-
 }
-
-/* spam filtre */
 
 if(window.BFModeration){
 
 const check = BFModeration.validate(content)
 
 if(!check.ok){
-
 alert(check.msg)
-
 return
-
 }
 
 }
-
-/* link kontrol */
 
 if(dealType==="online" && !link.startsWith("http")){
-
 alert("Geçerli bir link giriniz")
-
 return
-
 }
 
-/* görsel boyut */
-
 if(imageFile && imageFile.size > 2*1024*1024){
-
 alert("Fotoğraf maksimum 2MB olabilir")
-
 return
-
 }
 
 let imageBase64=null
@@ -339,10 +299,8 @@ if(imageFile){
 const reader=new FileReader()
 
 imageBase64 = await new Promise(resolve=>{
-
 reader.onload=()=>resolve(reader.result)
 reader.readAsDataURL(imageFile)
-
 })
 
 }
@@ -351,11 +309,8 @@ try{
 
 const res = await fetch("/api/firsatlar",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({
-
 type:dealType,
 title:title,
 content:content,
@@ -364,13 +319,10 @@ store_name:store,
 link:link,
 district:district,
 image:imageBase64
-
 })
 })
 
-if(!res.ok){
-throw new Error("API hata")
-}
+if(!res.ok) throw new Error("API hata")
 
 const result = await res.json()
 
@@ -392,7 +344,6 @@ loadDeals()
 }catch(e){
 
 console.error("Deal submit error",e)
-
 alert("Gönderi gönderilemedi")
 
 }
@@ -411,9 +362,7 @@ try{
 
 const res = await fetch("/api/firsatlar-delete",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({
 id:id,
 token:token
@@ -423,20 +372,14 @@ token:token
 const data = await res.json()
 
 if(data.ok){
-
 alert("Gönderi silindi")
 loadDeals()
-
 }else{
-
 alert("Silme başarısız")
-
 }
 
 }catch{
-
 alert("Silme hatası")
-
 }
 
 }
@@ -449,15 +392,11 @@ function shareDeal(title,url){
 
 if(navigator.share){
 
-navigator.share({
-title:title,
-url:url
-})
+navigator.share({title:title,url:url})
 
 }else{
 
 navigator.clipboard.writeText(url)
-
 alert("Link kopyalandı")
 
 }
