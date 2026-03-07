@@ -892,3 +892,157 @@ transition:.2s;
 .deal-add-btn:hover{
 transform:scale(1.05);
 }
+
+/* =====================================
+FIRSAT MODAL (BOTTOM SHEET)
+===================================== */
+
+.modal{
+position:fixed;
+left:0;
+right:0;
+top:0;
+bottom:0;
+background:rgba(0,0,0,0.45);
+display:none;
+align-items:flex-end;
+justify-content:center;
+z-index:1000;
+overflow:hidden;
+}
+
+/* modal açıldığında */
+
+.modal.show{
+display:flex;
+}
+
+/* modal kutu */
+
+.modal-box{
+background:#fff;
+width:100%;
+max-width:640px;
+border-radius:22px 22px 0 0;
+padding:22px 20px 32px 20px;
+position:relative;
+
+max-height:85vh;
+overflow-y:auto;
+
+box-shadow:0 -10px 40px rgba(0,0,0,0.25);
+
+animation:modalSlideUp .28s ease;
+}
+
+/* slide animasyonu */
+
+@keyframes modalSlideUp{
+
+from{
+transform:translateY(100%);
+opacity:.3;
+}
+
+to{
+transform:translateY(0);
+opacity:1;
+}
+
+}
+
+/* close butonu */
+
+.modal-close{
+position:absolute;
+top:14px;
+right:16px;
+border:none;
+background:none;
+font-size:22px;
+cursor:pointer;
+color:#666;
+}
+
+/* başlık */
+
+.modal-box h3{
+font-size:18px;
+font-weight:700;
+margin-bottom:16px;
+}
+
+/* form alanları */
+
+.form-group{
+margin-bottom:14px;
+}
+
+.form-group label{
+font-size:13px;
+font-weight:600;
+display:block;
+margin-bottom:6px;
+color:#374151;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+width:100%;
+padding:11px 12px;
+border-radius:10px;
+border:1px solid #e5e7eb;
+font-size:14px;
+background:#fff;
+}
+
+/* textarea */
+
+textarea{
+min-height:90px;
+resize:none;
+}
+
+/* fotoğraf upload */
+
+.image-upload{
+border:1px dashed #d1d5db;
+padding:12px;
+border-radius:10px;
+text-align:center;
+font-size:12px;
+color:#6b7280;
+}
+
+/* submit */
+
+.submit-btn{
+background:#2563eb;
+color:#fff;
+border:none;
+padding:12px;
+border-radius:12px;
+font-size:14px;
+font-weight:600;
+cursor:pointer;
+width:100%;
+margin-top:8px;
+}
+
+/* footer güvenli alan */
+
+.modal-box{
+padding-bottom:120px;
+}
+
+/* mobil düzen */
+
+@media(max-width:600px){
+
+.modal-box{
+max-height:82vh;
+padding-bottom:140px;
+}
+
+}

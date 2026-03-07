@@ -13,7 +13,7 @@ function openDealForm(type){
 
 dealType = type
 
-document.getElementById("dealModal").style.display="flex"
+document.getElementById("dealModal").classList.add("show")
 
 const title = document.getElementById("dealFormTitle")
 
@@ -42,7 +42,7 @@ districtBox.style.display="block"
 
 function closeDealForm(){
 
-document.getElementById("dealModal").style.display="none"
+document.getElementById("dealModal").classList.remove("show")
 
 document.getElementById("nickname").value=""
 document.getElementById("dealTitle").value=""
