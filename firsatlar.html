@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>İndirim & Fırsatlar | Bahçelievler Forum</title>
+
+<meta name="description" content="Online alışveriş ve Bahçelievler esnaf fırsatlarını keşfet. İnsanların paylaştığı indirimleri takip et.">
+
+<link rel="canonical" href="https://bahcelievler.forum/firsatlar">
+
+<!-- CSS -->
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<!-- GLOBAL HEADER (MERKEZİ) -->
+
+<div id="globalHeader"></div>
+
+<div class="page-wrapper">
+
+<h1 class="page-title">🔥 İndirim & Fırsatlar</h1>
+
+<p class="page-subtitle">
+Online alışveriş ve yerel esnaf kampanyalarını keşfet.
+</p>
+
+<!-- FILTER -->
+
+<div class="deal-filters">
+
+<button class="filter-btn active" onclick="filterDeals('all')">
+Tümü
+</button>
+
+<button class="filter-btn" onclick="filterDeals('online')">
+Online
+</button>
+
+<button class="filter-btn" onclick="filterDeals('store')">
+Mağaza
+</button>
+
+</div>
+
+<!-- ACTION CARDS -->
+
+<div class="action-grid">
+
+<div class="action-card" onclick="openDealForm('online')">
+
+<div class="action-icon tavsiye">
+<i class="fa-solid fa-bolt"></i>
+</div>
+
+<div class="action-title">
+Online Fırsat Paylaş
+</div>
+
+<div class="action-desc">
+E-ticaret indirimini paylaş
+</div>
+
+</div>
+
+<div class="action-card" onclick="openDealForm('store')">
+
+<div class="action-icon sikayet">
+<i class="fa-solid fa-store"></i>
+</div>
+
+<div class="action-title">
+Mağaza / Esnaf Fırsatı
+</div>
+
+<div class="action-desc">
+Yerel kampanyayı paylaş
+</div>
+
+</div>
+
+</div>
+
+<!-- DEAL FEED -->
+
+<div id="dealList" class="deal-list">
+
+<div class="empty-box">
+Fırsatlar yükleniyor...
+</div>
+
+</div>
+
+</div>
+
+<!-- ADD DEAL MODAL -->
+
+<div class="modal" id="dealModal">
+
+<div class="modal-box">
+
+<button class="modal-close" onclick="closeDealForm()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+
+<h3 id="dealFormTitle">Fırsat Paylaş</h3>
+
+<!-- NICKNAME -->
+
+<div class="form-group">
+<label>Nickname</label>
+
+<input 
+type="text"
+id="nickname"
+maxlength="10"
+placeholder="örn: erman">
+
+</div>
+
+<!-- TITLE -->
+
+<div class="form-group">
+<label>Başlık</label>
+
+<input 
+type="text"
+id="dealTitle"
+maxlength="80">
+
+</div>
+
+<!-- STORE / SITE -->
+
+<div class="form-group" id="storeBox">
+
+<label>Mağaza / Site</label>
+
+<input 
+type="text"
+id="storeName">
+
+</div>
+
+<!-- LINK -->
+
+<div class="form-group" id="linkBox">
+
+<label>Ürün Linki</label>
+
+<input 
+type="text"
+id="dealLink"
+placeholder="https://">
+
+</div>
+
+<!-- DISTRICT -->
+
+<div class="form-group" id="districtBox">
+
+<label>Mahalle</label>
+
+<select id="district">
+
+<option value="">Seçiniz</option>
+
+<option>Zafer Mahallesi</option>
+<option>Kocasinan Mahallesi</option>
+<option>Soğanlı Mahallesi</option>
+<option>Siyavuşpaşa Mahallesi</option>
+<option>Bahçelievler Mahallesi</option>
+<option>Şirinevler Mahallesi</option>
+<option>Hürriyet Mahallesi</option>
+<option>Cumhuriyet Mahallesi</option>
+<option>Yenibosna Merkez Mahallesi</option>
+<option>Çobançeşme Mahallesi</option>
+<option>Fevzi Çakmak Mahallesi</option>
+<option>İlçe dışı bölge</option>
+
+</select>
+
+</div>
+
+<!-- DESCRIPTION -->
+
+<div class="form-group">
+
+<label>Açıklama</label>
+
+<textarea 
+id="dealContent"
+maxlength="500"></textarea>
+
+</div>
+
+<!-- IMAGE -->
+
+<div class="form-group">
+
+<label>Fotoğraf (opsiyonel)</label>
+
+<label class="image-upload">
+
+<input 
+type="file"
+id="dealImage"
+accept="image/*">
+
+Fotoğraf yükle
+
+</label>
+
+</div>
+
+<button class="submit-btn" onclick="submitDeal()">
+Fırsatı Paylaş
+</button>
+
+</div>
+
+</div>
+
+<!-- LEGAL FOOTER (MERKEZİ) -->
+
+<div id="footerLegal"></div>
+
+<!-- JS -->
+
+<script src="assets/js/core.js" defer></script>
+
+<script src="assets/js/moderation.js" defer></script>
+
+<script src="assets/js/footerLegal.js" defer></script>
+
+<script src="assets/js/firsatlar.js" defer></script>
+
+<script>
+
+function filterDeals(type){
+
+const cards=document.querySelectorAll(".deal-card")
+
+cards.forEach(card=>{
+
+if(type==="all"){
+card.style.display="block"
+return
+}
+
+if(card.dataset.type===type){
+card.style.display="block"
+}else{
+card.style.display="none"
+}
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
