@@ -97,7 +97,7 @@ if(!container) return
 
 try{
 
-const res = await fetch("/api/firsatlar")
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar")
 
 if(!res.ok) throw new Error("API hata")
 
@@ -307,7 +307,7 @@ reader.readAsDataURL(imageFile)
 
 try{
 
-const res = await fetch("/api/firsatlar",{
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar",{
 method:"POST",
 headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({
@@ -360,7 +360,7 @@ if(!confirm("Gönderiyi silmek istiyor musunuz?")) return
 
 try{
 
-const res = await fetch("/api/firsatlar-delete",{
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar-delete",{
 method:"POST",
 headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({
