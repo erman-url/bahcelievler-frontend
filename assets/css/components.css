@@ -533,3 +533,147 @@ cursor:pointer;
 .ts-delete:hover{
 background:#d9363e;
 }
+
+/* =====================================
+   TAVSİYE & ŞİKAYET UI UPGRADE
+   (mevcut kodu silmez – override eder)
+===================================== */
+
+.ts-card{
+background:#fff;
+border-radius:16px;
+padding:14px;
+margin-bottom:14px;
+border:1px solid #eee;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+transition:all .2s ease;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+/* header badge */
+
+.ts-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:4px;
+}
+
+.ts-badge{
+font-size:11px;
+font-weight:600;
+padding:4px 8px;
+border-radius:8px;
+display:inline-block;
+}
+
+.ts-badge.tavsiye{
+background:#e8f8ef;
+color:#1f9d55;
+}
+
+.ts-badge.sikayet{
+background:#fdecea;
+color:#d93025;
+}
+
+/* başlık */
+
+.ts-title{
+font-size:16px;
+font-weight:700;
+line-height:1.35;
+}
+
+/* işletme */
+
+.ts-business{
+font-size:13px;
+color:#777;
+}
+
+/* görsel optimizasyon */
+
+.ts-image{
+width:100%;
+max-height:180px;
+object-fit:cover;
+border-radius:12px;
+margin-top:4px;
+}
+
+/* açıklama */
+
+.ts-text{
+font-size:14px;
+line-height:1.5;
+color:#333;
+}
+
+/* yıldız */
+
+.ts-stars{
+color:#ffb400;
+font-size:14px;
+margin-top:2px;
+}
+
+/* meta */
+
+.ts-meta{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+color:#999;
+margin-top:2px;
+}
+
+.ts-district{
+opacity:.8;
+}
+
+.ts-date{
+opacity:.7;
+}
+
+/* hover */
+
+.ts-card:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 26px rgba(0,0,0,0.12);
+}
+
+/* =====================================
+   MOBILE OPTIMIZATION
+===================================== */
+
+@media(max-width:480px){
+
+.ts-card{
+padding:12px;
+}
+
+.ts-title{
+font-size:15px;
+}
+
+.ts-text{
+font-size:13px;
+}
+
+.ts-image{
+max-height:160px;
+}
+
+}
+
+/* =====================================
+   SMALL PERFORMANCE FIX
+===================================== */
+
+.ts-card img{
+will-change:transform;
+transform:translateZ(0);
+}

@@ -88,6 +88,7 @@ const rating = parseInt(item.rating) || 0
 const el = document.createElement("div")
 
 el.className="ts-card"
+el.dataset.type = type
 
 /* STARS */
 
@@ -116,12 +117,15 @@ dateText=""
 }
 
 /* CARD HTML */
-
 el.innerHTML=`
 
-<span class="ts-type ${type}">
+<div class="ts-header">
+
+<span class="ts-badge ${type}">
 ${type==="tavsiye" ? "⭐ Tavsiye" : "⚠️ Şikayet"}
 </span>
+
+</div>
 
 <div class="ts-title">
 ${escapeHTML(title)}
@@ -134,7 +138,8 @@ ${escapeHTML(business)}
 ` : ""}
 
 ${image ? `
-<img class="ts-image"
+<img
+class="ts-image"
 src="${image}"
 loading="lazy"
 alt="Gönderi görseli">
@@ -152,11 +157,11 @@ ${stars}
 
 <div class="ts-meta">
 
-<span>
+<span class="ts-district">
 ${escapeHTML(district)}
 </span>
 
-<span>
+<span class="ts-date">
 ${dateText}
 </span>
 
@@ -165,6 +170,8 @@ ${dateText}
 ${deleteBtn}
 
 `
+
+
 
 container.appendChild(el)
 
