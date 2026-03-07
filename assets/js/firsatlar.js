@@ -97,9 +97,7 @@ if(!container) return
 
 try{
 
-const res = await fetch(
-"https://bahcelievler-api.erman-urel.workers.dev/api/deals"
-)
+const res = await fetch("/api/firsatlar")
 
 if(!res.ok) throw new Error("API hata")
 
@@ -173,7 +171,6 @@ dateText = new Date(created).toLocaleDateString("tr-TR")
 const el=document.createElement("div")
 
 el.className="deal-card"
-
 el.dataset.type=type
 
 el.innerHTML=`
@@ -232,7 +229,7 @@ ${link ? `<a href="${link}" target="_blank" class="submit-btn" style="flex:1;tex
 Siteye Git </a>` : ""}
 
 <button class="submit-btn" style="flex:1"
-onclick="shareDeal('${title}','${window.location.origin}/firsatlar')">
+onclick="shareDeal('${escapeHTML(title)}','${window.location.origin}/firsatlar')">
 Paylaş </button>
 
 </div>
@@ -344,7 +341,6 @@ const reader=new FileReader()
 imageBase64 = await new Promise(resolve=>{
 
 reader.onload=()=>resolve(reader.result)
-
 reader.readAsDataURL(imageFile)
 
 })
@@ -353,9 +349,7 @@ reader.readAsDataURL(imageFile)
 
 try{
 
-const res = await fetch(
-"https://bahcelievler-api.erman-urel.workers.dev/api/deals",
-{
+const res = await fetch("/api/firsatlar",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -372,13 +366,10 @@ district:district,
 image:imageBase64
 
 })
-}
-)
+})
 
 if(!res.ok){
-
 throw new Error("API hata")
-
 }
 
 const result = await res.json()
@@ -396,7 +387,6 @@ localStorage.setItem("bf_deal_tokens", JSON.stringify(tokens))
 alert("Fırsat başarıyla paylaşıldı")
 
 closeDealForm()
-
 loadDeals()
 
 }catch(e){
@@ -419,9 +409,7 @@ if(!confirm("Gönderiyi silmek istiyor musunuz?")) return
 
 try{
 
-const res = await fetch(
-"https://bahcelievler-api.erman-urel.workers.dev/api/deals-delete",
-{
+const res = await fetch("/api/firsatlar-delete",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -430,15 +418,13 @@ body:JSON.stringify({
 id:id,
 token:token
 })
-}
-)
+})
 
 const data = await res.json()
 
 if(data.ok){
 
 alert("Gönderi silindi")
-
 loadDeals()
 
 }else{
@@ -499,14 +485,22 @@ return text
 INIT
 ========================================= */
 
-document.addEventListener("DOMContentLoaded",loadDeals)
+document.addEventListener("DOMContentLoaded",()=>{
 
-/* MODAL DIŞI TIKLAMA */
+loadDeals()
 
-document.getElementById("dealModal").addEventListener("click",function(e){
+const modal = document.getElementById("dealModal")
+
+if(modal){
+
+modal.addEventListener("click",function(e){
 
 if(e.target.id==="dealModal"){
 closeDealForm()
+}
+
+})
+
 }
 
 })
