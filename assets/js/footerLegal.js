@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
 
-  const legalHTML = `
+const legalHTML = `
+
   <footer class="legal-footer">
     <div class="legal-inner">
       <a href="hakkimizda.html">Hakkımızda</a>
@@ -14,6 +15,17 @@ document.addEventListener("DOMContentLoaded", function(){
   </footer>
   `;
 
-  document.getElementById("globalFooterLegal").innerHTML = legalHTML;
+/* footer container */
+
+const footer = document.getElementById("globalFooterLegal");
+
+/* element yoksa script çalışmasın */
+
+if(!footer){
+console.debug("Footer container bulunamadı.");
+return;
+}
+
+footer.innerHTML = legalHTML;
 
 });
