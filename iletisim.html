@@ -21,15 +21,16 @@
 body{
 padding-top: env(safe-area-inset-top);
 padding-bottom: calc(120px + env(safe-area-inset-bottom));
-background:#f3f5f9;
+background:linear-gradient(180deg,#f4f6fb 0%,#eef2f7 100%);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 }
 
 /* WRAPPER */
 
 .page-wrapper{
-max-width:900px;
+max-width:880px;
 margin:0 auto;
-padding:20px 14px;
+padding:26px 16px;
 }
 
 /* TITLE */
@@ -37,9 +38,10 @@ padding:20px 14px;
 .contact-title{
 text-align:center;
 font-weight:800;
-font-size:20px;
-margin-bottom:20px;
+font-size:22px;
+margin-bottom:24px;
 color:#0f3d6e;
+letter-spacing:.2px;
 }
 
 /* MENU CARD */
@@ -61,15 +63,48 @@ color:#1a2b44;
 font-weight:600;
 
 box-shadow:
-inset 0 0 0 1px rgba(255,255,255,0.5),
-0 6px 18px rgba(0,0,0,0.05);
+inset 0 0 0 1px rgba(255,255,255,0.6),
+0 8px 22px rgba(0,0,0,0.06);
 
-transition:.25s;
+transition:all .25s ease;
+position:relative;
+
 }
+
+/* ARROW */
+
+.contact-link-card::after{
+content:"›";
+position:absolute;
+right:18px;
+font-size:20px;
+opacity:.5;
+}
+
+/* HOVER */
 
 .contact-link-card:hover{
 transform:translateY(-2px);
-box-shadow:0 10px 28px rgba(0,0,0,0.08);
+box-shadow:0 12px 30px rgba(0,0,0,0.08);
+}
+
+/* CLICK */
+
+.contact-link-card:active{
+transform:scale(.97);
+}
+
+/* ACTIVE CARD */
+
+.contact-link-card.active{
+background:#dfe7f4;
+transform:scale(1.02);
+box-shadow:0 14px 36px rgba(0,0,0,0.10);
+}
+
+.contact-link-card.active i{
+background:#0f4e8c;
+color:#fff;
 }
 
 /* ICON */
@@ -89,47 +124,69 @@ border-radius:12px;
 color:#0f4e8c;
 font-size:18px;
 
+transition:.2s;
+
 }
 
 /* CONTENT BOX */
 
 .contact-description-box{
 
-margin-top:22px;
+margin-top:26px;
 
-background:#f6f7f9;
+background:#ffffff;
 
-padding:24px;
+padding:26px;
 border-radius:20px;
 
-box-shadow:0 8px 28px rgba(0,0,0,0.05);
+box-shadow:0 10px 34px rgba(0,0,0,0.07);
 
 line-height:1.7;
 font-size:15px;
 
+transition:opacity .25s ease, transform .25s ease;
+
 }
+
+/* ANIMATION */
+
+.contact-description-box.fade{
+opacity:0;
+transform:translateY(6px);
+}
+
+/* CONTENT TITLE */
 
 .contact-description-box h3{
 
 text-align:center;
 font-weight:800;
 margin-bottom:18px;
-font-size:16px;
+font-size:17px;
+color:#0f3d6e;
 
 }
+
+/* DIVIDER */
 
 .contact-description-box hr{
-
 border:none;
 border-top:1px solid #e2e6ea;
-margin:14px 0;
-
+margin:14px 0 18px 0;
 }
 
-.contact-link-card.active{
-background:#dfe7f0;
-transform:scale(1.02);
-box-shadow:0 10px 26px rgba(0,0,0,0.08);
+/* MOBILE */
+
+@media (max-width:600px){
+
+.contact-title{
+font-size:20px;
+}
+
+.contact-link-card{
+padding:16px;
+}
+
 }
 
 </style>
@@ -173,8 +230,21 @@ Kurumsal Bilgiler & İletişim Merkezi
 
 <div id="legal-content-area" class="contact-description-box">
 
-Platformumuz hakkında yasal bilgiler, gizlilik politikaları ve
-iletişim kanallarına buradan ulaşabilirsiniz.
+<h3>Kurumsal Bilgilendirme</h3>
+
+<hr>
+
+<p>
+Bahçelievler Forum; mahalle içi bilgi paylaşımını,
+yerel ticareti ve topluluk iletişimini güçlendirmek
+amacıyla geliştirilmiş dijital bir platformdur.
+</p>
+
+<p>
+Yasal bilgiler, gizlilik politikası ve iletişim
+kanallarımız hakkında detaylara yukarıdaki menüden
+ulaşabilirsiniz.
+</p>
 
 </div>
 

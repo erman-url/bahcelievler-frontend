@@ -24,151 +24,77 @@ console.log("Contact module loaded");
 const contentBox = document.getElementById("legal-content-area");
 const cards = document.querySelectorAll(".contact-link-card");
 
-/* ================= CARD ACTIVE STATE ================= */
+if(!contentBox || !cards.length) return;
 
-cards.forEach(card => {
+/* ================= CONTENT DATA ================= */
 
-card.addEventListener("click", function(){
+const CONTENT = {
 
-cards.forEach(c => c.classList.remove("active"));
-this.classList.add("active");
-
-});
-
-});
-
-/* ================= DEFAULT CONTENT ================= */
-
-if(contentBox){
-
-contentBox.innerHTML = `
-<h3>Kurumsal Bilgilendirme</h3>
-<hr>
-<p>
-Bahçelievler Forum; mahalle içi bilgi paylaşımını,
-yerel ticareti ve topluluk iletişimini güçlendirmek
-amacıyla geliştirilmiş dijital bir platformdur.
-</p>
-
-<p>
-Yasal bilgiler, gizlilik politikası ve iletişim
-kanallarımız hakkında detaylara yukarıdaki menüden
-ulaşabilirsiniz.
-</p>
-`;
-
-}
-
-});
-
-/* =====================================================
-   LEGAL CONTENT SWITCH
-===================================================== */
-
-window.showLegal = function(type){
-
-const box = document.getElementById("legal-content-area");
-if(!box) return;
-
-let html = "";
-
-/* ================= HAKKIMIZDA ================= */
-
-if(type === "about"){
-
-html = `
+about:`
 <h3>ℹ️ HAKKIMIZDA</h3>
 <hr>
-
 <p>
 Bahçelievler Forum, İstanbul Bahçelievler ilçesine
 özel geliştirilmiş yerel bir dijital mahalle
 platformudur.
 </p>
-
 <p>
 Platform; ilan paylaşımı, mahalle duyuruları,
 fırsat bildirimi ve komşular arası bilgi
 paylaşımını tek bir çatı altında buluşturmayı
 amaçlar.
 </p>
-
 <p>
 Amacımız; semt içi iletişimi güçlendirmek,
 yerel ekonomiyi desteklemek ve güvenli
 bir dijital mahalle ekosistemi oluşturmaktır.
 </p>
-`;
+`,
 
-}
-
-/* ================= YASAL UYARI ================= */
-
-else if(type === "disclaimer"){
-
-html = `
+disclaimer:`
 <h3>⚖️ KULLANIM KOŞULLARI VE SORUMLULUK REDDİ</h3>
 <hr>
-
 <p>
 Bahçelievler Forum kullanıcıların içerik
 paylaşabildiği dijital bir platformdur.
 </p>
-
 <p>
 Platform üzerinde yer alan ilan, yorum,
 fırsat bildirimi ve diğer içeriklerin
 hukuki sorumluluğu tamamen içeriği
 oluşturan kullanıcıya aittir.
 </p>
-
 <p>
 Bahçelievler Forum, kullanıcılar tarafından
 paylaşılan içeriklerin doğruluğunu,
 güncelliğini veya hukuka uygunluğunu
 garanti etmez.
 </p>
-`;
+`,
 
-}
-
-/* ================= KVKK ================= */
-
-else if(type === "kvkk"){
-
-html = `
+kvkk:`
 <h3>🛡 KVKK AYDINLATMA METNİ</h3>
 <hr>
-
 <p>
 6698 sayılı Kişisel Verilerin Korunması Kanunu
 (KVKK) kapsamında kişisel verileriniz
 Bahçelievler Forum platformu tarafından
-aşağıdaki amaçlarla işlenmektedir.
+işlenmektedir.
 </p>
-
 <ul>
 <li>Platform hizmetlerinin sağlanması</li>
 <li>Kullanıcı güvenliğinin sağlanması</li>
-<li>İçerik yönetimi ve moderasyon</li>
+<li>İçerik yönetimi</li>
 </ul>
-
 <p>
-Toplanan veriler üçüncü kişilerle
-satılmaz veya ticari amaçla paylaşılmaz.
+Veriler üçüncü kişilerle satılmaz veya
+ticari amaçla paylaşılmaz.
 </p>
-`;
+`,
 
-}
-
-/* ================= SSS ================= */
-
-else if(type === "sss"){
-
-html = `
+sss:`
 <h3>❓ SIKÇA SORULAN SORULAR</h3>
 <hr>
-
 <b>Bahçelievler Forum nedir?</b>
 <p>
 Yerel ilanlar, mahalle duyuruları ve
@@ -187,40 +113,71 @@ Evet. Platformun temel kullanım
 İlanlar bölümünden yeni ilan
 oluşturabilirsiniz.
 </p>
-`;
+`,
 
-}
-
-/* ================= İLETİŞİM ================= */
-
-else if(type === "contact-info"){
-
-html = `
+contact:`
 <h3>✉️ BİZE YAZIN</h3>
 <hr>
-
 <p>
-Platform hakkında öneri, görüş veya
-geri bildirimlerinizi bizimle
-paylaşabilirsiniz.
+Platform hakkında öneri ve geri bildirimlerinizi
+bizimle paylaşabilirsiniz.
 </p>
 
 <p>
 <strong>E-posta</strong><br>
 info@bahcelievlerforum.com.tr
 </p>
+`
+};
 
-<p>
-Tüm mesajlar incelenmekte ve
-gerekli durumlarda geri dönüş
-yapılmaktadır.
-</p>
-`;
+/* ================= SET CONTENT ================= */
+
+function setContent(type){
+
+const html = CONTENT[type];
+if(!html) return;
+
+contentBox.classList.add("fade");
+
+setTimeout(()=>{
+contentBox.innerHTML = html;
+contentBox.classList.remove("fade");
+},120);
 
 }
 
-box.innerHTML = html;
+/* ================= CARD CLICK ================= */
 
-};
+cards.forEach(card => {
+
+card.addEventListener("click", function(e){
+
+e.preventDefault();
+
+cards.forEach(c => c.classList.remove("active"));
+this.classList.add("active");
+
+/* type detect */
+
+let type = "";
+
+if(this.innerText.includes("Hakkımızda")) type = "about";
+else if(this.innerText.includes("Yasal")) type = "disclaimer";
+else if(this.innerText.includes("KVKK")) type = "kvkk";
+else if(this.innerText.includes("Sorulan")) type = "sss";
+else type = "contact";
+
+setContent(type);
+
+});
+
+});
+
+/* ================= DEFAULT ================= */
+
+setContent("about");
+cards[0].classList.add("active");
+
+});
 
 })();
