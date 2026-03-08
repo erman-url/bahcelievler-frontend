@@ -128,6 +128,7 @@ bizimle paylaşabilirsiniz.
 info@bahcelievlerforum.com.tr
 </p>
 `
+
 };
 
 /* ================= SET CONTENT ================= */
@@ -140,8 +141,17 @@ if(!html) return;
 contentBox.classList.add("fade");
 
 setTimeout(()=>{
+
 contentBox.innerHTML = html;
 contentBox.classList.remove("fade");
+
+/* smooth scroll */
+
+contentBox.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
 },120);
 
 }
@@ -154,18 +164,14 @@ card.addEventListener("click", function(e){
 
 e.preventDefault();
 
+/* active state */
+
 cards.forEach(c => c.classList.remove("active"));
 this.classList.add("active");
 
-/* type detect */
+/* type */
 
-let type = "";
-
-if(this.innerText.includes("Hakkımızda")) type = "about";
-else if(this.innerText.includes("Yasal")) type = "disclaimer";
-else if(this.innerText.includes("KVKK")) type = "kvkk";
-else if(this.innerText.includes("Sorulan")) type = "sss";
-else type = "contact";
+const type = this.dataset.type;
 
 setContent(type);
 

@@ -203,27 +203,27 @@ padding:16px;
 Kurumsal Bilgiler & İletişim Merkezi
 </div>
 
-<a href="#" class="contact-link-card" onclick="showLegal('about');return false;">
+<a href="#" class="contact-link-card" data-type="about">
 <i class="fa-solid fa-circle-info"></i>
 <span>Hakkımızda</span>
 </a>
 
-<a href="#" class="contact-link-card" onclick="showLegal('disclaimer');return false;">
+<a href="#" class="contact-link-card" data-type="disclaimer">
 <i class="fa-solid fa-scale-balanced"></i>
 <span>Yasal Uyarı</span>
 </a>
 
-<a href="#" class="contact-link-card" onclick="showLegal('kvkk');return false;">
+<a href="#" class="contact-link-card" data-type="kvkk">
 <i class="fa-solid fa-shield-halved"></i>
 <span>KVKK & Gizlilik</span>
 </a>
 
-<a href="#" class="contact-link-card" onclick="showLegal('sss');return false;">
+<a href="#" class="contact-link-card" data-type="sss">
 <i class="fa-solid fa-circle-question"></i>
 <span>Sıkça Sorulan Sorular</span>
 </a>
 
-<a href="#" class="contact-link-card" onclick="showLegal('contact-info');return false;">
+<a href="#" class="contact-link-card" data-type="contact">
 <i class="fa-solid fa-envelope"></i>
 <span>Bize Yazın</span>
 </a>
@@ -254,8 +254,9 @@ ulaşabilirsiniz.
 
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/menu.js"></script>
-<script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerNav.js"></script>
+
+<script src="assets/js/core.js"></script>
 
 <script src="assets/js/modules/contact.js"></script>
 
