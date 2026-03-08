@@ -1,6 +1,8 @@
 /* =====================================================
    Bahçelievler Forum - Contact Module
-   Modüler Sistem | KVKK | Veri Toplama Hazır
+   Kurumsal Bilgi Merkezi
+   Menü → Dinamik içerik sistemi
+   ANAKOD uyumlu | Premium UX
 ===================================================== */
 
 (function(){
@@ -12,147 +14,213 @@ window.__BF_CONTACT__ = true;
 
 BF.registerModule("contact", function(){
 
-    /* ================= PAGE CHECK ================= */
-    if(!document.getElementById("contactPage")) return;
+const page = document.getElementById("contactPage");
+if(!page) return;
 
-    console.log("Contact module loaded");
+console.log("Contact module loaded");
 
-    /* ================= ELEMENTS ================= */
-    const form = document.getElementById("contactForm");
-    const status = document.getElementById("status");
-    const btn = document.getElementById("submitBtn");
+/* ================= ELEMENTS ================= */
 
-    /* ================= ACCORDION ================= */
-    const accItems = document.querySelectorAll(".acc-item");
+const contentBox = document.getElementById("legal-content-area");
+const cards = document.querySelectorAll(".contact-link-card");
 
-    if(accItems.length){
-        accItems.forEach(item=>{
-            const title = item.querySelector(".acc-title");
+/* ================= CARD ACTIVE STATE ================= */
 
-            if(!title) return;
+cards.forEach(card => {
 
-            title.addEventListener("click", ()=>{
-                item.classList.toggle("active");
-            });
-        });
-    }
+card.addEventListener("click", function(){
 
-    /* ================= FORM CHECK ================= */
-    if(!form) return;
-
-    /* ================= SUBMIT ================= */
-    form.addEventListener("submit", function(e){
-        e.preventDefault();
-
-        const name = getValue("name");
-        const email = getValue("email");
-        const message = getValue("message");
-        const kvkk = document.getElementById("kvkk")?.checked;
-        const honeypot = getValue("website");
-
-        /* ================= SPAM CHECK ================= */
-        if(honeypot){
-            console.warn("Spam blocked");
-            return;
-        }
-
-        /* ================= VALIDATION ================= */
-        if(!name || !email || !message){
-            return showStatus("Lütfen tüm alanları doldurun", "error");
-        }
-
-        if(!validateEmail(email)){
-            return showStatus("Geçerli bir e-posta girin", "error");
-        }
-
-        if(message.length < 5){
-            return showStatus("Mesaj çok kısa", "error");
-        }
-
-        if(!kvkk){
-            return showStatus("KVKK onayı gereklidir", "error");
-        }
-
-        /* ================= BUTTON STATE ================= */
-        btn.disabled = true;
-        btn.innerText = "Gönderiliyor...";
-
-        /* ================= DATA ================= */
-        const payload = {
-            name,
-            email,
-            message,
-            createdAt: new Date().toISOString(),
-            page: "contact",
-            userAgent: navigator.userAgent
-        };
-
-        console.log("Contact payload:", payload);
-
-        /* ================= MOCK SUBMIT ================= */
-        setTimeout(()=>{
-            showStatus("Mesajınız alındı", "success");
-            form.reset();
-            resetButton();
-
-            /* TRACK */
-            track("contact_submit");
-
-        }, 900);
-
-        /* ================= FIREBASE (İLERİDE) ================= */
-        /*
-        BF.api.saveContact(payload)
-        .then(()=>{
-            showStatus("Mesaj alındı", "success");
-            form.reset();
-            resetButton();
-        })
-        .catch(()=>{
-            showStatus("Bir hata oluştu", "error");
-            resetButton();
-        });
-        */
-
-    });
-
-    /* ================= HELPERS ================= */
-
-    function getValue(id){
-        return document.getElementById(id)?.value.trim() || "";
-    }
-
-    function validateEmail(email){
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function showStatus(msg, type){
-
-        if(!status) return;
-
-        status.innerText = msg;
-        status.className = "status " + type;
-        status.style.display = "block";
-
-        setTimeout(()=>{
-            status.style.display = "none";
-        }, 4000);
-    }
-
-    function resetButton(){
-        btn.disabled = false;
-        btn.innerText = "Gönder";
-    }
-
-    /* ================= TRACKING ================= */
-    function track(event){
-        console.log("EVENT:", event);
-
-        /* ileride analytics */
-        /*
-        BF.analytics.track(event)
-        */
-    }
+cards.forEach(c => c.classList.remove("active"));
+this.classList.add("active");
 
 });
+
+});
+
+/* ================= DEFAULT CONTENT ================= */
+
+if(contentBox){
+
+contentBox.innerHTML = `
+<h3>Kurumsal Bilgilendirme</h3>
+<hr>
+<p>
+Bahçelievler Forum; mahalle içi bilgi paylaşımını,
+yerel ticareti ve topluluk iletişimini güçlendirmek
+amacıyla geliştirilmiş dijital bir platformdur.
+</p>
+
+<p>
+Yasal bilgiler, gizlilik politikası ve iletişim
+kanallarımız hakkında detaylara yukarıdaki menüden
+ulaşabilirsiniz.
+</p>
+`;
+
+}
+
+});
+
+/* =====================================================
+   LEGAL CONTENT SWITCH
+===================================================== */
+
+window.showLegal = function(type){
+
+const box = document.getElementById("legal-content-area");
+if(!box) return;
+
+let html = "";
+
+/* ================= HAKKIMIZDA ================= */
+
+if(type === "about"){
+
+html = `
+<h3>ℹ️ HAKKIMIZDA</h3>
+<hr>
+
+<p>
+Bahçelievler Forum, İstanbul Bahçelievler ilçesine
+özel geliştirilmiş yerel bir dijital mahalle
+platformudur.
+</p>
+
+<p>
+Platform; ilan paylaşımı, mahalle duyuruları,
+fırsat bildirimi ve komşular arası bilgi
+paylaşımını tek bir çatı altında buluşturmayı
+amaçlar.
+</p>
+
+<p>
+Amacımız; semt içi iletişimi güçlendirmek,
+yerel ekonomiyi desteklemek ve güvenli
+bir dijital mahalle ekosistemi oluşturmaktır.
+</p>
+`;
+
+}
+
+/* ================= YASAL UYARI ================= */
+
+else if(type === "disclaimer"){
+
+html = `
+<h3>⚖️ KULLANIM KOŞULLARI VE SORUMLULUK REDDİ</h3>
+<hr>
+
+<p>
+Bahçelievler Forum kullanıcıların içerik
+paylaşabildiği dijital bir platformdur.
+</p>
+
+<p>
+Platform üzerinde yer alan ilan, yorum,
+fırsat bildirimi ve diğer içeriklerin
+hukuki sorumluluğu tamamen içeriği
+oluşturan kullanıcıya aittir.
+</p>
+
+<p>
+Bahçelievler Forum, kullanıcılar tarafından
+paylaşılan içeriklerin doğruluğunu,
+güncelliğini veya hukuka uygunluğunu
+garanti etmez.
+</p>
+`;
+
+}
+
+/* ================= KVKK ================= */
+
+else if(type === "kvkk"){
+
+html = `
+<h3>🛡 KVKK AYDINLATMA METNİ</h3>
+<hr>
+
+<p>
+6698 sayılı Kişisel Verilerin Korunması Kanunu
+(KVKK) kapsamında kişisel verileriniz
+Bahçelievler Forum platformu tarafından
+aşağıdaki amaçlarla işlenmektedir.
+</p>
+
+<ul>
+<li>Platform hizmetlerinin sağlanması</li>
+<li>Kullanıcı güvenliğinin sağlanması</li>
+<li>İçerik yönetimi ve moderasyon</li>
+</ul>
+
+<p>
+Toplanan veriler üçüncü kişilerle
+satılmaz veya ticari amaçla paylaşılmaz.
+</p>
+`;
+
+}
+
+/* ================= SSS ================= */
+
+else if(type === "sss"){
+
+html = `
+<h3>❓ SIKÇA SORULAN SORULAR</h3>
+<hr>
+
+<b>Bahçelievler Forum nedir?</b>
+<p>
+Yerel ilanlar, mahalle duyuruları ve
+topluluk paylaşımları için oluşturulmuş
+dijital bir mahalle platformudur.
+</p>
+
+<b>Platform ücretsiz mi?</b>
+<p>
+Evet. Platformun temel kullanım
+özellikleri ücretsizdir.
+</p>
+
+<b>İlan nasıl verilir?</b>
+<p>
+İlanlar bölümünden yeni ilan
+oluşturabilirsiniz.
+</p>
+`;
+
+}
+
+/* ================= İLETİŞİM ================= */
+
+else if(type === "contact-info"){
+
+html = `
+<h3>✉️ BİZE YAZIN</h3>
+<hr>
+
+<p>
+Platform hakkında öneri, görüş veya
+geri bildirimlerinizi bizimle
+paylaşabilirsiniz.
+</p>
+
+<p>
+<strong>E-posta</strong><br>
+info@bahcelievlerforum.com.tr
+</p>
+
+<p>
+Tüm mesajlar incelenmekte ve
+gerekli durumlarda geri dönüş
+yapılmaktadır.
+</p>
+`;
+
+}
+
+box.innerHTML = html;
+
+};
+
 })();

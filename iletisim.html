@@ -8,7 +8,6 @@
 
 <title>İletişim | Bahçelievler Forum</title>
 
-<!-- INDEX İLE AYNI CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <link rel="stylesheet" href="assets/css/base.css">
@@ -18,96 +17,119 @@
 <style>
 
 /* SAFE AREA */
+
 body{
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+padding-top: env(safe-area-inset-top);
+padding-bottom: calc(120px + env(safe-area-inset-bottom));
+background:#f3f5f9;
 }
 
-/* PAGE CENTER */
+/* WRAPPER */
+
 .page-wrapper{
-  max-width:1000px;
-  margin:0 auto;
-  width:100%;
+max-width:900px;
+margin:0 auto;
+padding:20px 14px;
 }
 
-/* HEADER TEXT */
-.page-head{
-  padding:20px 16px;
+/* TITLE */
+
+.contact-title{
+text-align:center;
+font-weight:800;
+font-size:20px;
+margin-bottom:20px;
+color:#0f3d6e;
 }
 
-.page-head h1{
-  font-size:22px;
-  font-weight:800;
+/* MENU CARD */
+
+.contact-link-card{
+
+display:flex;
+align-items:center;
+gap:14px;
+
+background:#e9edf2;
+padding:18px;
+border-radius:18px;
+
+margin-bottom:14px;
+
+text-decoration:none;
+color:#1a2b44;
+font-weight:600;
+
+box-shadow:
+inset 0 0 0 1px rgba(255,255,255,0.5),
+0 6px 18px rgba(0,0,0,0.05);
+
+transition:.25s;
 }
 
-.page-head p{
-  font-size:13px;
-  opacity:.7;
+.contact-link-card:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 28px rgba(0,0,0,0.08);
 }
 
-/* CARD */
-.contact-card{
-  margin:12px;
-  background:#fff;
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+/* ICON */
+
+.contact-link-card i{
+
+width:42px;
+height:42px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:#d8e1ea;
+border-radius:12px;
+
+color:#0f4e8c;
+font-size:18px;
+
 }
 
-/* FORM */
-.form-group{
-  margin-bottom:10px;
+/* CONTENT BOX */
+
+.contact-description-box{
+
+margin-top:22px;
+
+background:#f6f7f9;
+
+padding:24px;
+border-radius:20px;
+
+box-shadow:0 8px 28px rgba(0,0,0,0.05);
+
+line-height:1.7;
+font-size:15px;
+
 }
 
-input, textarea{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
+.contact-description-box h3{
+
+text-align:center;
+font-weight:800;
+margin-bottom:18px;
+font-size:16px;
+
 }
 
-textarea{
-  min-height:100px;
+.contact-description-box hr{
+
+border:none;
+border-top:1px solid #e2e6ea;
+margin:14px 0;
+
 }
 
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  background:#2563eb;
-  color:#fff;
-  font-weight:700;
-}
-
-/* STATUS */
-.status{
-  font-size:13px;
-  margin-top:10px;
-  display:none;
-}
-
-/* ACCORDION */
-.acc-item{
-  border-bottom:1px solid #eee;
-}
-
-.acc-title{
-  padding:10px 0;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.acc-content{
-  max-height:0;
-  overflow:hidden;
-  transition:.3s;
-  font-size:13px;
-  opacity:.8;
-}
-
-.acc-item.active .acc-content{
-  max-height:200px;
+.contact-link-card.active{
+background:#dfe7f0;
+transform:scale(1.02);
+box-shadow:0 10px 26px rgba(0,0,0,0.08);
 }
 
 </style>
@@ -116,94 +138,55 @@ button{
 
 <body id="contactPage">
 
-<!-- GLOBAL HEADER -->
 <div id="globalHeader"></div>
 
-<!-- PAGE -->
 <div class="page-wrapper">
 
-  <section class="page-head">
-    <h1>İletişim & Bilgilendirme</h1>
-    <p>Bahçelievler Forum hakkında tüm detaylar</p>
-  </section>
+<div class="contact-title">
+Kurumsal Bilgiler & İletişim Merkezi
+</div>
 
-  <section class="contact-card">
-    <h2>Hakkımızda</h2>
-    <p>
-      Bahçelievler Forum, mahalle odaklı bilgi paylaşımı, yerel ilanlar ve topluluk etkileşimini
-      bir araya getiren dijital bir platformdur.
-    </p>
-    <p>
-      Amacımız; kullanıcıların güvenli, hızlı ve doğru bilgiye ulaşmasını sağlamak, yerel ekonomiyi
-      desteklemek ve mahalle kültürünü dijital ortamda sürdürülebilir hale getirmektir.
-    </p>
-  </section>
+<a href="#" class="contact-link-card" onclick="showLegal('about');return false;">
+<i class="fa-solid fa-circle-info"></i>
+<span>Hakkımızda</span>
+</a>
 
-  <section class="contact-card">
-    <h2>Sıkça Sorulan Sorular</h2>
+<a href="#" class="contact-link-card" onclick="showLegal('disclaimer');return false;">
+<i class="fa-solid fa-scale-balanced"></i>
+<span>Yasal Uyarı</span>
+</a>
 
-    <div class="acc-item">
-      <div class="acc-title">Bahçelievler Forum nedir?</div>
-      <div class="acc-content">Yerel ilan ve bilgi platformudur.</div>
-    </div>
+<a href="#" class="contact-link-card" onclick="showLegal('kvkk');return false;">
+<i class="fa-solid fa-shield-halved"></i>
+<span>KVKK & Gizlilik</span>
+</a>
 
-    <div class="acc-item">
-      <div class="acc-title">İlan vermek ücretli mi?</div>
-      <div class="acc-content">Başlangıçta ücretsizdir.</div>
-    </div>
+<a href="#" class="contact-link-card" onclick="showLegal('sss');return false;">
+<i class="fa-solid fa-circle-question"></i>
+<span>Sıkça Sorulan Sorular</span>
+</a>
 
-    <div class="acc-item">
-      <div class="acc-title">Üyelik gerekli mi?</div>
-      <div class="acc-content">Bazı özellikler için üyelik gerekebilir.</div>
-    </div>
+<a href="#" class="contact-link-card" onclick="showLegal('contact-info');return false;">
+<i class="fa-solid fa-envelope"></i>
+<span>Bize Yazın</span>
+</a>
 
-  </section>
+<div id="legal-content-area" class="contact-description-box">
 
-  <section class="contact-card">
-    <h2>İletişim Formu</h2>
-
-    <form id="contactForm" novalidate>
-
-      <div class="form-group">
-        <input type="text" id="name" placeholder="Adınız">
-      </div>
-
-      <div class="form-group">
-        <input type="email" id="email" placeholder="E-posta">
-      </div>
-
-      <div class="form-group">
-        <textarea id="message" placeholder="Mesajınız"></textarea>
-      </div>
-
-      <div class="checkbox">
-        <input type="checkbox" id="kvkk">
-        <label for="kvkk">KVKK onaylıyorum</label>
-      </div>
-
-      <!-- SPAM -->
-      <input type="text" id="website" style="display:none">
-
-      <button type="submit" id="submitBtn">Gönder</button>
-
-      <div id="status" class="status"></div>
-
-    </form>
-
-  </section>
+Platformumuz hakkında yasal bilgiler, gizlilik politikaları ve
+iletişim kanallarına buradan ulaşabilirsiniz.
 
 </div>
 
-<!-- GLOBAL FOOTER -->
+</div>
+
 <div id="globalFooter"></div>
 
-<!-- SCRIPTS (INDEX İLE AYNI SIRADA) -->
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/menu.js"></script>
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerNav.js"></script>
 
-<!-- PAGE MODULE -->
 <script src="assets/js/modules/contact.js"></script>
 
 </body>
