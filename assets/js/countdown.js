@@ -1,32 +1,66 @@
+/* ==========================================
+   Bahçelievler Forum - Countdown
+   Kadir Gecesi Sayacı
+========================================== */
+
 const target = new Date("2026-03-16T00:00:00").getTime();
 
-/* countdown elementleri */
+/* elementler */
 
 const daysEl = document.getElementById("days");
 const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");
 const secondsEl = document.getElementById("seconds");
 
-/* eğer countdown bu sayfada yoksa script çalışmasın */
+/* eğer bu sayfada countdown yoksa script çalışmasın */
 
 if(!daysEl || !hoursEl || !minutesEl || !secondsEl){
+
 console.debug("Countdown elementi bulunamadı, script durduruldu.");
+
 }else{
 
-setInterval(()=>{
+function updateCountdown(){
 
-```
-const now = new Date().getTime();
+const now = Date.now();
 const diff = target - now;
 
-if(diff <= 0) return;
+/* süre bittiyse */
 
-daysEl.innerText = Math.floor(diff / (1000*60*60*24));
-hoursEl.innerText = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-minutesEl.innerText = Math.floor((diff % (1000*60*60)) / (1000*60));
-secondsEl.innerText = Math.floor((diff % (1000*60)) / 1000);
-```
+if(diff <= 0){
 
-},1000);
+daysEl.textContent = "0";
+hoursEl.textContent = "0";
+minutesEl.textContent = "0";
+secondsEl.textContent = "0";
+
+clearInterval(timer);
+return;
+
+}
+
+/* hesaplama */
+
+const days = Math.floor(diff / (1000*60*60*24));
+const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+const seconds = Math.floor((diff % (1000*60)) / 1000);
+
+/* DOM yaz */
+
+daysEl.textContent = days;
+hoursEl.textContent = hours;
+minutesEl.textContent = minutes;
+secondsEl.textContent = seconds;
+
+}
+
+/* ilk çalıştırma */
+
+updateCountdown();
+
+/* interval */
+
+const timer = setInterval(updateCountdown,1000);
 
 }
