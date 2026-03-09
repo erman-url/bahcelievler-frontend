@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="tr" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mühürlü Geçit | Bahçelievler Forum</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<style>
+
+/* ================= SAFE AREA ================= */
+body{
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ================= VH FIX ================= */
+:root{
+  --vh: 1vh;
+}
+
+/* ================= OYUN ALANI ================= */
+.game-wrapper{
+  position:relative;
+  height:calc(var(--vh, 1vh) * 100);
+  padding-bottom:calc(env(safe-area-inset-bottom) + 80px);
+  overflow:hidden;
+}
+
+/* ================= SCENE ================= */
+.scene{
+  position:relative;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#070a12;
+  font-family:"Cinzel",serif;
+}
+
+/* ================= DOOR ================= */
+.door{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.door img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  position:absolute;
+  inset:0;
+}
+
+/* ================= LOCK ================= */
+.lock{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:clamp(180px, 28vw, 260px);
+  aspect-ratio:1/1;
+  z-index:5;
+}
+
+.lock img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+/* ================= CODE RING ================= */
+.code-ring{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:65%;
+  height:65%;
+  border-radius:50%;
+  background:radial-gradient(circle,#000 0%,#111 60%,#000 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#e8c36a;
+  text-shadow:0 0 15px rgba(255,200,100,.6);
+  gap:8px;
+  z-index:10;
+}
+
+/* DIGITS */
+.digit{
+  width:25%;
+  text-align:center;
+  font-size:clamp(18px, 3vw, 34px);
+  cursor:pointer;
+  user-select:none;
+  touch-action:none;
+}
+
+/* UX HINT */
+.digit::after{
+  content:"↕";
+  display:block;
+  font-size:10px;
+  opacity:0.25;
+  margin-top:-4px;
+}
+
+/* ================= METAL EFFECT ================= */
+.lock::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:radial-gradient(circle at var(--x,50%) var(--y,50%),
+    rgba(255,230,150,.6),
+    transparent 60%);
+  opacity:0;
+  transition:.2s;
+}
+.lock:hover::after{opacity:.6;}
+
+/* ================= CANVAS ================= */
+canvas{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="globalHeader"></div>
+
+<div class="game-wrapper">
+<div class="scene">
+
+<canvas id="orbs"></canvas>
+
+<div class="door" id="door">
+  <img src="assets/images/door.jpg">
+  <div class="lock" id="lock">
+    <img src="assets/images/lock.png">
+
+    <div class="code-ring" id="display">
+      <div class="digit">0</div>
+      <div class="digit">0</div>
+      <div class="digit">0</div>
+      <div class="digit">0</div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/footerNav.js"></script>
+<script src="assets/js/footerLegal.js"></script>
+<script src="assets/js/menu.js"></script>
+
+<script>
+
+/* ================= VH FIX ================= */
+function setVH(){
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', vh + 'px');
+}
+setVH();
+window.addEventListener('resize', setVH);
+
+/* ================= AUDIO ================= */
+let mainSound=new Audio("assets/audio/main_sound.mp3");
+let basSound=new Audio("assets/audio/bas_sound.mp3");
+let wrongSound=new Audio("assets/audio/wrongsound.mp3");
+
+mainSound.loop=true;
+mainSound.volume=0.6;
+
+let audioStarted=false;
+function initAudio(){
+  if(audioStarted) return;
+  mainSound.play();
+  audioStarted=true;
+}
+document.addEventListener("click",initAudio);
+document.addEventListener("touchstart",initAudio);
+
+/* ================= CODE SYSTEM ================= */
+let code=[0,0,0,0];
+const correctCode="4729";
+
+function render(){
+  document.querySelectorAll(".digit").forEach((el,i)=>{
+    el.textContent=code[i];
+  });
+}
+render();
+
+function check(){
+  let input=code.join("");
+
+  if(input===correctCode){
+    alert("Açıldı!");
+  }else{
+    wrongSound.currentTime=0;
+    wrongSound.play();
+  }
+}
+
+/* ================= INPUT CONTROL ================= */
+const isMobile = 'ontouchstart' in window;
+
+document.querySelectorAll(".digit").forEach((el,index)=>{
+
+  let startY=0;
+  let moved=false;
+
+  if(isMobile){
+
+    el.addEventListener("touchstart",(e)=>{
+      startY=e.touches[0].clientY;
+      moved=false;
+    },{passive:true});
+
+    el.addEventListener("touchmove",(e)=>{
+      let diff=e.touches[0].clientY-startY;
+
+      if(Math.abs(diff)>25){
+
+        e.preventDefault();
+
+        moved=true;
+
+        if(diff<0){
+          code[index]=(code[index]+1)%10;
+        }else{
+          code[index]=(code[index]-1+10)%10;
+        }
+
+        basSound.currentTime=0;
+        basSound.play();
+
+        if(navigator.vibrate) navigator.vibrate(10);
+
+        render();
+        startY=e.touches[0].clientY;
+      }
+    },{passive:false});
+
+    el.addEventListener("touchend",()=>{
+      if(!moved){
+        code[index]=(code[index]+1)%10;
+
+        basSound.currentTime=0;
+        basSound.play();
+
+        if(navigator.vibrate) navigator.vibrate(10);
+
+        render();
+      }
+    });
+
+  }else{
+
+    el.addEventListener("wheel",(e)=>{
+      e.preventDefault();
+
+      if(e.deltaY>0){
+        code[index]=(code[index]+1)%10;
+      }else{
+        code[index]=(code[index]-1+10)%10;
+      }
+
+      render();
+    });
+
+  }
+
+});
+
+/* LOCK CLICK FIX */
+let isDragging=false;
+
+document.querySelectorAll(".digit").forEach(el=>{
+  el.addEventListener("touchmove",()=>isDragging=true);
+  el.addEventListener("touchend",()=>setTimeout(()=>isDragging=false,50));
+});
+
+document.getElementById("lock").addEventListener("click",()=>{
+  if(!isDragging) check();
+});
+
+/* ================= METAL EFFECT ================= */
+const lock=document.getElementById("lock");
+lock.addEventListener("mousemove",(e)=>{
+  const rect=lock.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  lock.style.setProperty("--x",x+"%");
+  lock.style.setProperty("--y",y+"%");
+});
+
+/* ================= DOOR SHAKE ================= */
+setInterval(()=>{
+  if(Math.random()>0.6){
+    const door=document.getElementById("door");
+    door.style.transform="translateX(-4px)";
+    setTimeout(()=>{
+      door.style.transform="translateX(4px)";
+      setTimeout(()=>{door.style.transform="translateX(0)";},120);
+    },120);
+  }
+},5000);
+
+/* ================= PARTICLES ================= */
+const canvas=document.getElementById("orbs");
+const ctx=canvas.getContext("2d");
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+
+let particles=[];
+for(let i=0;i<30;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*6+2,
+    dx:(Math.random()-.5)*0.3,
+    dy:(Math.random()-.5)*0.3
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle="rgba(255,220,120,.15)";
+    ctx.fill();
+    p.x+=p.dx;
+    p.y+=p.dy;
+
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+</script>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/menu.js"></script>
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/footerNav.js"></script>
+
+<div id="globalFooter"></div>
+
+</body>
+</html>
