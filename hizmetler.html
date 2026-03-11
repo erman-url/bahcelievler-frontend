@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Bahçelievler Hizmetler | Bahçelievler Forum</title>
+
+<meta name="description" content="Bahçelievler ilçesinde ustalar, servisler ve emlak talepleri için yerel platform.">
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* PAGE */
+
+body{
+background:#f2f5f9;
+padding-top:env(safe-area-inset-top);
+}
+
+/* WRAPPER */
+
+.page-wrapper{
+max-width:1000px;
+margin:auto;
+padding-bottom:120px;
+}
+
+/* HEADER FIX */
+
+#globalHeader{
+max-width:1000px;
+margin:auto;
+}
+
+/* TITLE */
+
+.page-title{
+
+font-size:26px;
+
+font-weight:800;
+
+margin:22px 18px 6px;
+
+letter-spacing:-0.3px;
+
+}
+
+.page-sub{
+
+font-size:14px;
+
+color:#667085;
+
+margin:0 18px 24px;
+
+line-height:1.5;
+
+}
+
+/* CARD AREA */
+
+.action-area{
+
+display:flex;
+
+flex-direction:column;
+
+gap:18px;
+
+padding:0 18px;
+
+}
+
+/* PREMIUM CARD */
+
+.action-card{
+
+display:flex;
+
+align-items:center;
+
+gap:16px;
+
+background:white;
+
+border-radius:22px;
+
+padding:20px;
+
+box-shadow:
+
+0 10px 25px rgba(0,0,0,0.06),
+
+0 2px 6px rgba(0,0,0,0.05);
+
+transition:all .2s ease;
+
+cursor:pointer;
+
+}
+
+/* TAP EFFECT */
+
+.action-card:active{
+
+transform:scale(.97);
+
+}
+
+/* ICON BOX */
+
+.action-icon{
+
+width:58px;
+
+height:58px;
+
+border-radius:18px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+color:white;
+
+font-size:22px;
+
+box-shadow:
+
+0 6px 14px rgba(37,99,235,0.35);
+
+}
+
+/* TEXT */
+
+.action-title{
+
+font-size:17px;
+
+font-weight:700;
+
+margin-bottom:2px;
+
+}
+
+.action-desc{
+
+font-size:13px;
+
+color:#6b7280;
+
+}
+
+/* ARROW */
+
+.action-arrow{
+
+margin-left:auto;
+
+color:#94a3b8;
+
+font-size:18px;
+
+}
+
+/* SAFE SPACE */
+
+.bottom-space{
+
+height:20px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="globalHeader"></div>
+
+<div class="page-wrapper">
+
+<main id="mainContent">
+
+<h1 class="page-title">
+
+Bahçelievler Hizmet Rehberi
+
+</h1>
+
+<div class="page-sub">
+
+Bahçelievler ilçesinde ustalar, servisler ve emlak talepleri için yerel platform.
+
+</div>
+
+<section class="action-area">
+
+<!-- TEKLİF -->
+
+<div class="action-card" onclick="location.href='teklif-al.html'">
+
+<div class="action-icon">
+
+<i class="fa-solid fa-dollar-sign"></i>
+
+</div>
+
+<div>
+
+<div class="action-title">Ücretsiz Teklif Al</div>
+
+<div class="action-desc">
+
+Aradığınız hizmet için teklif alın.
+
+</div>
+
+</div>
+
+<div class="action-arrow">
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+</div>
+
+<!-- HİZMET VER -->
+
+<div class="action-card" onclick="location.href='hizmet-ver.html'">
+
+<div class="action-icon">
+
+<i class="fa-solid fa-user-plus"></i>
+
+</div>
+
+<div>
+
+<div class="action-title">İşini Tanıt / Hizmet Ver</div>
+
+<div class="action-desc">
+
+Bahçelievler'de hizmet veriyorsanız kaydolun.
+
+</div>
+
+</div>
+
+<div class="action-arrow">
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+</div>
+
+<!-- EMLAK -->
+
+<div class="action-card" onclick="location.href='emlak-talep.html'">
+
+<div class="action-icon">
+
+<i class="fa-solid fa-house"></i>
+
+</div>
+
+<div>
+
+<div class="action-title">Emlak Talebi Bırak</div>
+
+<div class="action-desc">
+
+Aradığınız evi yazın, emlakçılar size ulaşsın.
+
+</div>
+
+</div>
+
+<div class="action-arrow">
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+</div>
+
+</section>
+
+<div class="bottom-space"></div>
+
+</main>
+
+</div>
+
+<div id="globalFooter"></div>
+
+<script src="assets/js/core.js" defer></script>
+
+</body>
+</html>
