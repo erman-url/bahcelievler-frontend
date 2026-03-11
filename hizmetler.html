@@ -1,14 +1,22 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="no-js">
 
 <head>
 
 <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Bahçelievler Hizmetler | Bahçelievler Forum</title>
+<title>Bahçelievler Hizmet Rehberi | Bahçelievler Forum</title>
 
-<meta name="description" content="Bahçelievler ilçesinde ustalar, servisler ve emlak talepleri için yerel platform.">
+<meta name="description" content="Bahçelievler ilçesinde hizmet veren ustalar, servisler, emlak talepleri ve esnaf rehberi. Yerel hizmet platformu.">
+
+<meta name="robots" content="index, follow">
+
+<meta name="theme-color" content="#2563eb">
+
+<link rel="icon" href="/favicon.ico">
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -21,19 +29,15 @@
 /* PAGE */
 
 body{
-background:#f2f5f9;
+background:#f3f6fb;
 padding-top:env(safe-area-inset-top);
 }
-
-/* WRAPPER */
 
 .page-wrapper{
 max-width:1000px;
 margin:auto;
 padding-bottom:120px;
 }
-
-/* HEADER FIX */
 
 #globalHeader{
 max-width:1000px;
@@ -43,46 +47,34 @@ margin:auto;
 /* TITLE */
 
 .page-title{
-
 font-size:26px;
-
 font-weight:800;
-
 margin:22px 18px 6px;
-
-letter-spacing:-0.3px;
-
 }
 
 .page-sub{
-
 font-size:14px;
-
 color:#667085;
-
-margin:0 18px 24px;
-
+margin:0 18px 22px;
 line-height:1.5;
-
 }
 
-/* CARD AREA */
+/* GRID */
 
-.action-area{
+.services-grid{
 
 display:flex;
-
 flex-direction:column;
 
-gap:18px;
+gap:16px;
 
 padding:0 18px;
 
 }
 
-/* PREMIUM CARD */
+/* CARD */
 
-.action-card{
+.service-card{
 
 display:flex;
 
@@ -98,38 +90,30 @@ padding:20px;
 
 box-shadow:
 
-0 10px 25px rgba(0,0,0,0.06),
-
+0 8px 20px rgba(0,0,0,0.06),
 0 2px 6px rgba(0,0,0,0.05);
-
-transition:all .2s ease;
 
 cursor:pointer;
 
+transition:.2s;
+
 }
 
-/* TAP EFFECT */
-
-.action-card:active{
-
+.service-card:active{
 transform:scale(.97);
-
 }
 
-/* ICON BOX */
+/* ICON */
 
-.action-icon{
+.service-icon{
 
 width:58px;
-
 height:58px;
 
 border-radius:18px;
 
 display:flex;
-
 align-items:center;
-
 justify-content:center;
 
 background:linear-gradient(135deg,#2563eb,#1d4ed8);
@@ -138,50 +122,40 @@ color:white;
 
 font-size:22px;
 
-box-shadow:
-
-0 6px 14px rgba(37,99,235,0.35);
+box-shadow:0 6px 14px rgba(37,99,235,0.35);
 
 }
 
 /* TEXT */
 
-.action-title{
+.service-title{
 
 font-size:17px;
-
 font-weight:700;
-
-margin-bottom:2px;
 
 }
 
-.action-desc{
+.service-desc{
 
 font-size:13px;
-
 color:#6b7280;
 
 }
 
 /* ARROW */
 
-.action-arrow{
+.service-arrow{
 
 margin-left:auto;
 
-color:#94a3b8;
-
 font-size:18px;
+
+color:#9ca3af;
 
 }
 
-/* SAFE SPACE */
-
 .bottom-space{
-
 height:20px;
-
 }
 
 </style>
@@ -204,101 +178,147 @@ Bahçelievler Hizmet Rehberi
 
 <div class="page-sub">
 
-Bahçelievler ilçesinde ustalar, servisler ve emlak talepleri için yerel platform.
+Bahçelievler ilçesinde ustalar, servisler, emlak talepleri ve yerel esnaf bilgilerine tek noktadan ulaşın.
 
 </div>
 
-<section class="action-area">
+<section class="services-grid">
 
-<!-- TEKLİF -->
+<!-- TEKLİF AL -->
 
-<div class="action-card" onclick="location.href='teklif-al.html'">
+<div class="service-card"
+onclick="location.href='teklif-al.html'">
 
-<div class="action-icon">
-
-<i class="fa-solid fa-dollar-sign"></i>
-
+<div class="service-icon">
+<i class="fa-solid fa-file-invoice-dollar"></i>
 </div>
 
 <div>
 
-<div class="action-title">Ücretsiz Teklif Al</div>
+<div class="service-title">
 
-<div class="action-desc">
+Ücretsiz Teklif Al
 
-Aradığınız hizmet için teklif alın.
+</div>
+
+<div class="service-desc">
+
+Aradığınız hizmet için talep oluşturun ve teklif alın.
 
 </div>
 
 </div>
 
-<div class="action-arrow">
+<div class="service-arrow">
 
 <i class="fa-solid fa-chevron-right"></i>
 
 </div>
 
 </div>
+
 
 <!-- HİZMET VER -->
 
-<div class="action-card" onclick="location.href='hizmet-ver.html'">
+<div class="service-card"
+onclick="location.href='hizmet-ver.html'">
 
-<div class="action-icon">
-
+<div class="service-icon">
 <i class="fa-solid fa-user-plus"></i>
-
 </div>
 
 <div>
 
-<div class="action-title">İşini Tanıt / Hizmet Ver</div>
+<div class="service-title">
 
-<div class="action-desc">
+İşini Tanıt / Hizmet Ver
 
-Bahçelievler'de hizmet veriyorsanız kaydolun.
+</div>
+
+<div class="service-desc">
+
+Bahçelievler'de hizmet veriyorsanız kaydınızı oluşturun.
 
 </div>
 
 </div>
 
-<div class="action-arrow">
+<div class="service-arrow">
 
 <i class="fa-solid fa-chevron-right"></i>
 
 </div>
 
 </div>
+
 
 <!-- EMLAK -->
 
-<div class="action-card" onclick="location.href='emlak-talep.html'">
+<div class="service-card"
+onclick="location.href='emlak-talep.html'">
 
-<div class="action-icon">
-
+<div class="service-icon">
 <i class="fa-solid fa-house"></i>
-
 </div>
 
 <div>
 
-<div class="action-title">Emlak Talebi Bırak</div>
+<div class="service-title">
 
-<div class="action-desc">
+Emlak Talebi Bırak
 
-Aradığınız evi yazın, emlakçılar size ulaşsın.
+</div>
+
+<div class="service-desc">
+
+Aradığınız evi yazın, emlak danışmanları size ulaşsın.
 
 </div>
 
 </div>
 
-<div class="action-arrow">
+<div class="service-arrow">
 
 <i class="fa-solid fa-chevron-right"></i>
 
 </div>
 
 </div>
+
+
+<!-- ESNAF REHBERİ -->
+
+<div class="service-card"
+onclick="location.href='bahcelievler-esnaf-rehberi.html'">
+
+<div class="service-icon">
+<i class="fa-solid fa-store"></i>
+</div>
+
+<div>
+
+<div class="service-title">
+
+Esnaf Rehberi
+
+</div>
+
+<div class="service-desc">
+
+Bahçelievler'de hizmet veren ustaları ve işletmeleri keşfedin.
+
+</div>
+
+</div>
+
+<div class="service-arrow">
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+</div>
+
 
 </section>
 
@@ -313,4 +333,5 @@ Aradığınız evi yazın, emlakçılar size ulaşsın.
 <script src="assets/js/core.js" defer></script>
 
 </body>
+
 </html>
