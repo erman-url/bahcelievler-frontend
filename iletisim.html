@@ -1,366 +1,427 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="no-js">
+
 <head>
+
 <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Kurumsal Bilgiler & İletişim Merkezi | Bahçelievler Forum</title>
+
+<meta name="description" content="Bahçelievler Forum hakkında kurumsal bilgiler, KVKK metni, kullanım koşulları ve iletişim kanallarına ulaşabilirsiniz.">
+
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563eb">
+
+<link rel="icon" href="/favicon.ico">
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
-<link rel="icon" href="/favicon.ico">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-:root{
-  --bg:#eef2f6;
-  --card:#ffffff;
-  --soft:#f3f5f8;
-  --border:#e4e8ec;
-  --primary:#1f4f82;
-  --shadow:0 10px 24px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05);
-}
-*{box-sizing:border-box}
+
+/* APP PAGE */
+
 body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
-  background:var(--bg);
-  color:#1f2937;
-}
-.container{
-  max-width:980px;
-  margin:auto;
-  padding:18px;
-}
-.title{
-  text-align:center;
-  font-weight:800;
-  font-size:22px;
-  margin:6px 0 20px;
-  color:#163d66;
+background:#f3f6fb;
+padding-top:env(safe-area-inset-top);
 }
 
-/* MENU CARDS */
+.page-wrapper{
+max-width:1000px;
+margin:auto;
+padding-bottom:120px;
+}
+
+/* HERO */
+
+.page-hero{
+padding:28px 20px 10px;
+}
+
+.page-title{
+font-size:28px;
+font-weight:800;
+}
+
+.page-sub{
+margin-top:6px;
+color:#6b7280;
+font-size:14px;
+line-height:1.5;
+}
+
+/* MENU */
+
+.menu-grid{
+display:flex;
+flex-direction:column;
+gap:14px;
+padding:14px 18px 0;
+}
+
 .menu-card{
-  display:flex;
-  align-items:center;
-  background:var(--soft);
-  padding:16px;
-  border-radius:18px;
-  margin-bottom:12px;
-  cursor:pointer;
-  border:1px solid var(--border);
-  transition:.18s ease;
-}
-.menu-card:hover{ background:#fff; box-shadow:var(--shadow); }
-.icon{
-  width:42px;height:42px;min-width:42px;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:12px;background:#e8edf3;color:var(--primary);
-  margin-right:12px;font-size:18px;
-}
-.menu-title{ font-weight:700; }
+display:flex;
+align-items:center;
+gap:14px;
 
-/* CONTENT AREA */
-.content{ margin-top:16px; }
-.info-box{
-  background:var(--card);
-  border-radius:20px;
-  padding:22px;
-  box-shadow:var(--shadow);
-  margin-bottom:16px;
-}
-.info-box h2{
-  text-align:center;
-  margin:0 0 6px;
-}
-.info-box hr{
-  border:none;border-top:1px solid #eee;margin:10px 0 16px;
+background:white;
+
+border-radius:22px;
+
+padding:18px;
+
+box-shadow:
+0 10px 26px rgba(0,0,0,0.07),
+0 2px 6px rgba(0,0,0,0.05);
+
+cursor:pointer;
+transition:.2s;
 }
 
-/* LONG TEXT – NO OVERFLOW */
-.longtext{
-  max-height:420px;           /* taşmayı engeller */
-  overflow:auto;              /* içeride kaydırma */
-  padding-right:6px;
+.menu-card:hover{
+transform:translateY(-2px);
 }
-.longtext p{ line-height:1.7; font-size:14px; margin:0 0 12px; }
-.longtext li{ margin:0 0 10px; line-height:1.7; font-size:14px; }
 
-/* CONTACT FORM */
-.contact-box{
-  background:var(--card);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:var(--shadow);
+.menu-card:active{
+transform:scale(.97);
 }
-.form-group{ margin-bottom:12px; }
-input,textarea{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  font-size:14px;
+
+/* ICON */
+
+.menu-icon{
+width:50px;
+height:50px;
+
+border-radius:16px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+color:white;
+font-size:20px;
+
+box-shadow:0 6px 14px rgba(37,99,235,0.35);
 }
-textarea{ min-height:120px; resize:vertical; }
-button{
-  width:100%;
-  border:none;
-  background:#2563eb;
-  color:#fff;
-  padding:14px;
-  border-radius:12px;
-  font-weight:700;
-  cursor:pointer;
+
+.menu-title{
+font-size:16px;
+font-weight:700;
 }
-.footer-note{
-  margin-top:14px;
-  background:#fff;
-  border-radius:16px;
-  padding:12px;
-  text-align:center;
-  font-size:13px;
-  color:#6b7280;
+
+.menu-desc{
+font-size:13px;
+color:#6b7280;
 }
+
+.menu-arrow{
+margin-left:auto;
+font-size:18px;
+color:#9ca3af;
+}
+
+/* CONTENT PANEL */
+
+.content{
+margin-top:20px;
+padding:0 18px;
+}
+
+.info-panel{
+background:white;
+
+border-radius:24px;
+
+padding:22px;
+
+box-shadow:
+0 12px 28px rgba(0,0,0,0.07),
+0 2px 6px rgba(0,0,0,0.05);
+
+animation:fadeIn .25s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:none;}
+}
+
+.info-panel h2{
+font-size:20px;
+margin-bottom:12px;
+}
+
+.info-text{
+max-height:420px;
+overflow:auto;
+font-size:14px;
+line-height:1.7;
+}
+
+/* CONTACT */
+
+.contact-box input,
+.contact-box textarea{
+
+width:100%;
+padding:12px;
+
+border-radius:12px;
+
+border:1px solid #ddd;
+
+margin-bottom:12px;
+
+font-size:14px;
+}
+
+.contact-box textarea{
+min-height:120px;
+resize:vertical;
+}
+
+.contact-box button{
+
+width:100%;
+background:#2563eb;
+
+border:none;
+
+color:white;
+
+padding:14px;
+
+border-radius:14px;
+
+font-weight:700;
+
+cursor:pointer;
+}
+
 </style>
-
 
 </head>
 
 <body>
-<div class="container">
 
-<h1 class="title">Kurumsal Bilgiler & İletişim Merkezi</h1>
+<div id="globalHeader"></div>
 
-<!-- MENÜ -->
-<div class="menu-card" onclick="openSection('about')">
-  <div class="icon"><i class="fa-solid fa-circle-info"></i></div>
-  <div class="menu-title">Hakkımızda</div>
+<div class="page-wrapper">
+
+<!-- HERO -->
+
+<div class="page-hero">
+
+<h1 class="page-title">
+Kurumsal Bilgiler
+</h1>
+
+<div class="page-sub">
+Bahçelievler Forum hakkında bilgiler, KVKK metni ve iletişim kanallarına buradan ulaşabilirsiniz.
 </div>
+
+</div>
+
+<!-- MENU -->
+
+<section class="menu-grid">
+
+<div class="menu-card" onclick="openSection('about')">
+
+<div class="menu-icon">
+<i class="fa-solid fa-circle-info"></i>
+</div>
+
+<div>
+<div class="menu-title">Hakkımızda</div>
+<div class="menu-desc">Platformun amacı ve vizyonu</div>
+</div>
+
+<div class="menu-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
 
 <div class="menu-card" onclick="openSection('legal')">
-  <div class="icon"><i class="fa-solid fa-scale-balanced"></i></div>
-  <div class="menu-title">Yasal Uyarı</div>
+
+<div class="menu-icon">
+<i class="fa-solid fa-scale-balanced"></i>
 </div>
+
+<div>
+<div class="menu-title">Yasal Uyarı</div>
+<div class="menu-desc">Kullanım koşulları ve sorumluluklar</div>
+</div>
+
+<div class="menu-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
 
 <div class="menu-card" onclick="openSection('kvkk')">
-  <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
-  <div class="menu-title">KVKK & Gizlilik</div>
+
+<div class="menu-icon">
+<i class="fa-solid fa-shield-halved"></i>
 </div>
+
+<div>
+<div class="menu-title">KVKK & Gizlilik</div>
+<div class="menu-desc">Kişisel veri politikası</div>
+</div>
+
+<div class="menu-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
 
 <div class="menu-card" onclick="openSection('faq')">
-  <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
-  <div class="menu-title">Sıkça Sorulan Sorular</div>
+
+<div class="menu-icon">
+<i class="fa-solid fa-circle-question"></i>
 </div>
 
-<div class="menu-card" onclick="openSection('contact')">
-  <div class="icon"><i class="fa-solid fa-envelope"></i></div>
-  <div class="menu-title">Bize Yazın</div>
+<div>
+<div class="menu-title">Sıkça Sorulan Sorular</div>
+<div class="menu-desc">Platform kullanımı hakkında</div>
 </div>
+
+<div class="menu-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
+
+<div class="menu-card" onclick="openSection('contact')">
+
+<div class="menu-icon">
+<i class="fa-solid fa-envelope"></i>
+</div>
+
+<div>
+<div class="menu-title">Bize Yazın</div>
+<div class="menu-desc">Görüş ve önerileriniz</div>
+</div>
+
+<div class="menu-arrow">
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+
+</div>
+
+</section>
+
+<!-- CONTENT -->
 
 <div id="content" class="content"></div>
 
-<div class="footer-note">
-Platformumuz hakkında yasal bilgiler, gizlilik politikaları ve iletişim kanallarına buradan ulaşabilirsiniz.
 </div>
-
-</div>
-
-<script>
-function openSection(type){
-  const c=document.getElementById("content");
-
-  if(type==="about"){
-    c.innerHTML=`
-    <section class="info-box">
-      <h2>HAKKIMIZDA</h2><hr>
-      <div class="longtext">
-        <p>Bahçelievler Forum, ilçemizin dijitalleşme sürecinde yerel kültürü koruyarak geleceğe taşıma hedefiyle kurulmuş bağımsız bir mahalle platformudur. Geleneksel komşuluk anlayışını modern teknolojiyle birleştirerek, semt içi iletişimi daha hızlı, güvenli ve sürdürülebilir hale getirmeyi amaçlar.</p>
-
-        <p>Amacımız; Bahçelievler sakinlerinin ilan, duyuru ve hizmet ihtiyaçlarını tek merkezde buluşturmak, yerel esnafın dijital görünürlüğünü artırmak ve mahalle ekonomisini güçlendirmektir. Platformumuz; ikinci el ilanlardan emlak taleplerine, fiyat radarından mahalle duyurularına, tavsiye paylaşımlarından hizmet tanıtımlarına kadar geniş kapsamlı bir yerel bilgi ağı sunar.</p>
-
-        <p><strong>Vizyonumuz:</strong> Bahçelievler’in en güvenilir dijital rehberi ve yerel ekonomi merkezi olmak. Sürekli gelişen altyapımız ve veri odaklı yaklaşımımızla, semt içi etkileşimi artıran ve sürdürülebilir bir mahalle ekosistemi oluşturan öncü bir platform olmayı hedefliyoruz.</p>
-
-        <p>Bahçelievler Forum, yerel değerleri teknolojiyle buluşturan ve mahalle ruhunu dijital dünyada yaşatan güçlü bir girişimdir.</p>
-      </div>
-    </section>`;
-  }
-
-  if(type==="legal"){
-    c.innerHTML=`
-   <section class="info-box">
-  <h2>⚖️ Kullanım Koşulları ve Sorumluluk Reddi</h2><hr>
-  <div class="longtext">
-
-  <p><strong>1. HİZMET TANIMI VE HUKUKİ STATÜ:</strong> Bahçelievler Forum, 5651 sayılı Kanun kapsamında yer sağlayıcı niteliğinde faaliyet gösteren dijital bir platformdur. Platform; kullanıcılar tarafından oluşturulan içerikleri barındırır ve yayınlar. Yayınlanan içerikler önceden hukuki veya editoryal incelemeye tabi tutulmaz.</p>
-
-  <p><strong>2. İÇERİK SORUMLULUĞU:</strong> Platformda yer alan ilan, yorum, tavsiye, şikayet, fiyat bilgisi, görsel ve diğer tüm içeriklerin hukuki ve cezai sorumluluğu tamamen içeriği paylaşan kullanıcıya aittir. Bahçelievler Forum, içeriklerin doğruluğunu, güncelliğini, güvenilirliğini veya hukuka uygunluğunu garanti etmez. Üçüncü kişilik haklarını ihlal eden, gerçeğe aykırı, yanıltıcı veya mevzuata aykırı içeriklerden doğabilecek tüm sonuçlar ilgili kullanıcıya aittir.</p>
-
-  <p><strong>3. TİCARİ İŞLEMLER VE SÖZLEŞME İLİŞKİSİ:</strong> Platform üzerinden gerçekleşen alım-satım, hizmet temini, teklif, pazarlık ve iletişim süreçlerinde Bahçelievler Forum taraf değildir. Kullanıcılar arasındaki işlemler tamamen bağımsızdır. Bu kapsamda oluşabilecek maddi zarar, ayıplı mal, eksik hizmet, dolandırıcılık, sözleşme ihlali veya sair ihtilaflardan platform sorumlu tutulamaz.</p>
-
-  <p><strong>4. FİYAT RADARI VE BİLGİ AMAÇLI İÇERİK:</strong> “Fiyat Dedektifi” ve benzeri bölümlerde yer alan fiyat ve ürün bilgileri kullanıcı beyanına dayanır. Bu bilgiler ticari teklif veya taahhüt niteliği taşımaz. İşletmelerin anlık fiyat değişikliği yapma hakkı saklıdır. Fiyat farklılıklarından platform sorumlu değildir.</p>
-
-  <p><strong>5. HİZMET SAĞLAYICILAR VE TEKLİF SİSTEMİ:</strong> “Teklif Al” veya benzeri yönlendirme sistemleri yalnızca iletişim kurulmasına aracılık eder. Hizmet kalitesi, ücretlendirme, ifa süresi ve sözleşme şartları taraflar arasında belirlenir. Platform herhangi bir garanti, taahhüt veya kefalet sunmaz.</p>
-
-  <p><strong>6. TELİF HAKLARI VE FİKRİ MÜLKİYET:</strong> Kullanıcılar yükledikleri içeriklerin kendilerine ait olduğunu veya kullanım hakkına sahip olduklarını beyan ve taahhüt eder. Telif hakkı ihlali durumunda doğabilecek hukuki sorumluluk ilgili kullanıcıya aittir. Hak sahiplerinden gelen usulüne uygun başvurular halinde içerik yayından kaldırılabilir.</p>
-
-  <p><strong>7. TEKNİK SÜREKLİLİK VE VERİ SORUMLULUĞU:</strong> Platform; bakım çalışmaları, teknik arızalar, siber saldırılar, mücbir sebepler veya üçüncü taraf servis kesintileri nedeniyle oluşabilecek erişim sorunları ve veri kayıplarından sorumlu değildir. Kullanıcılar paylaştıkları içeriklerin yedeğini almakla yükümlüdür.</p>
-
-  <p><strong>8. DIŞ BAĞLANTILAR:</strong> Platformda yer alan üçüncü taraf bağlantılar (harici web siteleri, servis sağlayıcılar vb.) bağımsız yapılardır. Bu sitelerin içerik, güvenlik ve veri politikalarından platform sorumlu değildir.</p>
-
-  <p><strong>9. İÇERİK KALDIRMA VE ERİŞİM ENGELLEME:</strong> Mevzuata aykırı olduğu değerlendirilen veya yetkili makamlarca bildirilen içerikler, platform yönetimi tarafından kaldırılabilir. Platform, topluluk kurallarına aykırı içerikleri önceden bildirim olmaksızın yayından kaldırma hakkını saklı tutar.</p>
-
-  <p><strong>10. KABUL BEYANI:</strong> Platformu kullanan tüm ziyaretçiler yukarıdaki kullanım koşullarını okumuş ve kabul etmiş sayılır. Bahçelievler Forum, kullanım koşullarını mevzuat değişiklikleri doğrultusunda güncelleme hakkını saklı tutar.</p>
-
-  </div>
-</section>`;
-  }
-
-  if(type==="kvkk"){
-    c.innerHTML=`
-   <section class="info-box">
-  <h2>🛡️ KVKK Aydınlatma Metni</h2><hr>
-  <div class="longtext">
-
-  <p><strong>1. VERİ SORUMLUSU:</strong> 6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla Bahçelievler Forum Mahalle Platformu (“Platform”) tarafından aşağıda açıklanan kapsamda işlenmektedir.</p>
-
-  <p><strong>2. İŞLENEN KİŞİSEL VERİ KATEGORİLERİ:</strong> Platform tarafından kullanıcılarımıza ait;<br><br>
-  <strong>Kimlik ve İletişim:</strong> E-posta adresi, (belirtilmesi halinde) Ad-Soyad.<br>
-  <strong>İşlem Güvenliği:</strong> IP adresi, 4 haneli içerik silme şifresi, giriş-çıkış log kayıtları.<br>
-  <strong>Lokasyon Verisi:</strong> İlan, kesinti ve şikayet formlarında kullanıcı tarafından manuel beyan edilen mahalle/sokak/konum bilgileri.<br>
-  <strong>Görsel Veriler:</strong> Formlara yüklenen etiket, arıza, hizmet veya mekan fotoğrafları.</p>
-
-  <p><strong>3. VERİ İŞLEME AMAÇLARI VE HUKUKİ SEBEPLER:</strong> Verileriniz, KVKK’nın 5. ve 6. maddelerinde belirtilen; “Bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması” ve “Veri sorumlusunun meşru menfaatleri” hukuki sebeplerine dayanarak;<br><br>
-  İlan, şikayet ve hizmet tanıtımlarının doğrulanması ve yayına alınması,<br>
-  “Teklif Al” sistemi üzerinden kullanıcı taleplerinin hizmet sağlayıcılara iletilmesi,<br>
-  Platform güvenliğinin sağlanması ve suistimallerin önlenmesi,<br>
-  Resmi kurumlarca talep edilen yasal bildirimlerin yapılması amacıyla işlenmektedir.</p>
-
-  <p><strong>4. VERİLERİN AKTARIMI VE SAKLANMASI:</strong> Kişisel verileriniz, bulut tabanlı yüksek güvenlikli Supabase altyapısında saklanmakta olup; ticari amaçlarla üçüncü taraflara asla satılmamaktadır. Verileriniz yalnızca yasal zorunluluk hallerinde yetkili kamu kurumları ve adli makamlar ile paylaşılabilecektir.</p>
-
-  <p><strong>5. VERİ SİLME VE UNUTULMA HAKKI:</strong> Kullanıcı, kendi belirlediği silme şifresi ile paylaştığı veriyi dilediği an sistemden kalıcı olarak temizleme hakkına sahiptir. Bu işlem gerçekleştirildiğinde veriler veri tabanımızdan geri döndürülemeyecek şekilde silinir.</p>
-
-  <p><strong>6. İLGİLİ KİŞİNİN HAKLARI:</strong> Kanun’un 11. maddesi kapsamında; verilerinizin işlenip işlenmediğini öğrenme, yanlış verilerin düzeltilmesini isteme ve verilerinizin silinmesini talep etme haklarınız saklıdır. Taleplerinizi "Bize Yazın" sekmesinden iletebilirsiniz.</p>
-
-  <p><strong>VERİ SAKLAMA SÜRESİ:</strong> Platform üzerinde paylaşılan içerikler, kullanıcı tarafından silinene kadar veya en fazla 12 ay süreyle sistemde tutulur. Uzun süre pasif kalan içerikler sistem tarafından otomatik olarak yayından kaldırılabilir.</p>
-
-  <p><strong>İŞLENEN VERİLER:</strong> Paylaşımlar sırasında girilen metinler, görseller, isteğe bağlı iletişim bilgileri ve teknik erişim kayıtları işlenebilir.</p>
-
-  <p><strong>VERİ İŞLEME AMACI:</strong> Toplanan veriler; ilan yayınlama, fiyat bilgilendirme, mahalle duyuruları, kullanıcı taleplerinin değerlendirilmesi ve platform güvenliğinin sağlanması amacıyla kullanılır.</p>
-
-  <p><strong>ÜÇÜNCÜ TARAF HİZMETLER:</strong> Teknik altyapı kapsamında Supabase (veri tabanı) ve EmailJS (bildirim iletimi) gibi hizmet sağlayıcılar kullanılabilir. Bu hizmetler yalnızca sistemin çalışması amacıyla sınırlı erişime sahiptir.</p>
-
-  <p><strong>KULLANICI HAKLARI:</strong> Kullanıcılar, KVKK’nın 11. maddesi kapsamında kişisel verilerine ilişkin bilgi talep etme, düzeltme, silme ve işlenmesine itiraz etme haklarına sahiptir.</p>
-
-  <p><strong>YÜRÜRLÜK:</strong> Bu aydınlatma metni, platformun kullanımı ile eş zamanlı olarak yürürlüğe girmiş kabul edilir.</p>
-
-  </div>
-</section>`;
-  }
-
-  if(type==="faq"){
-    c.innerHTML=`
-    <section class="info-box">
-  <h2>❓ Sıkça Sorulan Sorular</h2><hr>
-  <div class="longtext">
-
-  <p><strong>1. Paylaştığım içeriği (İlan, Fırsat, Şikayet vb.) nasıl kaldırabilirim?</strong><br>
-  Paylaşım sırasında belirlediğiniz 4 haneli “Silme Şifresi”, içeriğiniz üzerinde işlem yapabilmeniz için güvenlik anahtarınızdır. İlgili içeriğin bulunduğu bölümde yer alan kaldırma / silme işlem alanı üzerinden bu şifreyi girerek paylaşımınızı yayından kaldırabilirsiniz. Doğru şifre girildiğinde içerik sistemden pasif duruma alınır veya kalıcı olarak silinir ve yeniden erişilemez hale gelir. Her sayfada işlem butonunun konumu veya adı farklılık gösterebilir. İşlem sırasında teknik bir sorun yaşarsanız veya şifrenizi hatırlamıyorsanız, “Bize Yazın” bölümünden site yönetimi ile iletişime geçebilirsiniz.</p>
-
-  <p><strong>2. Şifremi unuttum, içeriği sildirmek istiyorum?</strong><br>
-  Güvenlik nedeniyle şifreleri biz dahi göremiyoruz. Ancak içeriği paylaşırken kullandığınız e-posta adresi üzerinden "Bize Yazın" kısmından talep gönderirseniz, manuel kontrol sonrası silme işlemini yönetim gerçekleştirebilir.</p>
-
-  <p><strong>3. "Fiyat Dedektifi / Radar" nedir?</strong><br>
-  Bu bir sosyal dayanışma projesidir. Marketlerde gördüğünüz fiyatları etiket fotoğrafı ile bildirerek, tüm mahallenin en uygun ürünü nerede bulacağını görmesini sağlarsınız. Gerçek zamanlı veri analizi ile fahiş fiyat artışlarını takip etmemizi sağlar.</p>
-
-  <p><strong>4. Platformda reklam vermek veya işletmemi öne çıkarmak istiyorum?</strong><br>
-  İşletmenizin mahalle sakinlerine daha hızlı ulaşması için ana sayfa widget alanlarında veya ilan listelerinde "Sponsorlu" içerik olarak yer alabilirsiniz. Detaylı reklam tarifesi için "Bize Yazın" bölümünden iletişim bilgilerinizi bırakın.</p>
-
-  <p><strong>5. "Ücretsiz Teklif Al" sistemi güvenli mi?</strong><br>
-  Evet. Talebiniz sadece Bahçelievler bölgesinde referansı olan, doğrulanmış esnaflara iletilir. Esnaflar size e-posta yoluyla teklif sunar. Bahçelievler Forum, taraflar arasındaki ticari pazarlığa karışmaz, sadece köprü kurar.</p>
-
-  <p><strong>6. Şikayet bildirirken nelere dikkat etmeliyim?</strong><br>
-  Şikayetlerin yapıcı bir dille yazılması zorunludur. Hakaret, küfür veya asılsız karalama içeren içerikler yayınlanmaz. Sorunu somutlaştırmak için fotoğraf eklemeniz, çözüm sürecini hızlandıracaktır.</p>
-
-  <p><strong>7. İlanım neden onaylanmadı veya silindi?</strong><br>
-  Yanıltıcı fiyat içeren, yasal olmayan ürün satışı yapılan, iletişim bilgisi hatalı olan veya 4'ten fazla fotoğraf yüklenmeye çalışılan ilanlar sistem tarafından otomatik olarak reddedilmiş olabilir.</p>
-
-  <p><strong>8. Mahalle Duyuruları kısmında kimler paylaşım yapabilir?</strong><br>
-  Duyurular bölümü resmi kurumlar, mahalle muhtarlıkları ve Bahçelievler Forum yönetimi tarafından güncellenir. Önemli bir mahalle duyurunuz varsa yönetime iletebilirsiniz.</p>
-
-  <p><strong>9. Kişisel verilerim 3. şahıslarla paylaşılıyor mu?</strong><br>
-  KVKK politikamız gereği e-posta ve iletişim bilgileriniz asla satılmaz. Verileriniz sadece sizin rızanızla (ilanlarda görünecek şekilde) veya yasal zorunluluk hallerinde yetkili makamlarla paylaşılır.</p>
-
-  <p><strong>10. Bahçelievler Forum bir belediye uygulaması mı?</strong><br>
-  Hayır. Bu platform Bahçelievler sakinleri tarafından oluşturulmuş bağımsız bir mahalle rehberidir ve tamamen gönüllülük/yerel ticaret odaklı çalışır.</p>
-
-  <p><strong>11. Paylaşılan ilan, fiyat ve şikayetler denetleniyor mu?</strong><br>
-  Paylaşımlar öncelikle otomatik güvenlik filtrelerinden (spam, küfür, bot kontrolü) geçer. Topluluk kurallarına aykırı veya şüpheli içerikler yayından kaldırılır. Platform, mahalle dayanışmasını esas alır.</p>
-
-  <p><strong>12. Yanlış veya yanıltıcı içerik girilirse ne olur?</strong><br>
-  Yanlış fiyat, sahte ilan veya yanıltıcı paylaşımlar tespit edildiğinde içerik yayından kaldırılır. Tekrarlayan ihlallerde ilgili kullanıcının paylaşım yapması sınırlandırılabilir.</p>
-
-  <p><strong>13. Fiyat Dedektifi verileri resmi fiyatlar mıdır?</strong><br>
-  Hayır. Fiyat Dedektifi, kullanıcıların paylaştığı etiket fotoğraflarına dayanan bilgilendirme amaçlı bir sistemdir. Marketlerin anlık fiyat değişikliği yapma hakkı saklıdır.</p>
-
-  <p><strong>14. Paylaşımlarım sistemde ne kadar süre saklanır?</strong><br>
-  Paylaşımlar, kullanıcı tarafından silinene kadar veya uzun süre pasif kalan içerikler için sistem tarafından otomatik olarak yayından kaldırılana kadar saklanır.</p>
-
-  <p><strong>15. Bahçelievler Forum neden ücretsiz?</strong><br>
-  Bahçelievler Forum, mahalle dayanışmasını ve yerel bilgi paylaşımını güçlendirmek amacıyla kurulmuştur. Temel kullanım ücretsizdir. İleride yalnızca isteğe bağlı tanıtım veya sponsorlu alanlar sunulabilir.</p>
-
-  <p><strong>16. Paylaşılan veriler reklam veya pazarlama amacıyla kullanılır mı?</strong><br>
-  Hayır. Kullanıcı verileri üçüncü kişilerle satılmaz veya izinsiz paylaşılmaz. Paylaşımlar yalnızca platform içi bilgilendirme ve mahalle faydası amacıyla kullanılır.</p>
-
-  <p><strong>17. Platformda sahte hesaplarla paylaşım yapılabilir mi?</strong><br>
-  Platformda klasik üyelik sistemi yerine içerik bazlı güvenlik yaklaşımı uygulanır. Görsel zorunluluğu, silme şifresi ve bot filtreleri sahte paylaşımları büyük ölçüde engeller.</p>
-
-  <p><strong>18. Paylaştığım içerikleri kimler görebilir?</strong><br>
-  Paylaşımlar platformu ziyaret eden kullanıcılar tarafından görüntülenebilir. Özel iletişim bilgileri paylaşılmadığı sürece kişisel veriler herkese açık hâle gelmez.</p>
-
-  <p><strong>19. İlanımı veya paylaşımımı nasıl silebilirim?</strong><br>
-  Paylaşım sırasında belirlediğiniz silme şifresi ile içeriğinizi dilediğiniz zaman yayından kaldırabilirsiniz.</p>
-
-  <p><strong>20. Telefon numaram veya iletişim bilgilerim herkese açık mı?</strong><br>
-  Hayır. İletişim bilgileri yalnızca kullanıcı tarafından açıkça paylaşılması hâlinde görünür olur.</p>
-
-  <p><strong>21. Yanlış veya kötüye kullanım içeren paylaşımlar olursa ne olur?</strong><br>
-  Yanıltıcı, kötüye kullanım veya topluluk kurallarına aykırı içerikler tespit edildiğinde yayından kaldırılır.</p>
-
-  <p><strong>22. Bahçelievler Forum resmi bir kurum mu?</strong><br>
-  Hayır. Bahçelievler Forum; mahalle dayanışmasını ve yerel bilgi paylaşımını amaçlayan bağımsız bir dijital platformdur. Herhangi bir kamu kurumu, belediye, muhtarlık, resmi kuruluş veya devlet kurumu ile kurumsal, idari ya da mali bir bağı bulunmamaktadır. Platformda yer alan içerikler resmi kurum duyurusu niteliği taşımaz; kullanıcı paylaşımlarına veya platform içi bilgilendirmelere dayanır. Resmî açıklama ve kararlar için ilgili kamu kurumlarının kendi resmi internet siteleri ve iletişim kanalları esas alınmalıdır.</p>
-
-  </div>
-</section>`;
-  }
-
-  if(type==="contact"){
-    c.innerHTML=`
-    <section class="contact-box">
-      <h2 style="text-align:center">Bize Yazın</h2>
-      <div class="form-group"><input placeholder="Ad Soyad"></div>
-      <div class="form-group"><input placeholder="E-posta"></div>
-      <div class="form-group"><textarea placeholder="Mesajınızı yazabilirsiniz..."></textarea></div>
-      <button>Mesaj Gönder</button>
-    </section>`;
-  }
-
-  window.scrollTo({top:c.offsetTop-30,behavior:"smooth"});
-}
-
-</script>
 
 <div id="globalFooter"></div>
 
 <script>
-fetch("/components/footer.html")
-.then(res => res.text())
-.then(data => {
-  document.getElementById("globalFooter").innerHTML = data;
+
+function openSection(type){
+
+const c=document.getElementById("content");
+
+if(type==="about"){
+c.innerHTML=`
+<div class="info-panel">
+<h2>Hakkımızda</h2>
+<div class="info-text">
+
+<p>Bahçelievler Forum, mahalle kültürünü dijital dünyaya taşıyan yerel bir platformdur.</p>
+
+<p>Amacımız mahalle sakinlerinin ilan, duyuru ve hizmet ihtiyaçlarını tek merkezde buluşturmak ve yerel ekonomiyi desteklemektir.</p>
+
+<p>Platform; fiyat radarından ilanlara, mahalle duyurularından hizmet rehberine kadar geniş bir yerel bilgi ağı sunar.</p>
+
+</div>
+</div>`;
+}
+
+if(type==="legal"){
+c.innerHTML=`
+<div class="info-panel">
+<h2>Kullanım Koşulları</h2>
+<div class="info-text">
+
+<p>Bahçelievler Forum 5651 sayılı kanun kapsamında yer sağlayıcıdır.</p>
+
+<p>Platformda paylaşılan içeriklerin hukuki sorumluluğu paylaşan kullanıcıya aittir.</p>
+
+</div>
+</div>`;
+}
+
+if(type==="kvkk"){
+c.innerHTML=`
+<div class="info-panel">
+<h2>KVKK Aydınlatma Metni</h2>
+<div class="info-text">
+
+<p>6698 sayılı KVKK kapsamında kişisel verileriniz yalnızca platform güvenliği ve hizmet sunumu amacıyla işlenmektedir.</p>
+
+</div>
+</div>`;
+}
+
+if(type==="faq"){
+c.innerHTML=`
+<div class="info-panel">
+<h2>Sıkça Sorulan Sorular</h2>
+<div class="info-text">
+
+<p><strong>İlan nasıl silinir?</strong><br>Silme şifresi kullanılarak kaldırılabilir.</p>
+
+<p><strong>Platform resmi kurum mu?</strong><br>Hayır. Bahçelievler Forum bağımsız bir mahalle platformudur.</p>
+
+</div>
+</div>`;
+}
+
+if(type==="contact"){
+c.innerHTML=`
+<div class="info-panel contact-box">
+
+<h2>Bize Yazın</h2>
+
+<input placeholder="Ad Soyad">
+
+<input placeholder="E-posta">
+
+<textarea placeholder="Mesajınızı yazabilirsiniz"></textarea>
+
+<button>Mesaj Gönder</button>
+
+</div>`;
+}
+
+window.scrollTo({top:c.offsetTop-30,behavior:"smooth"});
+
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+openSection("about");
 });
+
 </script>
+
+<script src="assets/js/core.js" defer></script>
 
 </body>
 </html>
