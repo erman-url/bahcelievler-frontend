@@ -5,17 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Kurumsal Bilgiler & İletişim Merkezi | Bahçelievler Forum</title>
-<meta name="description" content="Bahçelievler Forum hakkında kurumsal bilgiler, kullanım koşulları, KVKK aydınlatma metni ve sıkça sorulan sorular. İletişim formu üzerinden bize ulaşabilirsiniz.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#2563eb">
-
-
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
-
-
 
 <link rel="icon" href="/favicon.ico">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -132,6 +125,8 @@ button{
   color:#6b7280;
 }
 </style>
+
+
 </head>
 
 <body>
@@ -354,6 +349,18 @@ function openSection(type){
 
   window.scrollTo({top:c.offsetTop-30,behavior:"smooth"});
 }
+
 </script>
+
+<div id="globalFooter"></div>
+
+<script>
+fetch("/components/footer.html")
+.then(res => res.text())
+.then(data => {
+  document.getElementById("globalFooter").innerHTML = data;
+});
+</script>
+
 </body>
 </html>
