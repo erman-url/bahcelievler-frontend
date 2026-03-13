@@ -260,14 +260,77 @@ function openSection(type){
   if(type==="faq"){
     c.innerHTML=`
     <section class="info-box">
-      <h2>❓ Sıkça Sorulan Sorular</h2><hr>
-      <div class="longtext">
-        <p><strong>1.</strong> Paylaşımlar silme şifresi ile kaldırılabilir.</p>
-        <p><strong>2.</strong> Şifre unutulursa iletişim üzerinden destek alınabilir.</p>
-        <p><strong>3.</strong> Fiyat Dedektifi kullanıcı verilerine dayanır.</p>
-        <p><strong>4.</strong> Platform bağımsız bir mahalle platformudur.</p>
-      </div>
-    </section>`;
+  <h2>❓ Sıkça Sorulan Sorular</h2><hr>
+  <div class="longtext">
+
+  <p><strong>1. Paylaştığım içeriği (İlan, Fırsat, Şikayet vb.) nasıl kaldırabilirim?</strong><br>
+  Paylaşım sırasında belirlediğiniz 4 haneli “Silme Şifresi”, içeriğiniz üzerinde işlem yapabilmeniz için güvenlik anahtarınızdır. İlgili içeriğin bulunduğu bölümde yer alan kaldırma / silme işlem alanı üzerinden bu şifreyi girerek paylaşımınızı yayından kaldırabilirsiniz. Doğru şifre girildiğinde içerik sistemden pasif duruma alınır veya kalıcı olarak silinir ve yeniden erişilemez hale gelir. Her sayfada işlem butonunun konumu veya adı farklılık gösterebilir. İşlem sırasında teknik bir sorun yaşarsanız veya şifrenizi hatırlamıyorsanız, “Bize Yazın” bölümünden site yönetimi ile iletişime geçebilirsiniz.</p>
+
+  <p><strong>2. Şifremi unuttum, içeriği sildirmek istiyorum?</strong><br>
+  Güvenlik nedeniyle şifreleri biz dahi göremiyoruz. Ancak içeriği paylaşırken kullandığınız e-posta adresi üzerinden "Bize Yazın" kısmından talep gönderirseniz, manuel kontrol sonrası silme işlemini yönetim gerçekleştirebilir.</p>
+
+  <p><strong>3. "Fiyat Dedektifi / Radar" nedir?</strong><br>
+  Bu bir sosyal dayanışma projesidir. Marketlerde gördüğünüz fiyatları etiket fotoğrafı ile bildirerek, tüm mahallenin en uygun ürünü nerede bulacağını görmesini sağlarsınız. Gerçek zamanlı veri analizi ile fahiş fiyat artışlarını takip etmemizi sağlar.</p>
+
+  <p><strong>4. Platformda reklam vermek veya işletmemi öne çıkarmak istiyorum?</strong><br>
+  İşletmenizin mahalle sakinlerine daha hızlı ulaşması için ana sayfa widget alanlarında veya ilan listelerinde "Sponsorlu" içerik olarak yer alabilirsiniz. Detaylı reklam tarifesi için "Bize Yazın" bölümünden iletişim bilgilerinizi bırakın.</p>
+
+  <p><strong>5. "Ücretsiz Teklif Al" sistemi güvenli mi?</strong><br>
+  Evet. Talebiniz sadece Bahçelievler bölgesinde referansı olan, doğrulanmış esnaflara iletilir. Esnaflar size e-posta yoluyla teklif sunar. Bahçelievler Forum, taraflar arasındaki ticari pazarlığa karışmaz, sadece köprü kurar.</p>
+
+  <p><strong>6. Şikayet bildirirken nelere dikkat etmeliyim?</strong><br>
+  Şikayetlerin yapıcı bir dille yazılması zorunludur. Hakaret, küfür veya asılsız karalama içeren içerikler yayınlanmaz. Sorunu somutlaştırmak için fotoğraf eklemeniz, çözüm sürecini hızlandıracaktır.</p>
+
+  <p><strong>7. İlanım neden onaylanmadı veya silindi?</strong><br>
+  Yanıltıcı fiyat içeren, yasal olmayan ürün satışı yapılan, iletişim bilgisi hatalı olan veya 4'ten fazla fotoğraf yüklenmeye çalışılan ilanlar sistem tarafından otomatik olarak reddedilmiş olabilir.</p>
+
+  <p><strong>8. Mahalle Duyuruları kısmında kimler paylaşım yapabilir?</strong><br>
+  Duyurular bölümü resmi kurumlar, mahalle muhtarlıkları ve Bahçelievler Forum yönetimi tarafından güncellenir. Önemli bir mahalle duyurunuz varsa yönetime iletebilirsiniz.</p>
+
+  <p><strong>9. Kişisel verilerim 3. şahıslarla paylaşılıyor mu?</strong><br>
+  KVKK politikamız gereği e-posta ve iletişim bilgileriniz asla satılmaz. Verileriniz sadece sizin rızanızla (ilanlarda görünecek şekilde) veya yasal zorunluluk hallerinde yetkili makamlarla paylaşılır.</p>
+
+  <p><strong>10. Bahçelievler Forum bir belediye uygulaması mı?</strong><br>
+  Hayır. Bu platform Bahçelievler sakinleri tarafından oluşturulmuş bağımsız bir mahalle rehberidir ve tamamen gönüllülük/yerel ticaret odaklı çalışır.</p>
+
+  <p><strong>11. Paylaşılan ilan, fiyat ve şikayetler denetleniyor mu?</strong><br>
+  Paylaşımlar öncelikle otomatik güvenlik filtrelerinden (spam, küfür, bot kontrolü) geçer. Topluluk kurallarına aykırı veya şüpheli içerikler yayından kaldırılır. Platform, mahalle dayanışmasını esas alır.</p>
+
+  <p><strong>12. Yanlış veya yanıltıcı içerik girilirse ne olur?</strong><br>
+  Yanlış fiyat, sahte ilan veya yanıltıcı paylaşımlar tespit edildiğinde içerik yayından kaldırılır. Tekrarlayan ihlallerde ilgili kullanıcının paylaşım yapması sınırlandırılabilir.</p>
+
+  <p><strong>13. Fiyat Dedektifi verileri resmi fiyatlar mıdır?</strong><br>
+  Hayır. Fiyat Dedektifi, kullanıcıların paylaştığı etiket fotoğraflarına dayanan bilgilendirme amaçlı bir sistemdir. Marketlerin anlık fiyat değişikliği yapma hakkı saklıdır.</p>
+
+  <p><strong>14. Paylaşımlarım sistemde ne kadar süre saklanır?</strong><br>
+  Paylaşımlar, kullanıcı tarafından silinene kadar veya uzun süre pasif kalan içerikler için sistem tarafından otomatik olarak yayından kaldırılana kadar saklanır.</p>
+
+  <p><strong>15. Bahçelievler Forum neden ücretsiz?</strong><br>
+  Bahçelievler Forum, mahalle dayanışmasını ve yerel bilgi paylaşımını güçlendirmek amacıyla kurulmuştur. Temel kullanım ücretsizdir. İleride yalnızca isteğe bağlı tanıtım veya sponsorlu alanlar sunulabilir.</p>
+
+  <p><strong>16. Paylaşılan veriler reklam veya pazarlama amacıyla kullanılır mı?</strong><br>
+  Hayır. Kullanıcı verileri üçüncü kişilerle satılmaz veya izinsiz paylaşılmaz. Paylaşımlar yalnızca platform içi bilgilendirme ve mahalle faydası amacıyla kullanılır.</p>
+
+  <p><strong>17. Platformda sahte hesaplarla paylaşım yapılabilir mi?</strong><br>
+  Platformda klasik üyelik sistemi yerine içerik bazlı güvenlik yaklaşımı uygulanır. Görsel zorunluluğu, silme şifresi ve bot filtreleri sahte paylaşımları büyük ölçüde engeller.</p>
+
+  <p><strong>18. Paylaştığım içerikleri kimler görebilir?</strong><br>
+  Paylaşımlar platformu ziyaret eden kullanıcılar tarafından görüntülenebilir. Özel iletişim bilgileri paylaşılmadığı sürece kişisel veriler herkese açık hâle gelmez.</p>
+
+  <p><strong>19. İlanımı veya paylaşımımı nasıl silebilirim?</strong><br>
+  Paylaşım sırasında belirlediğiniz silme şifresi ile içeriğinizi dilediğiniz zaman yayından kaldırabilirsiniz.</p>
+
+  <p><strong>20. Telefon numaram veya iletişim bilgilerim herkese açık mı?</strong><br>
+  Hayır. İletişim bilgileri yalnızca kullanıcı tarafından açıkça paylaşılması hâlinde görünür olur.</p>
+
+  <p><strong>21. Yanlış veya kötüye kullanım içeren paylaşımlar olursa ne olur?</strong><br>
+  Yanıltıcı, kötüye kullanım veya topluluk kurallarına aykırı içerikler tespit edildiğinde yayından kaldırılır.</p>
+
+  <p><strong>22. Bahçelievler Forum resmi bir kurum mu?</strong><br>
+  Hayır. Bahçelievler Forum; mahalle dayanışmasını ve yerel bilgi paylaşımını amaçlayan bağımsız bir dijital platformdur. Herhangi bir kamu kurumu, belediye, muhtarlık, resmi kuruluş veya devlet kurumu ile kurumsal, idari ya da mali bir bağı bulunmamaktadır. Platformda yer alan içerikler resmi kurum duyurusu niteliği taşımaz; kullanıcı paylaşımlarına veya platform içi bilgilendirmelere dayanır. Resmî açıklama ve kararlar için ilgili kamu kurumlarının kendi resmi internet siteleri ve iletişim kanalları esas alınmalıdır.</p>
+
+  </div>
+</section>`;
   }
 
   if(type==="contact"){
