@@ -1,191 +1,149 @@
 <!DOCTYPE html>
-<html lang="tr" class="no-js">
+<html lang="tr">
+
 <head>
 
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>İletişim | Bahçelievler Forum</title>
+<title>Kurumsal Bilgiler & İletişim | Bahçelievler Forum</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/layout.css">
-<link rel="stylesheet" href="assets/css/components.css">
-
 <style>
 
-/* SAFE AREA */
-
 body{
-padding-top: env(safe-area-inset-top);
-padding-bottom: calc(120px + env(safe-area-inset-bottom));
-background:linear-gradient(180deg,#f4f6fb 0%,#eef2f7 100%);
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+margin:0;
+font-family:system-ui;
+background:#eef2f6;
 }
 
-/* WRAPPER */
-
-.page-wrapper{
-max-width:880px;
-margin:0 auto;
-padding:26px 16px;
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
 }
 
 /* TITLE */
 
-.contact-title{
+.page-title{
 text-align:center;
-font-weight:800;
+font-weight:700;
 font-size:22px;
-margin-bottom:24px;
-color:#0f3d6e;
-letter-spacing:.2px;
+margin-bottom:20px;
+color:#0f2c4d;
 }
 
-/* MENU CARD */
+/* MENU CARDS */
 
-.contact-link-card{
+.menu-card{
 
 display:flex;
 align-items:center;
-gap:14px;
 
-background:#e9edf2;
+background:#f1f4f7;
+
 padding:18px;
+
 border-radius:18px;
 
 margin-bottom:14px;
 
-text-decoration:none;
-color:#1a2b44;
-font-weight:600;
+cursor:pointer;
 
-box-shadow:
-inset 0 0 0 1px rgba(255,255,255,0.6),
-0 8px 22px rgba(0,0,0,0.06);
+transition:.2s;
 
-transition:all .25s ease;
-position:relative;
+border:1px solid #e2e6ea;
 
 }
 
-/* ARROW */
-
-.contact-link-card::after{
-content:"›";
-position:absolute;
-right:18px;
-font-size:20px;
-opacity:.5;
+.menu-card:hover{
+background:white;
 }
 
-/* HOVER */
+.menu-icon{
 
-.contact-link-card:hover{
-transform:translateY(-2px);
-box-shadow:0 12px 30px rgba(0,0,0,0.08);
-}
-
-/* CLICK */
-
-.contact-link-card:active{
-transform:scale(.97);
-}
-
-/* ACTIVE CARD */
-
-.contact-link-card.active{
-background:#dfe7f4;
-transform:scale(1.02);
-box-shadow:0 14px 36px rgba(0,0,0,0.10);
-}
-
-.contact-link-card.active i{
-background:#0f4e8c;
-color:#fff;
-}
-
-/* ICON */
-
-.contact-link-card i{
-
-width:42px;
-height:42px;
+width:44px;
+height:44px;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-background:#d8e1ea;
 border-radius:12px;
 
-color:#0f4e8c;
-font-size:18px;
+background:#e7edf4;
 
-transition:.2s;
+margin-right:14px;
+
+font-size:18px;
+color:#1f4f82;
 
 }
 
-/* CONTENT BOX */
+.menu-title{
 
-.contact-description-box{
-
-margin-top:26px;
-
-background:#ffffff;
-
-padding:26px;
-border-radius:20px;
-
-box-shadow:0 10px 34px rgba(0,0,0,0.07);
-
-line-height:1.7;
+font-weight:600;
 font-size:15px;
 
-transition:opacity .25s ease, transform .25s ease;
+}
+
+/* INFO */
+
+.info-box{
+
+margin-top:18px;
+
+background:white;
+
+border-radius:20px;
+
+padding:24px;
+
+box-shadow:0 8px 18px rgba(0,0,0,0.08);
+
+display:none;
 
 }
 
-/* ANIMATION */
-
-.contact-description-box.fade{
-opacity:0;
-transform:translateY(6px);
+.info-box h2{
+text-align:center;
+margin-bottom:14px;
 }
 
-/* CONTENT TITLE */
+.info-box hr{
+margin:12px 0 18px;
+border:none;
+border-top:1px solid #eee;
+}
 
-.contact-description-box h3{
+.info-box p{
+line-height:1.6;
+font-size:14px;
+margin-bottom:14px;
+}
+
+.info-box li{
+margin-bottom:10px;
+}
+
+.footer-note{
+
+margin-top:20px;
+
+background:white;
+
+padding:16px;
+
+border-radius:18px;
 
 text-align:center;
-font-weight:800;
-margin-bottom:18px;
-font-size:17px;
-color:#0f3d6e;
 
-}
+font-size:13px;
 
-/* DIVIDER */
+color:#555;
 
-.contact-description-box hr{
-border:none;
-border-top:1px solid #e2e6ea;
-margin:14px 0 18px 0;
-}
-
-/* MOBILE */
-
-@media (max-width:600px){
-
-.contact-title{
-font-size:20px;
-}
-
-.contact-link-card{
-padding:16px;
-}
+box-shadow:0 6px 14px rgba(0,0,0,0.06);
 
 }
 
@@ -193,67 +151,173 @@ padding:16px;
 
 </head>
 
-<body id="contactPage">
+<body>
 
-<div id="globalHeader"></div>
+<div class="container">
 
-<div class="page-wrapper">
-
-<div class="contact-title">
+<div class="page-title">
 Kurumsal Bilgiler & İletişim Merkezi
 </div>
 
-<a href="#" class="contact-link-card" data-type="about">
-<i class="fa-solid fa-circle-info"></i>
-<span>Hakkımızda</span>
-</a>
 
-<a href="#" class="contact-link-card" data-type="disclaimer">
-<i class="fa-solid fa-scale-balanced"></i>
-<span>Yasal Uyarı</span>
-</a>
+<div class="menu-card" onclick="openSection('hakkimizda')">
+<div class="menu-icon"><i class="fa-solid fa-circle-info"></i></div>
+<div class="menu-title">Hakkımızda</div>
+</div>
 
-<a href="#" class="contact-link-card" data-type="kvkk">
-<i class="fa-solid fa-shield-halved"></i>
-<span>KVKK & Gizlilik</span>
-</a>
+<div class="menu-card" onclick="openSection('yasal')">
+<div class="menu-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+<div class="menu-title">Yasal Uyarı</div>
+</div>
 
-<a href="#" class="contact-link-card" data-type="sss">
-<i class="fa-solid fa-circle-question"></i>
-<span>Sıkça Sorulan Sorular</span>
-</a>
+<div class="menu-card" onclick="openSection('kvkk')">
+<div class="menu-icon"><i class="fa-solid fa-shield-halved"></i></div>
+<div class="menu-title">KVKK & Gizlilik</div>
+</div>
 
-<a href="#" class="contact-link-card" data-type="contact">
-<i class="fa-solid fa-envelope"></i>
-<span>Bize Yazın</span>
-</a>
+<div class="menu-card" onclick="openSection('sss')">
+<div class="menu-icon"><i class="fa-solid fa-circle-question"></i></div>
+<div class="menu-title">Sıkça Sorulan Sorular</div>
+</div>
 
-<div id="legal-content-area" class="contact-description-box">
+<div class="menu-card" onclick="openSection('iletisim')">
+<div class="menu-icon"><i class="fa-solid fa-envelope"></i></div>
+<div class="menu-title">Bize Yazın</div>
+</div>
 
-<h3>Kurumsal Bilgilendirme</h3>
 
+<!-- DETAY ALANI -->
+
+<div id="contentArea"></div>
+
+<div class="footer-note">
+Platformumuz hakkında yasal bilgiler, gizlilik politikaları ve iletişim kanallarına buradan ulaşabilirsiniz.
+</div>
+
+</div>
+
+<script>
+
+function openSection(type){
+
+let content="";
+
+if(type==="hakkimizda"){
+
+content=`
+<div class="info-box" style="display:block">
+<h2>HAKKIMIZDA</h2>
 <hr>
 
-<p>
-Bahçelievler Forum; mahalle içi bilgi paylaşımını,
-yerel ticareti ve topluluk iletişimini güçlendirmek
-amacıyla geliştirilmiş dijital bir platformdur.
-</p>
+<p>Bahçelievler Forum, ilçemizin dijitalleşme sürecinde yerel kültürü koruyarak geleceğe taşıma hedefiyle kurulmuş bağımsız bir mahalle platformudur. Geleneksel komşuluk anlayışını modern teknolojiyle birleştirerek, semt içi iletişimi daha hızlı, güvenli ve sürdürülebilir hale getirmeyi amaçlar.</p>
 
-<p>
-Yasal bilgiler, gizlilik politikası ve iletişim
-kanallarımız hakkında detaylara yukarıdaki menüden
-ulaşabilirsiniz.
-</p>
+<p>Amacımız; Bahçelievler sakinlerinin ilan, duyuru ve hizmet ihtiyaçlarını tek merkezde buluşturmak, yerel esnafın dijital görünürlüğünü artırmak ve mahalle ekonomisini güçlendirmektir. Platformumuz; ikinci el ilanlardan emlak taleplerine, fiyat radarından mahalle duyurularına, tavsiye paylaşımlarından hizmet tanıtımlarına kadar geniş kapsamlı bir yerel bilgi ağı sunar.</p>
+
+<p><strong>Vizyonumuz:</strong> Bahçelievler’in en güvenilir dijital rehberi ve yerel ekonomi merkezi olmak. Sürekli gelişen altyapımız ve veri odaklı yaklaşımımızla, semt içi etkileşimi artıran ve sürdürülebilir bir mahalle ekosistemi oluşturan öncü bir platform olmayı hedefliyoruz.</p>
+
+<p>Bahçelievler Forum, yerel değerleri teknolojiyle buluşturan ve mahalle ruhunu dijital dünyada yaşatan güçlü bir girişimdir.</p>
 
 </div>
+`;
+}
+
+if(type==="yasal"){
+
+content=`
+<div class="info-box" style="display:block">
+<h2>YASAL UYARI</h2>
+<hr>
+
+<p><strong>⚖️ KULLANIM KOŞULLARI VE SORUMLULUK REDDİ BEYANI</strong></p>
+
+<p><strong>1. HİZMET TANIMI VE HUKUKİ STATÜ:</strong> Bahçelievler Forum, 5651 sayılı Kanun kapsamında yer sağlayıcı niteliğinde faaliyet gösteren dijital bir platformdur.</p>
+
+<p><strong>2. İÇERİK SORUMLULUĞU:</strong> Platformda yer alan tüm içeriklerin hukuki ve cezai sorumluluğu içeriği paylaşan kullanıcıya aittir.</p>
+
+<p><strong>3. TİCARİ İŞLEMLER:</strong> Platform üzerinden gerçekleşen işlemlerde Bahçelievler Forum taraf değildir.</p>
+
+<p><strong>4. FİYAT RADARI:</strong> Kullanıcı beyanına dayanır.</p>
+
+<p><strong>5. HİZMET SAĞLAYICILAR:</strong> Platform yalnızca iletişim kurulmasına aracılık eder.</p>
+
+<p><strong>6. TELİF HAKLARI:</strong> İçerik hakları kullanıcıya aittir.</p>
+
+<p><strong>7. TEKNİK SÜREKLİLİK:</strong> Platform teknik sorunlardan sorumlu değildir.</p>
+
+<p><strong>8. DIŞ BAĞLANTILAR:</strong> Harici siteler platformdan bağımsızdır.</p>
+
+<p><strong>9. İÇERİK KALDIRMA:</strong> Mevzuata aykırı içerikler kaldırılabilir.</p>
 
 </div>
+`;
+}
 
-<div id="globalFooter"></div>
+if(type==="kvkk"){
 
-<script src="assets/js/core.js"></script>
-<script src="assets/js/contact.js"></script>
+content=`
+<div class="info-box" style="display:block">
+<h2>KVKK & GİZLİLİK</h2>
+<hr>
+
+<p><strong>1. VERİ SORUMLUSU:</strong> Bahçelievler Forum veri sorumlusudur.</p>
+
+<p><strong>2. İŞLENEN VERİLER:</strong> E-posta, IP adresi, log kayıtları ve görseller.</p>
+
+<p><strong>3. VERİ AMAÇLARI:</strong> Platform güvenliği ve ilan yönetimi.</p>
+
+<p><strong>4. SAKLAMA:</strong> Veriler Supabase altyapısında tutulur.</p>
+
+<p><strong>5. SİLME HAKKI:</strong> Kullanıcılar içeriklerini kaldırabilir.</p>
+
+<p><strong>6. HAKLAR:</strong> KVKK madde 11 kapsamında haklar kullanılabilir.</p>
+
+</div>
+`;
+}
+
+if(type==="sss"){
+
+content=`
+<div class="info-box" style="display:block">
+<h2>SIKÇA SORULAN SORULAR</h2>
+<hr>
+
+<ul>
+<li>Paylaşımlar silme şifresi ile kaldırılabilir.</li>
+<li>Şifre unutulursa iletişim üzerinden destek alınabilir.</li>
+<li>Fiyat Dedektifi kullanıcıların paylaştığı fiyat verilerine dayanır.</li>
+<li>Bahçelievler Forum bağımsız bir mahalle platformudur.</li>
+</ul>
+
+</div>
+`;
+}
+
+if(type==="iletisim"){
+
+content=`
+<div class="info-box" style="display:block">
+<h2>BİZE YAZIN</h2>
+<hr>
+
+<p>Öneri, teknik sorun veya içerik kaldırma taleplerinizi bize iletebilirsiniz.</p>
+
+<p>Email: iletisim@bahcelievlerforum.com</p>
+
+</div>
+`;
+}
+
+document.getElementById("contentArea").innerHTML=content;
+
+window.scrollTo({
+top:document.getElementById("contentArea").offsetTop-40,
+behavior:"smooth"
+});
+
+}
+
+</script>
 
 </body>
 </html>
