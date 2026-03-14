@@ -251,25 +251,64 @@ BF.ui.renderFooter = function(){
     `;
 };
 
-
 /* -------- MENU EVENTS -------- */
 BF.ui.bindMenuEvents = function(){
 
     document.addEventListener("click", function(e){
 
+        /* MENU OPEN */
         if(e.target.closest("#menuBtn")){
             document.querySelector(".side-menu")?.classList.add("active");
             document.querySelector(".overlay")?.classList.add("active");
         }
 
+        /* MENU CLOSE */
         if(e.target.closest("#closeMenu") || e.target.classList.contains("overlay")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
 
+        /* MENU LINK CLICK */
         if(e.target.closest(".side-menu a")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
+        }
+
+        /* 🔍 SEARCH SYSTEM */
+        if(e.target.closest("#searchBtn")){
+
+            const query = prompt("Bahçelievler Forum içinde ara:");
+
+            if(!query) return;
+
+            const q = query.toLowerCase();
+
+            if(q.includes("ilan")){
+                window.location.href = "ilanlar.html";
+                return;
+            }
+
+            if(q.includes("fırsat") || q.includes("firsat")){
+                window.location.href = "firsatlar.html";
+                return;
+            }
+
+            if(q.includes("hizmet")){
+                window.location.href = "hizmetler.html";
+                return;
+            }
+
+            if(q.includes("duyuru")){
+                window.location.href = "duyurular.html";
+                return;
+            }
+
+            if(q.includes("şikayet") || q.includes("sikayet")){
+                window.location.href = "tavsiye-sikayet.html";
+                return;
+            }
+
+            alert("Sonuç bulunamadı.");
         }
 
     });
