@@ -120,6 +120,7 @@ BF.cache.setCached = function(key, value, minutes){
 
 /* ================= UI ENGINE ================= */
 /* -------- HEADER -------- */
+/* -------- HEADER -------- */
 BF.ui.renderHeader = function(){
 
     const container = document.getElementById("globalHeader");
@@ -142,6 +143,13 @@ BF.ui.renderHeader = function(){
                     <i id="searchBtn" class="fa-solid fa-magnifying-glass"></i>
                 </div>
 
+            </div>
+        </div>
+
+        <div class="search-overlay">
+            <div class="search-box">
+                <input id="siteSearchInput" type="text" placeholder="Sitede ara...">
+                <div id="searchResults"></div>
             </div>
         </div>
     `;
