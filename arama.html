@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<title>Arama Sonuçları</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:system-ui;
+padding:20px;
+background:#f4f7fb;
+}
+
+h1{
+font-size:22px;
+}
+
+.result{
+background:white;
+padding:16px;
+border-radius:12px;
+margin-bottom:12px;
+box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.result a{
+text-decoration:none;
+font-weight:700;
+color:#1f6fd1;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Arama Sonuçları</h1>
+
+<div id="results"></div>
+
+<script>
+
+const params = new URLSearchParams(location.search);
+const q = params.get("q")?.toLowerCase();
+
+const pages = [
+
+{title:"Macbook İlanları", url:"ilanlar.html"},
+{title:"İlanlar", url:"ilanlar.html"},
+{title:"Hizmetler", url:"hizmetler.html"},
+{title:"Fırsatlar", url:"firsatlar.html"},
+{title:"Duyurular", url:"duyurular.html"},
+{title:"Tavsiye ve Şikayet", url:"tavsiye-sikayet.html"}
+
+];
+
+const container = document.getElementById("results");
+
+const found = pages.filter(p =>
+p.title.toLowerCase().includes(q)
+);
+
+if(found.length === 0){
+
+container.innerHTML = "<p>Sonuç bulunamadı</p>";
+
+}else{
+
+found.forEach(item=>{
+
+const div = document.createElement("div");
+
+div.className = "result";
+
+div.innerHTML = `
+<a href="${item.url}">
+${item.title}
+</a>
+`;
+
+container.appendChild(div);
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
