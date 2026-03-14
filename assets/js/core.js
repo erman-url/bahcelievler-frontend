@@ -145,13 +145,6 @@ BF.ui.renderHeader = function(){
 
             </div>
         </div>
-
-        <div class="search-overlay">
-            <div class="search-box">
-                <input id="siteSearchInput" type="text" placeholder="Sitede ara...">
-                <div id="searchResults"></div>
-            </div>
-        </div>
     `;
 };
 
