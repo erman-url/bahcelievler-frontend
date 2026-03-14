@@ -120,7 +120,6 @@ BF.cache.setCached = function(key, value, minutes){
 
 /* ================= UI ENGINE ================= */
 /* -------- HEADER -------- */
-/* -------- HEADER -------- */
 BF.ui.renderHeader = function(){
 
     const container = document.getElementById("globalHeader");
@@ -145,9 +144,18 @@ BF.ui.renderHeader = function(){
 
             </div>
         </div>
+
+        <!-- GLOBAL SEARCH PANEL -->
+        <div class="search-panel">
+            <input 
+                id="globalSearchInput" 
+                type="text" 
+                placeholder="Tüm sitede ara..."
+                autocomplete="off"
+            />
+        </div>
     `;
 };
-
 /* -------- FOOTER NAV -------- */
 BF.ui.renderFooterNav = function(){
 
@@ -243,70 +251,53 @@ BF.ui.renderFooter = function(){
         </footer>
     `;
 };
-
-/* -------- MENU EVENTS -------- */
 /* -------- MENU EVENTS -------- */
 BF.ui.bindMenuEvents = function(){
 
     document.addEventListener("click", function(e){
 
+        /* MENU OPEN */
         if(e.target.closest("#menuBtn")){
             document.querySelector(".side-menu")?.classList.add("active");
             document.querySelector(".overlay")?.classList.add("active");
         }
 
+        /* MENU CLOSE */
         if(e.target.closest("#closeMenu") || e.target.classList.contains("overlay")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
 
+        /* MENU LINK CLICK */
         if(e.target.closest(".side-menu a")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
 
-        /* 🔍 SEARCH */
+        /* 🔍 SEARCH TOGGLE (no prompt) */
         if(e.target.closest("#searchBtn")){
-
-            const q = prompt("Bahçelievler Forum'da ara:");
-
-            if(!q) return;
-
-            const query = q.toLowerCase();
-
-            if(query.includes("ilan")){
-                window.location.href = "ilanlar.html";
-                return;
+            const panel = document.querySelector(".search-panel");
+            if(panel){
+                panel.classList.toggle("active");
+                const input = document.getElementById("globalSearchInput");
+                if(panel.classList.contains("active")){
+                    input?.focus();
+                }
             }
-
-            if(query.includes("fırsat") || query.includes("firsat")){
-                window.location.href = "firsatlar.html";
-                return;
-            }
-
-            if(query.includes("hizmet")){
-                window.location.href = "hizmetler.html";
-                return;
-            }
-
-            if(query.includes("duyuru")){
-                window.location.href = "duyurular.html";
-                return;
-            }
-
-            if(query.includes("şikayet") || query.includes("sikayet")){
-                window.location.href = "tavsiye-sikayet.html";
-                return;
-            }
-
-            alert("Sonuç bulunamadı");
-
         }
 
     });
 
-};
+    /* ENTER ile arama sayfasına yönlendir */
+    document.addEventListener("keydown", function(e){
+        if(e.target.id === "globalSearchInput" && e.key === "Enter"){
+            const q = e.target.value.trim();
+            if(!q) return;
+            window.location.href = "arama.html?q=" + encodeURIComponent(q);
+        }
+    });
 
+};
 
 /* ================= NAV ACTIVE ================= */
 
