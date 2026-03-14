@@ -119,7 +119,6 @@ BF.cache.setCached = function(key, value, minutes){
 
 
 /* ================= UI ENGINE ================= */
-
 /* -------- HEADER -------- */
 BF.ui.renderHeader = function(){
 
@@ -129,16 +128,24 @@ BF.ui.renderHeader = function(){
     container.innerHTML = `
         <div class="top-header">
             <div class="header-inner">
-                <i id="menuBtn" class="fa-solid fa-bars"></i>
-                <div>
+
+                <div class="header-left">
+                    <i id="menuBtn" class="fa-solid fa-bars"></i>
+                </div>
+
+                <div class="header-center">
                     <div class="header-title">BAHÇELİEVLER FORUM</div>
                     <div class="header-sub">Semt · Bilgi · Yaşam Portalı</div>
                 </div>
+
+                <div class="header-right">
+                    <i id="searchBtn" class="fa-solid fa-magnifying-glass"></i>
+                </div>
+
             </div>
         </div>
     `;
 };
-
 
 /* -------- FOOTER NAV -------- */
 BF.ui.renderFooterNav = function(){
