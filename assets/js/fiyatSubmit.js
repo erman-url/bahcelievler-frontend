@@ -11,89 +11,97 @@ const btn = document.querySelector(".fd-submit")
 
 /* captcha kontrol */
 
-if(captcha != "5"){
-
+if(captcha !== "5"){
 alert("Doğrulama hatalı")
 return
-
 }
 
 /* veri kontrol */
 
 if(!barcode || !urun || !fiyat){
-
 alert("Eksik bilgi var")
 return
-
 }
 
-/* fiyat format düzelt */
+/* fiyat format normalize */
 
 fiyat = fiyat.replace(",",".")
 fiyat = parseFloat(fiyat)
 
 if(isNaN(fiyat) || fiyat <= 0){
-
 alert("Fiyat geçersiz")
 return
-
 }
 
-/* buton kilitle (spam engelle) */
+/* buton kilitle */
 
 btn.disabled = true
 btn.innerText = "Gönderiliyor..."
 
 const data = {
-
 barcode:barcode,
 urun:urun,
 fiyat:fiyat,
 market:market,
 mahalle:mahalle
-
 }
 
 try{
 
-const res = await fetch("/api/fiyat-ekle",{
+/* network timeout */
 
+const controller = new AbortController()
+const timeout = setTimeout(()=>controller.abort(),8000)
+
+/* worker endpoint */
+
+const res = await fetch("https://bahcelievlerforum.com.tr/api/fiyat-ekle",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
-body:JSON.stringify(data)
-
+body:JSON.stringify(data),
+signal:controller.signal
 })
 
-/* http hata kontrol */
+clearTimeout(timeout)
+
+/* http hata */
 
 if(!res.ok){
 
-throw new Error("Sunucu hatası")
+const text = await res.text()
+throw new Error("HTTP "+res.status+" : "+text)
 
 }
 
-const result = await res.json()
+/* json güvenli parse */
 
-/* api hata kontrol */
+let result
+
+try{
+result = await res.json()
+}catch{
+throw new Error("JSON parse hatası")
+}
+
+/* api cevap kontrol */
 
 if(!result.ok){
 
 alert(result.error || "Kayıt başarısız")
 
-btn.disabled = false
-btn.innerText = "RADARA EKLE"
+btn.disabled=false
+btn.innerText="RADARA EKLE"
 
 return
-
 }
+
+/* başarı */
 
 alert("✅ Fiyat başarıyla eklendi")
 
-/* form temizle */
+/* form reset */
 
 document.getElementById("barcodeInput").value=""
 document.getElementById("urunInput").value=""
@@ -106,15 +114,19 @@ closeModal()
 
 }catch(e){
 
-console.error(e)
+console.error("Fiyat gönderme hatası:",e)
 
+if(e.name === "AbortError"){
+alert("Sunucu yanıt vermedi (timeout)")
+}else{
 alert("Sunucu bağlantı hatası")
+}
 
 }
 
 /* buton tekrar aktif */
 
-btn.disabled = false
-btn.innerText = "RADARA EKLE"
+btn.disabled=false
+btn.innerText="RADARA EKLE"
 
 }
