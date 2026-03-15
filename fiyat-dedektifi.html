@@ -133,6 +133,7 @@ width:95%;
 max-width:500px;
 border-radius:18px;
 padding:20px;
+padding-bottom:120px;
 max-height:calc(100vh - 120px);
 overflow-y:auto;
 overscroll-behavior:contain;
@@ -280,7 +281,7 @@ id="imageInput"
 type="file"
 accept="image/*"
 capture="environment"
-onchange="runOCR(this.files[0])"
+onchange="if(this.files.length){runOCR(this.files[0])}"
 >
 
 <p style="font-size:12px;color:#888">
@@ -322,7 +323,7 @@ Kamerayı Kapat
 <input id="urunInput" class="fd-input" placeholder="Örn: Sütaş Süt 200ml">
 
 <label class="fd-label">Fiyat (TL)</label>
-<input id="priceInput" class="fd-input" placeholder="17.45">
+<input id="priceInput" class="fd-input" inputmode="decimal" placeholder="17.45">
 
 <label class="fd-label">Market</label>
 
@@ -385,11 +386,25 @@ RADARA EKLE
 <script>
 
 function openModal(){
-document.getElementById("priceModal").style.display="flex";
+
+const modal = document.getElementById("priceModal")
+
+modal.style.display="flex"
+
+/* arka sayfa scroll kilitle */
+document.body.style.overflow="hidden"
+
 }
 
 function closeModal(){
-document.getElementById("priceModal").style.display="none";
+
+const modal = document.getElementById("priceModal")
+
+modal.style.display="none"
+
+/* scroll tekrar aktif */
+document.body.style.overflow="auto"
+
 }
 
 </script>
