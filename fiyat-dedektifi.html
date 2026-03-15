@@ -7,7 +7,7 @@
 
 <title>Fiyat Dedektifi | Bahçelievler Forum</title>
 
-<meta name="description" content="Market fiyatlarını paylaşarak Bahçelievler semt fiyat endeksine katkıda bulunun.">
+<meta name="description" content="Marketlerde gördüğünüz fiyatları paylaşarak Bahçelievler semt fiyat endeksine katkıda bulunun.">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -16,6 +16,12 @@
 <link rel="stylesheet" href="assets/css/components.css">
 <link rel="stylesheet" href="assets/css/responsive.css">
 
+<!-- BARKOD -->
+<script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
+
+<!-- OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
 <style>
 
 .page-container{
@@ -23,8 +29,6 @@ max-width:720px;
 margin:auto;
 padding-bottom:120px;
 }
-
-/* HEADER */
 
 .fd-header{
 background:linear-gradient(120deg,#0d2c54,#1f6fd1);
@@ -38,8 +42,6 @@ font-size:21px;
 font-weight:700;
 }
 
-/* CARD */
-
 .fd-card{
 background:white;
 border-radius:18px;
@@ -47,8 +49,6 @@ padding:18px;
 margin:16px 12px;
 box-shadow:0 8px 22px rgba(0,0,0,.06);
 }
-
-/* GRAPH */
 
 .fd-graph{
 height:170px;
@@ -59,8 +59,6 @@ align-items:center;
 justify-content:center;
 color:#777;
 }
-
-/* PRODUCT */
 
 .fd-product{
 display:flex;
@@ -99,10 +97,7 @@ font-size:13px;
 font-weight:600;
 }
 
-/* ADD BUTTON */
-
 .fd-add-btn{
-
 margin:18px 12px;
 background:#1657b7;
 color:white;
@@ -111,13 +106,9 @@ border-radius:14px;
 text-align:center;
 font-weight:600;
 cursor:pointer;
-
 }
 
-/* MODAL */
-
 .fd-modal{
-
 position:fixed;
 top:0;
 left:0;
@@ -128,11 +119,9 @@ display:none;
 align-items:center;
 justify-content:center;
 z-index:999;
-
 }
 
 .fd-modal-content{
-
 background:white;
 width:95%;
 max-width:500px;
@@ -140,10 +129,7 @@ border-radius:18px;
 padding:20px;
 max-height:90vh;
 overflow:auto;
-
 }
-
-/* INPUT */
 
 .fd-input{
 width:100%;
@@ -170,7 +156,6 @@ background:#fafafa;
 }
 
 .fd-submit{
-
 background:#ff006a;
 color:white;
 border:none;
@@ -179,17 +164,23 @@ padding:14px;
 border-radius:12px;
 margin-top:16px;
 font-weight:600;
-
 }
 
 .fd-close{
-
 position:absolute;
 top:18px;
 right:22px;
 font-size:18px;
 cursor:pointer;
+}
 
+/* SCANNER */
+
+#scanner{
+width:100%;
+height:260px;
+border-radius:12px;
+overflow:hidden;
 }
 
 </style>
@@ -203,12 +194,9 @@ cursor:pointer;
 <div class="page-container">
 
 <div class="fd-header">
-
 <h1><i class="fa-solid fa-magnifying-glass"></i> Fiyat Dedektifi</h1>
 <p>Semt fiyat endeksi</p>
-
 </div>
-
 
 <!-- SEMT ENDEKS -->
 
@@ -217,19 +205,14 @@ cursor:pointer;
 <h3><i class="fa-solid fa-chart-line"></i> Semt Fiyat Endeksi</h3>
 
 <div class="fd-graph">
-
 Grafik burada gösterilecek
-
 </div>
 
 <p style="font-size:11px;margin-top:8px;color:#777">
-
 Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
-
 </p>
 
 </div>
-
 
 <!-- SON EKLENENLER -->
 
@@ -253,39 +236,15 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 </div>
 
-
-<div class="fd-product">
-
-<div>
-
-<strong>Sütaş Süt 200ml</strong>
-
-<div class="fd-meta">ÇAĞRI • Bahçelievler</div>
-
-<div class="fd-date">17 Mart 2026</div>
-
-<div class="fd-verified">✔ Etiket doğrulandı</div>
-
 </div>
 
-<div class="fd-price">17.45 TL</div>
-
-</div>
-
-</div>
-
-
-<!-- ADD PRICE BUTTON -->
+<!-- ADD BUTTON -->
 
 <div class="fd-add-btn" onclick="openModal()">
-
 <i class="fa-solid fa-plus"></i> Radar / Fiyat Ekle
-
 </div>
 
 </div>
-
-
 
 <!-- MODAL -->
 
@@ -294,37 +253,61 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 <div class="fd-modal-content">
 
 <div class="fd-close" onclick="closeModal()">
-
 <i class="fa-solid fa-xmark"></i>
-
 </div>
 
 <h3>Fiyat Bildir</h3>
-
 
 <label class="fd-label">📷 Ürün Etiket Fotoğrafı</label>
 
 <div class="fd-camera">
 
-<input type="file" accept="image/*" capture="environment">
+<input id="imageInput" type="file" accept="image/*" capture="environment" onchange="runOCR(this.files[0])">
 
-<p style="font-size:12px;color:#888">Etiket fotoğrafı zorunludur</p>
+<p style="font-size:12px;color:#888">
+Etiket fotoğrafı zorunludur
+</p>
 
 </div>
 
-
 <label class="fd-label">Barkod</label>
-<input class="fd-input" placeholder="869XXXXXXXXXXXX">
+
+<div style="display:flex;gap:6px">
+
+<input
+id="barcodeInput"
+class="fd-input"
+placeholder="869XXXXXXXXXXXX"
+onblur="getProductByBarcode()"
+>
+
+<button onclick="startScanner()" style="width:60px">
+<i class="fa-solid fa-barcode"></i>
+</button>
+
+</div>
+
+<!-- SCANNER -->
+
+<div id="scannerArea" style="display:none;margin-top:10px">
+
+<div id="scanner"></div>
+
+<button onclick="stopScanner()" class="fd-submit" style="margin-top:8px">
+Kamerayı Kapat
+</button>
+
+</div>
 
 <label class="fd-label">Ürün Adı</label>
-<input class="fd-input" placeholder="Örn: Sütaş Süt 200ml">
+<input id="urunInput" class="fd-input" placeholder="Örn: Sütaş Süt 200ml">
 
 <label class="fd-label">Fiyat (TL)</label>
-<input class="fd-input" placeholder="17.45">
+<input id="priceInput" class="fd-input" placeholder="17.45">
 
 <label class="fd-label">Market</label>
 
-<select class="fd-input">
+<select id="marketSelect" class="fd-input">
 
 <option>A101</option>
 <option>BİM</option>
@@ -341,7 +324,7 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <label class="fd-label">Mahalle</label>
 
-<select class="fd-input">
+<select id="districtSelect" class="fd-input">
 
 <option>Bahçelievler Mahallesi</option>
 <option>Cumhuriyet Mahallesi</option>
@@ -358,19 +341,15 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 </select>
 
 <label class="fd-label">Doğrulama</label>
-<input class="fd-input" placeholder="3 + 2 = ?">
+<input id="captchaInput" class="fd-input" placeholder="3 + 2 = ?">
 
-<button class="fd-submit">
-
+<button onclick="submitPrice()" class="fd-submit">
 RADARA EKLE
-
 </button>
 
 </div>
 
 </div>
-
-
 
 <div id="globalFooter"></div>
 
@@ -379,18 +358,18 @@ RADARA EKLE
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerNav.js"></script>
 
+<script src="assets/js/barcodeScanner.js"></script>
+<script src="assets/js/ocr.js"></script>
+<script src="assets/js/fiyatSubmit.js"></script>
+
 <script>
 
 function openModal(){
-
 document.getElementById("priceModal").style.display="flex";
-
 }
 
 function closeModal(){
-
 document.getElementById("priceModal").style.display="none";
-
 }
 
 </script>
