@@ -11,8 +11,6 @@
 <meta name="keywords" content="bahçelievler fiyat, market fiyatları, semt enflasyonu, fiyat karşılaştırma">
 <meta name="author" content="Bahçelievler Forum">
 
-<!-- CENTRAL CSS -->
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <link rel="stylesheet" href="assets/css/base.css">
@@ -22,159 +20,166 @@
 
 <style>
 
-/* SAYFA ÖZEL */
+/* PAGE */
 
 .page-container{
-
 max-width:720px;
 margin:auto;
 padding-bottom:120px;
-
 }
 
 /* HEADER */
 
 .fd-header{
-
 background:linear-gradient(120deg,#0d2c54,#1f6fd1);
 color:white;
-padding:20px;
-border-radius:0 0 18px 18px;
-
+padding:22px;
+border-radius:0 0 20px 20px;
 }
 
 .fd-header h1{
-
-font-size:20px;
+font-size:21px;
 font-weight:700;
-
 }
 
 .fd-header p{
-
 font-size:13px;
 opacity:.85;
 margin-top:4px;
-
 }
 
 /* CARD */
 
 .fd-card{
-
 background:white;
-border-radius:16px;
+border-radius:18px;
 padding:18px;
 margin:16px 12px;
-box-shadow:0 6px 18px rgba(0,0,0,.06);
-
+box-shadow:0 8px 22px rgba(0,0,0,.06);
 }
 
 /* BUTTON */
 
 .fd-btn{
-
 width:100%;
 padding:14px;
 border:none;
 border-radius:12px;
 font-weight:600;
 cursor:pointer;
-
+transition:.2s;
 }
 
 .fd-btn-blue{
-
 background:#1657b7;
 color:white;
+}
 
+.fd-btn-blue:hover{
+background:#134a9d;
 }
 
 .fd-btn-pink{
-
 background:#ff006a;
 color:white;
-
 }
 
 /* INPUT */
 
 .fd-input{
-
 width:100%;
 padding:12px;
 border-radius:10px;
 border:1px solid #ddd;
 margin-top:8px;
-
+font-size:14px;
 }
 
 /* LABEL */
 
 .fd-label{
-
 font-size:13px;
 font-weight:600;
 margin-top:12px;
 display:block;
-
 }
 
 /* CAMERA */
 
 .fd-camera{
-
 border:2px dashed #ddd;
-padding:25px;
+padding:26px;
 border-radius:12px;
 text-align:center;
 margin-top:8px;
-
-}
-
-/* PRODUCT LIST */
-
-.fd-product{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:14px 0;
-border-bottom:1px solid #eee;
-
-}
-
-.fd-price{
-
-background:#ff006a;
-color:white;
-padding:6px 12px;
-border-radius:20px;
-font-size:13px;
-
+background:#fafafa;
 }
 
 /* GRAPH */
 
 .fd-graph{
-
-height:150px;
+height:160px;
 border-radius:14px;
 background:linear-gradient(180deg,#ffd2e7,#fff);
 display:flex;
 align-items:center;
 justify-content:center;
 color:#777;
+}
 
+/* PRODUCT LIST */
+
+.fd-product{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 0;
+border-bottom:1px solid #eee;
+}
+
+.fd-product:last-child{
+border-bottom:none;
+}
+
+.fd-product-info strong{
+font-size:14px;
+}
+
+.fd-meta{
+font-size:12px;
+color:#777;
+margin-top:2px;
+}
+
+.fd-date{
+font-size:11px;
+color:#999;
+margin-top:2px;
+}
+
+.fd-verified{
+font-size:11px;
+color:#18a558;
+margin-top:2px;
+font-weight:600;
+}
+
+/* PRICE */
+
+.fd-price{
+background:#ff006a;
+color:white;
+padding:7px 14px;
+border-radius:20px;
+font-size:13px;
+font-weight:600;
 }
 
 /* DESKTOP WARNING */
 
 .desktop-warning{
-
 display:none;
 text-align:center;
-
 }
 
 </style>
@@ -183,7 +188,6 @@ text-align:center;
 
 <body>
 
-<!-- SIDE MENU -->
 <div id="sideMenu"></div>
 
 <div class="page-container">
@@ -198,25 +202,22 @@ text-align:center;
 
 </div>
 
-<!-- DESKTOP UYARI -->
+<!-- DESKTOP WARNING -->
 
 <div id="desktopWarning" class="fd-card desktop-warning">
 
 <h3>📱 Mobil Cihaz Gerekli</h3>
-
 <p>Fiyat ekleme özelliği yalnızca mobil cihazlarda kullanılabilir.</p>
 
 </div>
 
-<!-- YENİ FİYAT -->
+<!-- ADD PRICE -->
 
 <div id="mobileForm" class="fd-card">
 
 <button class="fd-btn fd-btn-blue">
-
 <i class="fa-solid fa-camera"></i>
-YENİ FİYAT BİLDİR
-
+Yeni Fiyat Bildir
 </button>
 
 </div>
@@ -238,15 +239,12 @@ Etiket fotoğrafı zorunludur
 </div>
 
 <label class="fd-label">Barkod</label>
-
-<input class="fd-input" placeholder="869XXXXXXXXXX">
+<input class="fd-input" placeholder="869XXXXXXXXXXXX">
 
 <label class="fd-label">Ürün Adı</label>
-
 <input class="fd-input" placeholder="Örn: Sütaş Süt 200ml">
 
 <label class="fd-label">Fiyat (TL)</label>
-
 <input class="fd-input" placeholder="17.45">
 
 <label class="fd-label">Market</label>
@@ -289,14 +287,12 @@ Etiket fotoğrafı zorunludur
 <input class="fd-input" placeholder="3 + 2 = ?">
 
 <button class="fd-btn fd-btn-pink" style="margin-top:16px">
-
 RADARA EKLE
-
 </button>
 
 </div>
 
-<!-- SEMT ENDEKSİ -->
+<!-- PRICE INDEX -->
 
 <div class="fd-card">
 
@@ -308,29 +304,32 @@ Semt Fiyat Endeksi
 </h3>
 
 <div class="fd-graph">
-
 Grafik burada gösterilecek
-
 </div>
 
 <p style="font-size:11px;margin-top:8px;color:#777">
-
 Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
-
 </p>
 
 </div>
 
-<!-- SON EKLENENLER -->
+<!-- LAST PRICES -->
 
 <div class="fd-card">
 
 <div class="fd-product">
 
-<div>
+<div class="fd-product-info">
 
-<strong>Güzel Pınar Su</strong><br>
-<small>ŞOK • Bahçelievler</small>
+<strong>Güzel Pınar Su</strong>
+
+<div class="fd-meta">ŞOK • Bahçelievler</div>
+
+<div class="fd-date">18 Mart 2026</div>
+
+<div class="fd-verified">
+✔ Etiket doğrulandı
+</div>
 
 </div>
 
@@ -340,10 +339,17 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <div class="fd-product">
 
-<div>
+<div class="fd-product-info">
 
-<strong>Sütaş Süt 200ml</strong><br>
-<small>ÇAĞRI • Bahçelievler</small>
+<strong>Sütaş Süt 200ml</strong>
+
+<div class="fd-meta">ÇAĞRI • Bahçelievler</div>
+
+<div class="fd-date">17 Mart 2026</div>
+
+<div class="fd-verified">
+✔ Etiket doğrulandı
+</div>
 
 </div>
 
@@ -353,10 +359,17 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <div class="fd-product">
 
-<div>
+<div class="fd-product-info">
 
-<strong>Biskrem 184g</strong><br>
-<small>ÇAĞRI • Bahçelievler</small>
+<strong>Biskrem 184g</strong>
+
+<div class="fd-meta">ÇAĞRI • Bahçelievler</div>
+
+<div class="fd-date">16 Mart 2026</div>
+
+<div class="fd-verified">
+✔ Etiket doğrulandı
+</div>
 
 </div>
 
@@ -368,11 +381,7 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 </div>
 
-<!-- GLOBAL FOOTER -->
-
 <div id="globalFooter"></div>
-
-<!-- CENTRAL JS -->
 
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/menu.js"></script>
@@ -381,19 +390,13 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <script>
 
-/* MOBILE CHECK */
-
 function isMobile(){
-
 return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
 }
 
 if(!isMobile()){
-
 document.getElementById("mobileForm").style.display="none";
 document.getElementById("desktopWarning").style.display="block";
-
 }
 
 </script>
