@@ -262,7 +262,13 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <div class="fd-camera">
 
-<input id="imageInput" type="file" accept="image/*" capture="environment" onchange="runOCR(this.files[0])">
+<input
+id="imageInput"
+type="file"
+accept="image/*"
+capture="environment"
+onchange="runOCR(this.files[0])"
+>
 
 <p style="font-size:12px;color:#888">
 Etiket fotoğrafı zorunludur
@@ -281,7 +287,7 @@ placeholder="869XXXXXXXXXXXX"
 onblur="getProductByBarcode()"
 >
 
-<button onclick="startScanner()" style="width:60px">
+<button type="button" onclick="startScanner()" style="width:60px">
 <i class="fa-solid fa-barcode"></i>
 </button>
 
@@ -360,6 +366,7 @@ RADARA EKLE
 
 <script src="assets/js/barcodeScanner.js"></script>
 <script src="assets/js/ocr.js"></script>
+<script src="assets/js/productLookup.js"></script>
 <script src="assets/js/fiyatSubmit.js"></script>
 
 <script>
