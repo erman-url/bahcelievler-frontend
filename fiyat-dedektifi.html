@@ -7,9 +7,7 @@
 
 <title>Fiyat Dedektifi | Bahçelievler Forum</title>
 
-<meta name="description" content="Marketlerde gördüğünüz fiyatları paylaşarak Bahçelievler semt fiyat endeksine katkıda bulunun.">
-<meta name="keywords" content="bahçelievler fiyat, market fiyatları, semt enflasyonu, fiyat karşılaştırma">
-<meta name="author" content="Bahçelievler Forum">
+<meta name="description" content="Market fiyatlarını paylaşarak Bahçelievler semt fiyat endeksine katkıda bulunun.">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -19,8 +17,6 @@
 <link rel="stylesheet" href="assets/css/responsive.css">
 
 <style>
-
-/* PAGE */
 
 .page-container{
 max-width:720px;
@@ -42,12 +38,6 @@ font-size:21px;
 font-weight:700;
 }
 
-.fd-header p{
-font-size:13px;
-opacity:.85;
-margin-top:4px;
-}
-
 /* CARD */
 
 .fd-card{
@@ -58,67 +48,10 @@ margin:16px 12px;
 box-shadow:0 8px 22px rgba(0,0,0,.06);
 }
 
-/* BUTTON */
-
-.fd-btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-font-weight:600;
-cursor:pointer;
-transition:.2s;
-}
-
-.fd-btn-blue{
-background:#1657b7;
-color:white;
-}
-
-.fd-btn-blue:hover{
-background:#134a9d;
-}
-
-.fd-btn-pink{
-background:#ff006a;
-color:white;
-}
-
-/* INPUT */
-
-.fd-input{
-width:100%;
-padding:12px;
-border-radius:10px;
-border:1px solid #ddd;
-margin-top:8px;
-font-size:14px;
-}
-
-/* LABEL */
-
-.fd-label{
-font-size:13px;
-font-weight:600;
-margin-top:12px;
-display:block;
-}
-
-/* CAMERA */
-
-.fd-camera{
-border:2px dashed #ddd;
-padding:26px;
-border-radius:12px;
-text-align:center;
-margin-top:8px;
-background:#fafafa;
-}
-
 /* GRAPH */
 
 .fd-graph{
-height:160px;
+height:170px;
 border-radius:14px;
 background:linear-gradient(180deg,#ffd2e7,#fff);
 display:flex;
@@ -127,13 +60,13 @@ justify-content:center;
 color:#777;
 }
 
-/* PRODUCT LIST */
+/* PRODUCT */
 
 .fd-product{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:14px 0;
+padding:16px 0;
 border-bottom:1px solid #eee;
 }
 
@@ -141,30 +74,21 @@ border-bottom:1px solid #eee;
 border-bottom:none;
 }
 
-.fd-product-info strong{
-font-size:14px;
-}
-
 .fd-meta{
 font-size:12px;
 color:#777;
-margin-top:2px;
 }
 
 .fd-date{
 font-size:11px;
 color:#999;
-margin-top:2px;
 }
 
 .fd-verified{
 font-size:11px;
 color:#18a558;
-margin-top:2px;
 font-weight:600;
 }
-
-/* PRICE */
 
 .fd-price{
 background:#ff006a;
@@ -175,11 +99,97 @@ font-size:13px;
 font-weight:600;
 }
 
-/* DESKTOP WARNING */
+/* ADD BUTTON */
 
-.desktop-warning{
-display:none;
+.fd-add-btn{
+
+margin:18px 12px;
+background:#1657b7;
+color:white;
+padding:16px;
+border-radius:14px;
 text-align:center;
+font-weight:600;
+cursor:pointer;
+
+}
+
+/* MODAL */
+
+.fd-modal{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.45);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
+
+}
+
+.fd-modal-content{
+
+background:white;
+width:95%;
+max-width:500px;
+border-radius:18px;
+padding:20px;
+max-height:90vh;
+overflow:auto;
+
+}
+
+/* INPUT */
+
+.fd-input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
+margin-top:8px;
+}
+
+.fd-label{
+font-size:13px;
+font-weight:600;
+margin-top:12px;
+display:block;
+}
+
+.fd-camera{
+border:2px dashed #ddd;
+padding:26px;
+border-radius:12px;
+text-align:center;
+margin-top:8px;
+background:#fafafa;
+}
+
+.fd-submit{
+
+background:#ff006a;
+color:white;
+border:none;
+width:100%;
+padding:14px;
+border-radius:12px;
+margin-top:16px;
+font-weight:600;
+
+}
+
+.fd-close{
+
+position:absolute;
+top:18px;
+right:22px;
+font-size:18px;
+cursor:pointer;
+
 }
 
 </style>
@@ -192,39 +202,105 @@ text-align:center;
 
 <div class="page-container">
 
-<!-- HEADER -->
-
 <div class="fd-header">
 
 <h1><i class="fa-solid fa-magnifying-glass"></i> Fiyat Dedektifi</h1>
-
-<p>Market fiyatlarını paylaşarak semt fiyat endeksine katkıda bulun</p>
-
-</div>
-
-<!-- DESKTOP WARNING -->
-
-<div id="desktopWarning" class="fd-card desktop-warning">
-
-<h3>📱 Mobil Cihaz Gerekli</h3>
-<p>Fiyat ekleme özelliği yalnızca mobil cihazlarda kullanılabilir.</p>
+<p>Semt fiyat endeksi</p>
 
 </div>
 
-<!-- ADD PRICE -->
 
-<div id="mobileForm" class="fd-card">
-
-<button class="fd-btn fd-btn-blue">
-<i class="fa-solid fa-camera"></i>
-Yeni Fiyat Bildir
-</button>
-
-</div>
-
-<!-- FORM -->
+<!-- SEMT ENDEKS -->
 
 <div class="fd-card">
+
+<h3><i class="fa-solid fa-chart-line"></i> Semt Fiyat Endeksi</h3>
+
+<div class="fd-graph">
+
+Grafik burada gösterilecek
+
+</div>
+
+<p style="font-size:11px;margin-top:8px;color:#777">
+
+Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
+
+</p>
+
+</div>
+
+
+<!-- SON EKLENENLER -->
+
+<div class="fd-card">
+
+<div class="fd-product">
+
+<div>
+
+<strong>Güzel Pınar Su</strong>
+
+<div class="fd-meta">ŞOK • Bahçelievler</div>
+
+<div class="fd-date">18 Mart 2026</div>
+
+<div class="fd-verified">✔ Etiket doğrulandı</div>
+
+</div>
+
+<div class="fd-price">4.75 TL</div>
+
+</div>
+
+
+<div class="fd-product">
+
+<div>
+
+<strong>Sütaş Süt 200ml</strong>
+
+<div class="fd-meta">ÇAĞRI • Bahçelievler</div>
+
+<div class="fd-date">17 Mart 2026</div>
+
+<div class="fd-verified">✔ Etiket doğrulandı</div>
+
+</div>
+
+<div class="fd-price">17.45 TL</div>
+
+</div>
+
+</div>
+
+
+<!-- ADD PRICE BUTTON -->
+
+<div class="fd-add-btn" onclick="openModal()">
+
+<i class="fa-solid fa-plus"></i> Radar / Fiyat Ekle
+
+</div>
+
+</div>
+
+
+
+<!-- MODAL -->
+
+<div class="fd-modal" id="priceModal">
+
+<div class="fd-modal-content">
+
+<div class="fd-close" onclick="closeModal()">
+
+<i class="fa-solid fa-xmark"></i>
+
+</div>
+
+<h3>Fiyat Bildir</h3>
+
 
 <label class="fd-label">📷 Ürün Etiket Fotoğrafı</label>
 
@@ -232,11 +308,10 @@ Yeni Fiyat Bildir
 
 <input type="file" accept="image/*" capture="environment">
 
-<p style="font-size:12px;margin-top:6px;color:#888">
-Etiket fotoğrafı zorunludur
-</p>
+<p style="font-size:12px;color:#888">Etiket fotoğrafı zorunludur</p>
 
 </div>
+
 
 <label class="fd-label">Barkod</label>
 <input class="fd-input" placeholder="869XXXXXXXXXXXX">
@@ -251,16 +326,16 @@ Etiket fotoğrafı zorunludur
 
 <select class="fd-input">
 
-<option value="A101">A101</option>
-<option value="BIM">BİM</option>
-<option value="SOK">ŞOK</option>
-<option value="ONUR">ONUR</option>
-<option value="CAGRI">ÇAĞRI</option>
-<option value="MIGROS">Migros</option>
-<option value="Carrefour">CarrefourSA</option>
-<option value="TARIM">Tarım Kredi</option>
-<option value="Magaza">Mağazacılık</option>
-<option value="Yerel Esnaf">Yerel Esnaf/Pazar</option>
+<option>A101</option>
+<option>BİM</option>
+<option>ŞOK</option>
+<option>ONUR</option>
+<option>ÇAĞRI</option>
+<option>Migros</option>
+<option>CarrefourSA</option>
+<option>Tarım Kredi</option>
+<option>Mağazacılık</option>
+<option>Yerel Esnaf/Pazar</option>
 
 </select>
 
@@ -268,118 +343,34 @@ Etiket fotoğrafı zorunludur
 
 <select class="fd-input">
 
-<option value="Bahçelievler Mah.">Bahçelievler Mahallesi</option>
-<option value="Cumhuriyet Mah.">Cumhuriyet Mahallesi</option>
-<option value="Çobançeşme Mah.">Çobançeşme Mahallesi</option>
-<option value="Fevzi Çakmak Mah.">Fevzi Çakmak Mahallesi</option>
-<option value="Hürriyet Mah.">Hürriyet Mahallesi</option>
-<option value="Kocasinan Merkez Mah.">Kocasinan Merkez Mahallesi</option>
-<option value="Siyavuşpaşa Mah.">Siyavuşpaşa Mahallesi</option>
-<option value="Soğanlı Mah.">Soğanlı Mahallesi</option>
-<option value="Şirinevler Mah.">Şirinevler Mahallesi</option>
-<option value="Yenibosna Merkez Mah.">Yenibosna Merkez Mahallesi</option>
-<option value="Zafer Mah.">Zafer Mahallesi</option>
+<option>Bahçelievler Mahallesi</option>
+<option>Cumhuriyet Mahallesi</option>
+<option>Çobançeşme Mahallesi</option>
+<option>Fevzi Çakmak Mahallesi</option>
+<option>Hürriyet Mahallesi</option>
+<option>Kocasinan Merkez Mahallesi</option>
+<option>Siyavuşpaşa Mahallesi</option>
+<option>Soğanlı Mahallesi</option>
+<option>Şirinevler Mahallesi</option>
+<option>Yenibosna Merkez Mahallesi</option>
+<option>Zafer Mahallesi</option>
 
 </select>
 
 <label class="fd-label">Doğrulama</label>
-
 <input class="fd-input" placeholder="3 + 2 = ?">
 
-<button class="fd-btn fd-btn-pink" style="margin-top:16px">
+<button class="fd-submit">
+
 RADARA EKLE
+
 </button>
 
 </div>
 
-<!-- PRICE INDEX -->
-
-<div class="fd-card">
-
-<h3 style="font-size:15px;margin-bottom:8px">
-
-<i class="fa-solid fa-chart-line"></i>
-Semt Fiyat Endeksi
-
-</h3>
-
-<div class="fd-graph">
-Grafik burada gösterilecek
 </div>
 
-<p style="font-size:11px;margin-top:8px;color:#777">
-Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
-</p>
 
-</div>
-
-<!-- LAST PRICES -->
-
-<div class="fd-card">
-
-<div class="fd-product">
-
-<div class="fd-product-info">
-
-<strong>Güzel Pınar Su</strong>
-
-<div class="fd-meta">ŞOK • Bahçelievler</div>
-
-<div class="fd-date">18 Mart 2026</div>
-
-<div class="fd-verified">
-✔ Etiket doğrulandı
-</div>
-
-</div>
-
-<div class="fd-price">4.75 TL</div>
-
-</div>
-
-<div class="fd-product">
-
-<div class="fd-product-info">
-
-<strong>Sütaş Süt 200ml</strong>
-
-<div class="fd-meta">ÇAĞRI • Bahçelievler</div>
-
-<div class="fd-date">17 Mart 2026</div>
-
-<div class="fd-verified">
-✔ Etiket doğrulandı
-</div>
-
-</div>
-
-<div class="fd-price">17.45 TL</div>
-
-</div>
-
-<div class="fd-product">
-
-<div class="fd-product-info">
-
-<strong>Biskrem 184g</strong>
-
-<div class="fd-meta">ÇAĞRI • Bahçelievler</div>
-
-<div class="fd-date">16 Mart 2026</div>
-
-<div class="fd-verified">
-✔ Etiket doğrulandı
-</div>
-
-</div>
-
-<div class="fd-price">52 TL</div>
-
-</div>
-
-</div>
-
-</div>
 
 <div id="globalFooter"></div>
 
@@ -390,13 +381,16 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <script>
 
-function isMobile(){
-return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function openModal(){
+
+document.getElementById("priceModal").style.display="flex";
+
 }
 
-if(!isMobile()){
-document.getElementById("mobileForm").style.display="none";
-document.getElementById("desktopWarning").style.display="block";
+function closeModal(){
+
+document.getElementById("priceModal").style.display="none";
+
 }
 
 </script>
