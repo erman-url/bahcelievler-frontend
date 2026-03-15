@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fiyat Dedektifi | Bahçelievler Forum</title>
+
+<meta name="description" content="Marketlerde gördüğünüz fiyatları paylaşarak Bahçelievler semt fiyat endeksine katkıda bulunun.">
+<meta name="keywords" content="bahçelievler fiyat, market fiyatları, semt enflasyonu, fiyat karşılaştırma">
+<meta name="author" content="Bahçelievler Forum">
+
+<!-- CENTRAL CSS -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
+
+<style>
+
+/* SAYFA ÖZEL */
+
+.page-container{
+
+max-width:720px;
+margin:auto;
+padding-bottom:120px;
+
+}
+
+/* HEADER */
+
+.fd-header{
+
+background:linear-gradient(120deg,#0d2c54,#1f6fd1);
+color:white;
+padding:20px;
+border-radius:0 0 18px 18px;
+
+}
+
+.fd-header h1{
+
+font-size:20px;
+font-weight:700;
+
+}
+
+.fd-header p{
+
+font-size:13px;
+opacity:.85;
+margin-top:4px;
+
+}
+
+/* CARD */
+
+.fd-card{
+
+background:white;
+border-radius:16px;
+padding:18px;
+margin:16px 12px;
+box-shadow:0 6px 18px rgba(0,0,0,.06);
+
+}
+
+/* BUTTON */
+
+.fd-btn{
+
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+
+}
+
+.fd-btn-blue{
+
+background:#1657b7;
+color:white;
+
+}
+
+.fd-btn-pink{
+
+background:#ff006a;
+color:white;
+
+}
+
+/* INPUT */
+
+.fd-input{
+
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
+margin-top:8px;
+
+}
+
+/* LABEL */
+
+.fd-label{
+
+font-size:13px;
+font-weight:600;
+margin-top:12px;
+display:block;
+
+}
+
+/* CAMERA */
+
+.fd-camera{
+
+border:2px dashed #ddd;
+padding:25px;
+border-radius:12px;
+text-align:center;
+margin-top:8px;
+
+}
+
+/* PRODUCT LIST */
+
+.fd-product{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 0;
+border-bottom:1px solid #eee;
+
+}
+
+.fd-price{
+
+background:#ff006a;
+color:white;
+padding:6px 12px;
+border-radius:20px;
+font-size:13px;
+
+}
+
+/* GRAPH */
+
+.fd-graph{
+
+height:150px;
+border-radius:14px;
+background:linear-gradient(180deg,#ffd2e7,#fff);
+display:flex;
+align-items:center;
+justify-content:center;
+color:#777;
+
+}
+
+/* DESKTOP WARNING */
+
+.desktop-warning{
+
+display:none;
+text-align:center;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDE MENU -->
+<div id="sideMenu"></div>
+
+<div class="page-container">
+
+<!-- HEADER -->
+
+<div class="fd-header">
+
+<h1><i class="fa-solid fa-magnifying-glass"></i> Fiyat Dedektifi</h1>
+
+<p>Market fiyatlarını paylaşarak semt fiyat endeksine katkıda bulun</p>
+
+</div>
+
+<!-- DESKTOP UYARI -->
+
+<div id="desktopWarning" class="fd-card desktop-warning">
+
+<h3>📱 Mobil Cihaz Gerekli</h3>
+
+<p>Fiyat ekleme özelliği yalnızca mobil cihazlarda kullanılabilir.</p>
+
+</div>
+
+<!-- YENİ FİYAT -->
+
+<div id="mobileForm" class="fd-card">
+
+<button class="fd-btn fd-btn-blue">
+
+<i class="fa-solid fa-camera"></i>
+YENİ FİYAT BİLDİR
+
+</button>
+
+</div>
+
+<!-- FORM -->
+
+<div class="fd-card">
+
+<label class="fd-label">📷 Ürün Etiket Fotoğrafı</label>
+
+<div class="fd-camera">
+
+<input type="file" accept="image/*" capture="environment">
+
+<p style="font-size:12px;margin-top:6px;color:#888">
+Etiket fotoğrafı zorunludur
+</p>
+
+</div>
+
+<label class="fd-label">Barkod</label>
+
+<input class="fd-input" placeholder="869XXXXXXXXXX">
+
+<label class="fd-label">Ürün Adı</label>
+
+<input class="fd-input" placeholder="Örn: Sütaş Süt 200ml">
+
+<label class="fd-label">Fiyat (TL)</label>
+
+<input class="fd-input" placeholder="17.45">
+
+<label class="fd-label">Market</label>
+
+<select class="fd-input">
+
+<option value="A101">A101</option>
+<option value="BIM">BİM</option>
+<option value="SOK">ŞOK</option>
+<option value="ONUR">ONUR</option>
+<option value="CAGRI">ÇAĞRI</option>
+<option value="MIGROS">Migros</option>
+<option value="Carrefour">CarrefourSA</option>
+<option value="TARIM">Tarım Kredi</option>
+<option value="Magaza">Mağazacılık</option>
+<option value="Yerel Esnaf">Yerel Esnaf/Pazar</option>
+
+</select>
+
+<label class="fd-label">Mahalle</label>
+
+<select class="fd-input">
+
+<option value="Bahçelievler Mah.">Bahçelievler Mahallesi</option>
+<option value="Cumhuriyet Mah.">Cumhuriyet Mahallesi</option>
+<option value="Çobançeşme Mah.">Çobançeşme Mahallesi</option>
+<option value="Fevzi Çakmak Mah.">Fevzi Çakmak Mahallesi</option>
+<option value="Hürriyet Mah.">Hürriyet Mahallesi</option>
+<option value="Kocasinan Merkez Mah.">Kocasinan Merkez Mahallesi</option>
+<option value="Siyavuşpaşa Mah.">Siyavuşpaşa Mahallesi</option>
+<option value="Soğanlı Mah.">Soğanlı Mahallesi</option>
+<option value="Şirinevler Mah.">Şirinevler Mahallesi</option>
+<option value="Yenibosna Merkez Mah.">Yenibosna Merkez Mahallesi</option>
+<option value="Zafer Mah.">Zafer Mahallesi</option>
+
+</select>
+
+<label class="fd-label">Doğrulama</label>
+
+<input class="fd-input" placeholder="3 + 2 = ?">
+
+<button class="fd-btn fd-btn-pink" style="margin-top:16px">
+
+RADARA EKLE
+
+</button>
+
+</div>
+
+<!-- SEMT ENDEKSİ -->
+
+<div class="fd-card">
+
+<h3 style="font-size:15px;margin-bottom:8px">
+
+<i class="fa-solid fa-chart-line"></i>
+Semt Fiyat Endeksi
+
+</h3>
+
+<div class="fd-graph">
+
+Grafik burada gösterilecek
+
+</div>
+
+<p style="font-size:11px;margin-top:8px;color:#777">
+
+Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
+
+</p>
+
+</div>
+
+<!-- SON EKLENENLER -->
+
+<div class="fd-card">
+
+<div class="fd-product">
+
+<div>
+
+<strong>Güzel Pınar Su</strong><br>
+<small>ŞOK • Bahçelievler</small>
+
+</div>
+
+<div class="fd-price">4.75 TL</div>
+
+</div>
+
+<div class="fd-product">
+
+<div>
+
+<strong>Sütaş Süt 200ml</strong><br>
+<small>ÇAĞRI • Bahçelievler</small>
+
+</div>
+
+<div class="fd-price">17.45 TL</div>
+
+</div>
+
+<div class="fd-product">
+
+<div>
+
+<strong>Biskrem 184g</strong><br>
+<small>ÇAĞRI • Bahçelievler</small>
+
+</div>
+
+<div class="fd-price">52 TL</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- GLOBAL FOOTER -->
+
+<div id="globalFooter"></div>
+
+<!-- CENTRAL JS -->
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/menu.js"></script>
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/footerNav.js"></script>
+
+<script>
+
+/* MOBILE CHECK */
+
+function isMobile(){
+
+return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+}
+
+if(!isMobile()){
+
+document.getElementById("mobileForm").style.display="none";
+document.getElementById("desktopWarning").style.display="block";
+
+}
+
+</script>
+
+</body>
+</html>
