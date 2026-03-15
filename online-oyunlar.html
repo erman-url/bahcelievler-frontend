@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="tr" class="no-js">
 
+<html lang="tr">
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Online Oyunlar | Bahçelievler Forum</title>
+
+<meta name="description" content="Bahçelievler Forum ücretsiz mobil uyumlu online oyunlar. 2048 ve Flappy Bird oyunlarını oynayın.">
+<meta name="robots" content="index,follow">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -16,191 +19,121 @@
 
 <style>
 
-/* SAFE AREA */
-
 body{
+background:#f4f7ff;
 padding-top:env(safe-area-inset-top);
-background:#f5f7fb;
+font-family:system-ui;
 }
-
-/* PAGE */
 
 .page-wrapper{
 max-width:900px;
 margin:auto;
-padding-bottom:calc(140px + env(safe-area-inset-bottom));
+padding-bottom:160px;
 }
 
-/* TITLE */
-
 .page-title{
-font-size:22px;
+font-size:24px;
 font-weight:700;
 padding:20px;
 }
 
-/* GAME GRID */
-
 .game-grid{
 display:grid;
-gap:14px;
+gap:16px;
 padding:16px;
 }
 
-/* CARD */
-
 .game-card{
-
-background:white;
-border-radius:16px;
-
+background:linear-gradient(180deg,#ffffff,#eef3ff);
+border-radius:18px;
 padding:18px;
-
-box-shadow:0 6px 16px rgba(0,0,0,.06);
-
 display:flex;
 align-items:center;
-
+box-shadow:0 12px 30px rgba(0,0,0,.08);
+border:1px solid #e6ecff;
 cursor:pointer;
-
-transition:.2s;
-
-}
-
-.game-card:hover{
-transform:translateY(-3px);
 }
 
 .game-icon{
-font-size:24px;
-color:#2563eb;
+width:48px;
+height:48px;
+border-radius:12px;
+background:#2563eb;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:22px;
 }
 
-.game-info{
-flex:1;
-margin-left:12px;
-}
+.game-info{margin-left:14px;}
 
-.game-title{
-font-weight:700;
-}
+.game-title{font-weight:700;}
 
-.game-desc{
-font-size:13px;
-color:#666;
-margin-top:4px;
-}
-
-/* GAME AREA */
+.game-desc{font-size:13px;color:#666;}
 
 .game-area{
 display:none;
 padding:20px;
-padding-bottom:160px;
 }
 
-/* BACK */
+canvas{
+width:100%;
+max-width:420px;
+background:white;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,.12);
+margin:auto;
+display:block;
+}
 
-.back-btn{
-margin-bottom:15px;
-cursor:pointer;
+.back{
+margin-bottom:14px;
 color:#2563eb;
 font-weight:600;
-}
-
-/* ===== WORD GAME ===== */
-
-.letters{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-bottom:10px;
-}
-
-.letter{
-background:#111;
-color:white;
-padding:10px 14px;
-border-radius:8px;
-font-weight:700;
-}
-
-#wordInput{
-padding:10px;
-width:100%;
-border-radius:8px;
-border:1px solid #ccc;
-margin-bottom:10px;
-}
-
-.word-list{
-font-size:14px;
-margin-top:10px;
-}
-
-/* ===== REFLEX ===== */
-
-#reflexBox{
-
-height:180px;
-
-border-radius:16px;
-
-background:#ddd;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:20px;
-font-weight:700;
-
 cursor:pointer;
-
 }
 
-/* ===== MEMORY ===== */
+.score{
+text-align:center;
+font-weight:700;
+margin-bottom:10px;
+}
 
-.memory-grid{
-
-display:grid;
-
-grid-template-columns:repeat(4,1fr);
-
-gap:8px;
-
+.btn{
 margin-top:10px;
-
-}
-
-.memory-card{
-
+padding:10px 16px;
+border:none;
+border-radius:12px;
 background:#2563eb;
-
-height:70px;
-
-border-radius:10px;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:22px;
-
 color:white;
-
+font-weight:600;
 cursor:pointer;
-
 }
 
-.memory-card.open{
+.game-over{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.65);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.over-box{
 background:white;
-color:black;
+padding:28px;
+border-radius:18px;
+text-align:center;
+max-width:280px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -213,251 +146,292 @@ color:black;
 
 <div id="menu" class="game-grid">
 
-<div class="game-card" onclick="openGame('word')">
-
-<div class="game-icon">
-<i class="fa-solid fa-keyboard"></i>
-</div>
-
+<div class="game-card" onclick="start2048()">
+<div class="game-icon"><i class="fa-solid fa-cubes"></i></div>
 <div class="game-info">
-<div class="game-title">Kelime Makinesi</div>
-<div class="game-desc">Harflerden kaç kelime çıkarabilirsin?</div>
+<div class="game-title">2048</div>
+<div class="game-desc">Kutuları birleştir ve 2048'e ulaş</div>
+</div>
 </div>
 
-</div>
-
-<div class="game-card" onclick="openGame('reflex')">
-
-<div class="game-icon">
-<i class="fa-solid fa-bolt"></i>
-</div>
-
+<div class="game-card" onclick="startFlappy()">
+<div class="game-icon"><i class="fa-solid fa-dove"></i></div>
 <div class="game-info">
-<div class="game-title">Refleks Testi</div>
-<div class="game-desc">Işık yanınca en hızlı sen bas</div>
+<div class="game-title">Flappy Bird</div>
+<div class="game-desc">Borulara çarpmadan uç</div>
+</div>
 </div>
 
 </div>
 
-<div class="game-card" onclick="openGame('memory')">
+<div id="gameArea" class="game-area">
 
-<div class="game-icon">
-<i class="fa-solid fa-brain"></i>
+<div class="back" onclick="goMenu()">← Oyunlara dön</div>
+
+<div class="score" id="scoreText"></div>
+
+<canvas id="gameCanvas" width="420" height="420"></canvas>
+
+<div style="text-align:center">
+<button class="btn" onclick="restartGame()">Tekrar Oyna</button>
 </div>
-
-<div class="game-info">
-<div class="game-title">Hafıza Kartları</div>
-<div class="game-desc">Aynı kartları eşleştir</div>
-</div>
-
-</div>
-
-</div>
-
-
-<!-- WORD GAME -->
-
-<div id="wordGame" class="game-area">
-
-<div class="back-btn" onclick="goBack()">← Oyunlara dön</div>
-
-<h3>Kelime Makinesi</h3>
-
-<div class="letters" id="letters"></div>
-
-<input id="wordInput" placeholder="Kelime yaz">
-
-<button onclick="submitWord()">Ekle</button>
-
-<div class="word-list" id="wordList"></div>
-
-</div>
-
-
-<!-- REFLEX GAME -->
-
-<div id="reflexGame" class="game-area">
-
-<div class="back-btn" onclick="goBack()">← Oyunlara dön</div>
-
-<h3>Refleks Testi</h3>
-
-<div id="reflexBox">Bekle...</div>
-
-</div>
-
-
-<!-- MEMORY GAME -->
-
-<div id="memoryGame" class="game-area">
-
-<div class="back-btn" onclick="goBack()">← Oyunlara dön</div>
-
-<h3>Hafıza Oyunu</h3>
-
-<div class="memory-grid" id="memoryGrid"></div>
 
 </div>
 
 </div>
 
+<div class="game-over" id="gameOver">
+
+<div class="over-box">
+
+<h3 id="overTitle">Oyun Bitti</h3>
+<p id="finalScore"></p>
+
+<button class="btn" onclick="restartGame()">Tekrar Oyna</button>
+
+</div>
+
+</div>
 
 <script>
 
-/* OYUN GEÇİŞ */
+let canvas=document.getElementById("gameCanvas")
+let ctx=canvas.getContext("2d")
 
-function openGame(name){
+let currentGame=null
+let score=0
 
+function openGame(){
 document.getElementById("menu").style.display="none"
+document.getElementById("gameArea").style.display="block"
+}
 
-document.querySelectorAll(".game-area").forEach(el=>el.style.display="none")
+function goMenu(){
+location.reload()
+}
 
-document.getElementById(name+"Game").style.display="block"
+function gameOver(text){
+document.getElementById("finalScore").innerText=text
+document.getElementById("gameOver").style.display="flex"
+}
+
+function restartGame(){
+document.getElementById("gameOver").style.display="none"
+
+if(currentGame==="2048") start2048()
+if(currentGame==="flappy") startFlappy()
+}
+
+////////////////////////////////////////////////////
+//// 2048
+////////////////////////////////////////////////////
+
+let grid
+
+function start2048(){
+
+currentGame="2048"
+openGame()
+
+grid=[
+[0,0,0,0],
+[0,0,0,0],
+[0,0,0,0],
+[0,0,0,0]
+]
+
+score=0
+spawn()
+spawn()
+draw2048()
 
 }
 
-function goBack(){
+function spawn(){
 
-document.getElementById("menu").style.display="grid"
+let empty=[]
 
-document.querySelectorAll(".game-area").forEach(el=>el.style.display="none")
+grid.forEach((r,y)=>{
+r.forEach((v,x)=>{
+if(v===0) empty.push({x,y})
+})
+})
+
+let r=empty[Math.floor(Math.random()*empty.length)]
+grid[r.y][r.x]=2
 
 }
 
+function draw2048(){
 
-/* WORD GAME */
+ctx.clearRect(0,0,420,420)
 
-const letters=["A","E","K","L","M","T","R","S"]
+grid.forEach((row,y)=>{
+row.forEach((v,x)=>{
 
-const lettersDiv=document.getElementById("letters")
+ctx.fillStyle=v?"#2563eb":"#ddd"
+ctx.fillRect(x*100+10,y*100+10,90,90)
 
-letters.forEach(l=>{
+if(v){
+ctx.fillStyle="white"
+ctx.font="30px Arial"
+ctx.fillText(v,x*100+40,y*100+65)
+}
 
-const div=document.createElement("div")
+})
+})
 
-div.className="letter"
+document.getElementById("scoreText").innerText="Skor: "+score
 
-div.textContent=l
+}
 
-lettersDiv.appendChild(div)
+function moveRight(){
+
+grid.forEach(r=>{
+for(let i=2;i>=0;i--){
+if(r[i] && r[i]===r[i+1]){
+r[i+1]*=2
+r[i]=0
+score+=r[i+1]
+}
+}
+})
+
+spawn()
+draw2048()
+
+}
+
+document.addEventListener("keydown",e=>{
+if(currentGame!=="2048") return
+
+if(e.key==="ArrowRight") moveRight()
+})
+
+////////////////////////////////////////////////////
+//// Flappy Bird
+////////////////////////////////////////////////////
+
+let birdY,velocity,pipes,loop
+
+function startFlappy(){
+
+currentGame="flappy"
+openGame()
+
+birdY=200
+velocity=0
+pipes=[]
+score=0
+
+loop=setInterval(updateFlappy,20)
+
+}
+
+function updateFlappy(){
+
+ctx.clearRect(0,0,420,420)
+
+velocity+=0.5
+birdY+=velocity
+
+ctx.fillStyle="orange"
+ctx.fillRect(80,birdY,30,30)
+
+pipes.forEach(p=>{
+
+p.x-=2
+
+ctx.fillStyle="green"
+ctx.fillRect(p.x,0,50,p.top)
+ctx.fillRect(p.x,p.bottom,50,420)
+
+if(p.x===80) score++
+
+if(80+30>p.x && 80<p.x+50){
+if(birdY<p.top || birdY+30>p.bottom){
+clearInterval(loop)
+gameOver("Skor: "+score)
+}
+}
 
 })
 
-let words=[]
+if(Math.random()<0.02){
 
-function submitWord(){
+let top=Math.random()*200+50
 
-const input=document.getElementById("wordInput")
-
-const w=input.value.toUpperCase()
-
-if(w.length<2) return
-
-words.push(w)
-
-document.getElementById("wordList").innerHTML=words.join(", ")
-
-input.value=""
+pipes.push({
+x:420,
+top:top,
+bottom:top+140
+})
 
 }
 
-
-/* REFLEX GAME */
-
-let startTime
-
-const box=document.getElementById("reflexBox")
-
-setTimeout(()=>{
-
-box.style.background="green"
-
-box.textContent="BAS!"
-
-startTime=Date.now()
-
-},2000+Math.random()*2000)
-
-box.onclick=function(){
-
-if(box.style.background==="green"){
-
-let time=Date.now()-startTime
-
-box.textContent=time+" ms"
-
-box.style.background="#2563eb"
+document.getElementById("scoreText").innerText="Skor: "+score
 
 }
 
+document.addEventListener("click",()=>{
+if(currentGame==="flappy") velocity=-8
+})
+
+////////////////////////////////////////////////////
+//// TOUCH SWIPE (2048 mobil)
+////////////////////////////////////////////////////
+
+let touchStartX
+
+canvas.addEventListener("touchstart",e=>{
+touchStartX=e.touches[0].clientX
+})
+
+canvas.addEventListener("touchend",e=>{
+
+let dx=e.changedTouches[0].clientX-touchStartX
+
+if(currentGame==="2048"){
+if(dx>40) moveRight()
 }
-
-
-/* MEMORY GAME */
-
-const symbols=["🍎","🍎","🚗","🚗","🐱","🐱","⚽","⚽"]
-
-symbols.sort(()=>Math.random()-0.5)
-
-let open=[]
-
-symbols.forEach(s=>{
-
-const card=document.createElement("div")
-
-card.className="memory-card"
-
-card.dataset.symbol=s
-
-card.onclick=function(){
-
-card.classList.add("open")
-
-card.textContent=s
-
-open.push(card)
-
-if(open.length==2){
-
-if(open[0].dataset.symbol!==open[1].dataset.symbol){
-
-setTimeout(()=>{
-
-open.forEach(c=>{
-
-c.classList.remove("open")
-
-c.textContent=""
 
 })
 
-open=[]
+////////////////////////////////////////////////////
+//// PWA OFFLINE
+////////////////////////////////////////////////////
 
-},700)
+if("serviceWorker" in navigator){
 
-}else{
+const swCode=`
+const cacheName='bf-games-v1';
+self.addEventListener('install',e=>{
+e.waitUntil(caches.open(cacheName).then(c=>c.addAll(['./'])));
+});
+self.addEventListener('fetch',e=>{
+e.respondWith(
+caches.match(e.request).then(r=>r||fetch(e.request))
+);
+});
+`;
 
-open=[]
+const blob=new Blob([swCode],{type:'text/javascript'});
+const swURL=URL.createObjectURL(blob);
+
+navigator.serviceWorker.register(swURL);
 
 }
-
-}
-
-}
-
-document.getElementById("memoryGrid").appendChild(card)
-
-})
 
 </script>
 
-
-<!-- MERKEZİ SİSTEMLER -->
-
 <script src="assets/js/layout.js"></script>
+
 <script src="assets/js/menu.js"></script>
+
 <script src="assets/js/core.js"></script>
+
 <script src="assets/js/footerNav.js"></script>
+
 <script src="assets/js/footerLegal.js"></script>
 
 <div id="globalFooter"></div>
