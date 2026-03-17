@@ -1,4 +1,4 @@
-,async function submitPrice(){
+async function submitPrice(){
 
 const barcode = document.getElementById("barcodeInput").value.trim()
 const urun = document.getElementById("urunInput").value.trim()
