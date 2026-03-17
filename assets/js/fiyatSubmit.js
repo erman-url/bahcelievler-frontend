@@ -1,4 +1,4 @@
-async function submitPrice(){
+,async function submitPrice(){
 
 const barcode = document.getElementById("barcodeInput").value.trim()
 const urun = document.getElementById("urunInput").value.trim()
@@ -46,12 +46,15 @@ market:market,
 mahalle:mahalle
 }
 
+let timeout
+let controller
+
 try{
 
 /* network timeout */
 
-const controller = new AbortController()
-const timeout = setTimeout(()=>controller.abort(),8000)
+controller = new AbortController()
+timeout = setTimeout(()=>controller.abort(),8000)
 
 /* worker endpoint */
 
@@ -116,17 +119,23 @@ closeModal()
 
 console.error("Fiyat gönderme hatası:",e)
 
+if(timeout){
+clearTimeout(timeout)
+}
+
 if(e.name === "AbortError"){
 alert("Sunucu yanıt vermedi (timeout)")
 }else{
 alert("Sunucu bağlantı hatası")
 }
 
-}
+}finally{
 
 /* buton tekrar aktif */
 
 btn.disabled=false
 btn.innerText="RADARA EKLE"
+
+}
 
 }
