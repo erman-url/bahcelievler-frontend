@@ -55,7 +55,7 @@ const timeout = setTimeout(()=>controller.abort(),8000)
 
 /* worker endpoint */
 
-const res = await fetch("https://bahcelievlerforum.com.tr/api/fiyat-ekle",{
+const res = await fetch("/api/fiyat-ekle",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
