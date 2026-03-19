@@ -1,5 +1,12 @@
-async function submitPrice(){
+async function submitPrice(event){
 
+/* doğru buton */
+const btn = event.target
+
+/* double click engelle */
+if(btn.disabled) return
+
+/* inputlar */
 const barcode = document.getElementById("barcodeInput").value.trim()
 const urun = document.getElementById("urunInput").value.trim()
 let fiyat = document.getElementById("priceInput").value.trim()
@@ -7,24 +14,19 @@ const market = document.getElementById("marketSelect").value
 const mahalle = document.getElementById("districtSelect").value
 const captcha = document.getElementById("captchaInput").value.trim()
 
-const btn = document.querySelector(".fd-submit")
-
-/* captcha kontrol */
-
+/* captcha */
 if(captcha !== "5"){
 alert("Doğrulama hatalı")
 return
 }
 
-/* veri kontrol */
-
+/* zorunlu alanlar */
 if(!barcode || !urun || !fiyat){
 alert("Eksik bilgi var")
 return
 }
 
-/* fiyat format normalize */
-
+/* fiyat normalize */
 fiyat = fiyat.replace(",",".")
 fiyat = parseFloat(fiyat)
 
@@ -34,16 +36,15 @@ return
 }
 
 /* buton kilitle */
-
 btn.disabled = true
 btn.innerText = "Gönderiliyor..."
 
 const data = {
-barcode:barcode,
-urun:urun,
-fiyat:fiyat,
-market:market,
-mahalle:mahalle
+barcode,
+urun,
+fiyat,
+market,
+mahalle
 }
 
 let timeout
@@ -51,13 +52,11 @@ let controller
 
 try{
 
-/* network timeout */
-
+/* timeout sistemi */
 controller = new AbortController()
 timeout = setTimeout(()=>controller.abort(),8000)
 
-/* worker endpoint */
-
+/* API çağrısı */
 const res = await fetch("/api/fiyat-ekle",{
 method:"POST",
 headers:{
@@ -69,60 +68,49 @@ signal:controller.signal
 
 clearTimeout(timeout)
 
-/* http hata */
-
+/* HTTP kontrol */
 if(!res.ok){
-
 const text = await res.text()
 throw new Error("HTTP "+res.status+" : "+text)
-
 }
 
-/* json güvenli parse */
-
+/* JSON parse */
 let result
-
 try{
 result = await res.json()
 }catch{
 throw new Error("JSON parse hatası")
 }
 
-/* api cevap kontrol */
-
-if(!result.ok){
-
-alert(result.error || "Kayıt başarısız")
-
-btn.disabled=false
-btn.innerText="RADARA EKLE"
-
+/* API kontrol */
+if(!result || !result.ok){
+alert(result?.error || "Kayıt başarısız")
 return
 }
 
-/* başarı */
-
+/* başarı akışı */
+closeModal()
 alert("✅ Fiyat başarıyla eklendi")
 
-/* form reset */
+/* listeyi yenile */
+if (window.refreshPrices) {
+  window.refreshPrices()
+}
 
+/* form temizle */
 document.getElementById("barcodeInput").value=""
 document.getElementById("urunInput").value=""
 document.getElementById("priceInput").value=""
 document.getElementById("captchaInput").value=""
 
-/* modal kapat */
-
-closeModal()
-
 }catch(e){
 
-console.error("Fiyat gönderme hatası:",e)
+console.error("Fiyat gönderme hatası:", e)
 
-if(timeout){
-clearTimeout(timeout)
-}
+/* timeout temizle */
+if(timeout) clearTimeout(timeout)
 
+/* hata mesajı */
 if(e.name === "AbortError"){
 alert("Sunucu yanıt vermedi (timeout)")
 }else{
@@ -131,10 +119,9 @@ alert("Sunucu bağlantı hatası")
 
 }finally{
 
-/* buton tekrar aktif */
-
-btn.disabled=false
-btn.innerText="RADARA EKLE"
+/* buton aç */
+btn.disabled = false
+btn.innerText = "RADARA EKLE"
 
 }
 

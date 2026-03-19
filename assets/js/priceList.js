@@ -1,14 +1,16 @@
 async function loadLastPrices(){
 
 let res = await fetch("/api/son-fiyatlar")
-
 let data = await res.json()
 
 let container = document.getElementById("lastPrices")
 
-container.innerHTML=""
+container.innerHTML = "<h3>Son Eklenen Fiyatlar</h3>"
 
 data.forEach(p => {
+
+const date = new Date(p.created_at)
+const formatted = date.toLocaleDateString("tr-TR")
 
 container.innerHTML += `
 
@@ -16,11 +18,11 @@ container.innerHTML += `
 
 <div>
 
-<strong>${p.urun_adi}</strong>
+<strong>${p.urun_adi || p.urun}</strong>
 
 <div class="fd-meta">${p.market} • ${p.mahalle}</div>
 
-<div class="fd-date">${p.created_at}</div>
+<div class="fd-date">${formatted}</div>
 
 <div class="fd-verified">✔ Etiket doğrulandı</div>
 

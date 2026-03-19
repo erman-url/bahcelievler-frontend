@@ -354,7 +354,7 @@ Kamerayı Kapat
 <label class="fd-label">Doğrulama</label>
 <input id="captchaInput" class="fd-input" inputmode="numeric" placeholder="3 + 2 = ?">
 
-<button onclick="submitPrice()" class="fd-submit">
+<button onclick="submitPrice(event)" class="fd-submit">
 RADARA EKLE
 </button>
 
@@ -365,11 +365,15 @@ RADARA EKLE
 <div id="globalFooter"></div>
 
 
+<!-- mevcut scriptlerin aynen duruyor -->
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/barcodeScanner.js"></script>
 <script src="assets/js/ocr.js"></script>
 <script src="assets/js/productLookup.js"></script>
 <script src="assets/js/fiyatSubmit.js"></script>
+
+<!-- ✅ EKLENDİ -->
+<script src="assets/js/priceList.js"></script>
 
 <script>
 
@@ -390,6 +394,22 @@ if(e.target===this){
 closeModal()
 }
 })
+
+/* ✅ SAYFA AÇILINCA VERİ ÇEK */
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof loadLastPrices === "function") {
+    loadLastPrices()
+  } else {
+    console.error("loadLastPrices bulunamadı")
+  }
+})
+
+/* ✅ GLOBAL YENİLEME (submit sonrası için hook) */
+window.refreshPrices = function(){
+  if (typeof loadLastPrices === "function") {
+    loadLastPrices()
+  }
+}
 
 </script>
 
