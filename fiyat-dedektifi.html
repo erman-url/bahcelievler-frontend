@@ -419,6 +419,10 @@ window.refreshPrices = function(){
   if (typeof loadLastPrices === "function") {
     loadLastPrices()
   }
+
+  if (typeof loadSemtChart === "function") {
+    loadSemtChart()
+  }
 }
 
 async function loadChart(urun){
