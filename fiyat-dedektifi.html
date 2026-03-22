@@ -409,8 +409,9 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("loadLastPrices bulunamadı")
   }
 
-   // ✅ TEST İÇİN
-  loadChart("Ürün test")
+   
+ loadSemtChart()
+
 })
 
 /* ✅ GLOBAL YENİLEME (submit sonrası için hook) */
@@ -466,6 +467,36 @@ window.priceChartInstance = new Chart(ctx, {
 }catch(e){
 console.error("grafik hata", e)
 }
+
+}
+
+async function loadSemtChart(){
+
+const res = await fetch("/api/semt-endeks")
+const data = await res.json()
+
+const labels = data.map(i => i.gun)
+const prices = data.map(i => i.ortalama)
+
+const ctx = document.getElementById("priceChart").getContext("2d")
+
+if(window.priceChartInstance){
+  window.priceChartInstance.destroy()
+}
+
+window.priceChartInstance = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels,
+    datasets: [{
+      data: prices,
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins:{ legend:{ display:false } }
+  }
+})
 
 }
 
