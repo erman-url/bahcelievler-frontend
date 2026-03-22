@@ -218,7 +218,7 @@ object-fit:cover;
 <h3><i class="fa-solid fa-chart-line"></i> Semt Fiyat Endeksi</h3>
 
 <div class="fd-graph">
-Grafik burada gösterilecek
+  <canvas id="priceChart"></canvas>
 </div>
 
 <p style="font-size:11px;margin-top:8px;color:#777">
@@ -410,6 +410,55 @@ window.refreshPrices = function(){
   if (typeof loadLastPrices === "function") {
     loadLastPrices()
   }
+}
+
+async function loadChart(urun){
+
+try{
+
+const res = await fetch(`/api/fiyat-grafik?urun=${encodeURIComponent(urun)}`)
+const data = await res.json()
+
+if(!data.length){
+  console.log("Grafik veri yok")
+  return
+}
+
+const labels = data.map(i => {
+  const d = new Date(i.created_at)
+  return d.toLocaleDateString("tr-TR")
+})
+
+const prices = data.map(i => i.fiyat)
+
+const ctx = document.getElementById("priceChart").getContext("2d")
+
+// eski chart varsa temizle
+if(window.priceChartInstance){
+  window.priceChartInstance.destroy()
+}
+
+window.priceChartInstance = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels,
+    datasets: [{
+      data: prices,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins:{
+      legend:{ display:false }
+    }
+  }
+})
+
+}catch(e){
+console.error("grafik hata", e)
+}
+
 }
 
 </script>
