@@ -198,6 +198,11 @@ height:100%!important;
 object-fit:cover;
 }
 
+#priceChart{
+  width:100% !important;
+  height:150px !important;
+}
+
 </style>
 
 </head>
@@ -403,6 +408,9 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.error("loadLastPrices bulunamadı")
   }
+
+   // ✅ TEST İÇİN
+  loadChart("Ürün test")
 })
 
 /* ✅ GLOBAL YENİLEME (submit sonrası için hook) */
