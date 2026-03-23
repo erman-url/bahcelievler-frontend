@@ -19,7 +19,6 @@
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
-
 <!-- Barkod -->
 <script src="https://unpkg.com/quagga/dist/quagga.min.js" defer></script>
 
@@ -28,23 +27,41 @@
 
 <style>
 
+/* ✅ EKLENDİ - GLOBAL BODY FIX */
+body{
+background:#f3f6fb;
+padding-top:env(safe-area-inset-top);
+}
+
+/* ✅ EKLENDİ - WRAPPER FIX */
+.page-wrapper{
+max-width:900px;
+margin:auto;
+padding-bottom:120px;
+margin-top:10px;
+}
+
 .page-container{
 max-width:720px;
 margin:auto;
 padding-bottom:calc(120px + env(safe-area-inset-bottom));
 }
 
+/* 🔁 REVIZE EDİLDİ - DOUBLE HEADER FIX */
 .fd-header{
-background:linear-gradient(120deg,#0d2c54,#1f6fd1);
-color:white;
-padding:22px;
-border-radius:0 0 20px 20px;
+background:#eef3fb;
+color:#1f2937;
+padding:14px 16px;
+border-radius:14px;
+margin:12px;
 }
 
 .fd-header h1{
-font-size:21px;
+font-size:18px;
 font-weight:700;
 }
+
+/* --- ORİJİNAL CSS DEVAM EDİYOR --- */
 
 .fd-card{
 background:white;
@@ -112,6 +129,7 @@ font-weight:600;
 cursor:pointer;
 }
 
+/* 🔁 Z-INDEX FIX */
 .fd-modal{
 position:fixed;
 top:0;
@@ -122,10 +140,11 @@ background:rgba(0,0,0,.45);
 display:none;
 align-items:center;
 justify-content:center;
-z-index:999;
+z-index:9999;
 -webkit-overflow-scrolling:touch;
 }
 
+/* 🔁 SCROLL FIX */
 .fd-modal-content{
 position:relative;
 background:white;
@@ -137,6 +156,12 @@ padding-bottom:120px;
 max-height:calc(100vh - 120px);
 overflow-y:auto;
 overscroll-behavior:contain;
+-webkit-overflow-scrolling:touch;
+}
+
+/* ✅ EKLENDİ */
+body.modal-open{
+overflow:hidden;
 }
 
 .fd-input{
@@ -199,26 +224,34 @@ object-fit:cover;
 }
 
 #priceChart{
-  width:100% !important;
-  height:150px !important;
+width:100% !important;
+height:150px !important;
 }
 
 </style>
+
 </head>
+
 <body>
 
 <div id="globalHeader"></div>
 <div id="sideMenu"></div>
+
 <div class="page-wrapper">
 <div class="page-container">
 
+<!-- 🔁 ORİJİNAL HEADER KORUNDU -->
+<div class="fd-header">
+<h1><i class="fa-solid fa-magnifying-glass"></i> Fiyat Dedektifi</h1>
+<p>Semt fiyat endeksi</p>
+</div>
 
 <div class="fd-card">
 
 <h3><i class="fa-solid fa-chart-line"></i> Semt Fiyat Endeksi</h3>
 
 <div class="fd-graph">
-  <canvas id="priceChart"></canvas>
+<canvas id="priceChart"></canvas>
 </div>
 
 <p style="font-size:11px;margin-top:8px;color:#777">
@@ -231,22 +264,15 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 
 <h3>Son Eklenen Fiyatlar</h3>
 
+<!-- ✅ ORİJİNAL STATIC DATA KORUNDU -->
 <div class="fd-product">
-
 <div>
-
 <strong>Güzel Pınar Su</strong>
-
 <div class="fd-meta">ŞOK • Bahçelievler</div>
-
 <div class="fd-date">18 Mart 2026</div>
-
 <div class="fd-verified">✔ Etiket doğrulandı</div>
-
 </div>
-
 <div class="fd-price">4.75 TL</div>
-
 </div>
 
 </div>
@@ -318,7 +344,7 @@ Kamerayı Kapat
 <input id="urunInput" class="fd-input" placeholder="Örn: Sütaş Süt 200ml">
 
 <label class="fd-label">Fiyat (TL)</label>
-<input id="priceInput" class="fd-input" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" placeholder="17.45">
+<input id="priceInput" class="fd-input" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" placeholder="17.45" required>
 
 <label class="fd-label">Market</label>
 
@@ -331,6 +357,7 @@ Kamerayı Kapat
 <option>Migros</option>
 <option>CarrefourSA</option>
 <option>Tarım Kredi</option>
+<option>Mağazacılık</option>
 <option>Yerel Esnaf/Pazar</option>
 </select>
 
@@ -363,22 +390,26 @@ RADARA EKLE
 
 <div id="globalFooter"></div>
 
-
-<!-- ✅ EKLENDİ -->
 <script src="assets/js/priceList.js"></script>
 
 <script>
 
+/* ✅ DEBUG GUARD */
+document.addEventListener("DOMContentLoaded",function(){
+if(!document.getElementById("globalHeader")) console.error("globalHeader eksik")
+if(!document.getElementById("sideMenu")) console.error("sideMenu eksik")
+})
+
 function openModal(){
 const modal=document.getElementById("priceModal")
 modal.style.display="flex"
-document.body.style.overflow="hidden"
+document.body.classList.add("modal-open")
 }
 
 function closeModal(){
 const modal=document.getElementById("priceModal")
 modal.style.display="none"
-document.body.style.overflow="auto"
+document.body.classList.remove("modal-open")
 }
 
 document.getElementById("priceModal").addEventListener("click",function(e){
@@ -387,114 +418,66 @@ closeModal()
 }
 })
 
-/* ✅ SAYFA AÇILINCA VERİ ÇEK */
 document.addEventListener("DOMContentLoaded", () => {
-  if (typeof loadLastPrices === "function") {
-    loadLastPrices()
-  } else {
-    console.error("loadLastPrices bulunamadı")
-  }
-
-   
- loadSemtChart()
-
+if (typeof loadLastPrices === "function") {
+loadLastPrices()
+} else {
+console.error("loadLastPrices bulunamadı")
+}
+loadSemtChart()
 })
 
-/* ✅ GLOBAL YENİLEME (submit sonrası için hook) */
 window.refreshPrices = function(){
-  if (typeof loadLastPrices === "function") {
-    loadLastPrices()
-  }
-
-  if (typeof loadSemtChart === "function") {
-    loadSemtChart()
-  }
+if (typeof loadLastPrices === "function") {
+loadLastPrices()
+}
+if (typeof loadSemtChart === "function") {
+loadSemtChart()
+}
 }
 
-async function loadChart(urun){
-
+async function loadSemtChart(){
 try{
-
-const res = await fetch(`/api/fiyat-grafik?urun=${encodeURIComponent(urun)}`)
+const res = await fetch("/api/semt-endeks")
 const data = await res.json()
 
-if(!data.length){
-  console.log("Grafik veri yok")
-  return
+if(!data || !data.length){
+console.warn("grafik veri yok")
+return
 }
-
-const labels = data.map(i => {
-  const d = new Date(i.created_at)
-  return d.toLocaleDateString("tr-TR")
-})
-
-const prices = data.map(i => i.fiyat)
 
 const ctx = document.getElementById("priceChart").getContext("2d")
 
-// eski chart varsa temizle
-if(window.priceChartInstance){
-  window.priceChartInstance.destroy()
+if(window.priceChartInstance instanceof Chart){
+window.priceChartInstance.destroy()
 }
 
 window.priceChartInstance = new Chart(ctx, {
-  type: "line",
-  data: {
-    labels,
-    datasets: [{
-      data: prices,
-      tension: 0.3
-    }]
-  },
-  options: {
-    responsive: true,
-    plugins:{
-      legend:{ display:false }
-    }
-  }
+type: "line",
+data: {
+labels: data.map(i => i.gun),
+datasets: [{
+data: data.map(i => i.ortalama),
+tension: 0.3
+}]
+},
+options: {
+plugins:{ legend:{ display:false } }
+}
 })
 
 }catch(e){
 console.error("grafik hata", e)
 }
-
-}
-
-async function loadSemtChart(){
-
-const res = await fetch("/api/semt-endeks")
-const data = await res.json()
-
-const labels = data.map(i => i.gun)
-const prices = data.map(i => i.ortalama)
-
-const ctx = document.getElementById("priceChart").getContext("2d")
-
-if(window.priceChartInstance){
-  window.priceChartInstance.destroy()
-}
-
-window.priceChartInstance = new Chart(ctx, {
-  type: "line",
-  data: {
-    labels,
-    datasets: [{
-      data: prices,
-      tension: 0.3
-    }]
-  },
-  options: {
-    plugins:{ legend:{ display:false } }
-  }
-})
-
 }
 
 </script>
+
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/slider.js" defer></script>
 <script src="assets/js/countdown.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
+
 </body>
 </html>
