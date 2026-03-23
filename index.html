@@ -30,10 +30,19 @@
 <link rel="stylesheet" href="assets/css/components.css">
 <style>
 
-/* SAFE AREA */
+/* ===============================
+GLOBAL RESET / BASE IMPROVE
+=============================== */
+
+*{
+  -webkit-tap-highlight-color: transparent;
+}
+
 body{
   padding-top: env(safe-area-inset-top);
-  background:#f3f6fb; /* ✅ eklendi */
+  background:#f3f6fb;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* DESKTOP BODY */
@@ -57,7 +66,10 @@ body{
   margin:0 auto;
 }
 
-/* INFO BAR */
+/* ===============================
+INFO BAR (DAHA PREMIUM)
+=============================== */
+
 .info-bar{
   display:flex;
   gap:10px;
@@ -74,12 +86,13 @@ body{
   display:flex;
   flex-direction:column;
   justify-content:center;
-  transition:all .2s ease; /* ✅ eklendi */
+  transition:all .25s ease;
+  border:1px solid rgba(0,0,0,0.03);
 }
 
 .info-card:hover{
-  transform:translateY(-2px); /* ✅ eklendi */
-  box-shadow:0 8px 20px rgba(0,0,0,0.08); /* ✅ eklendi */
+  transform:translateY(-3px);
+  box-shadow:0 10px 24px rgba(0,0,0,0.08);
 }
 
 .info-title{
@@ -98,16 +111,19 @@ body{
   opacity:0.6;
 }
 
-/* HERO */
+/* ===============================
+HERO (STABİL + PREMIUM)
+=============================== */
+
 .hero-slider{
   position:relative;
   overflow:hidden;
   height:220px;
-  border-radius:14px; /* ✅ eklendi */
+  border-radius:14px;
 }
 
 .hero-slide{
-  position:absolute; /* ✅ eklendi */
+  position:absolute;
   top:0;
   left:0;
   width:100%;
@@ -128,7 +144,7 @@ body{
   display:block;
 }
 
-/* ✅ HERO OVERLAY EKLENDİ */
+/* HERO OVERLAY */
 .hero-overlay{
   position:absolute;
   bottom:0;
@@ -166,7 +182,10 @@ body{
   text-shadow:0 2px 8px rgba(0,0,0,0.4);
 }
 
-/* NEWS */
+/* ===============================
+NEWS CARD (TEMİZ)
+=============================== */
+
 .news-card img{
   width:100%;
   height:120px;
@@ -178,14 +197,17 @@ body{
   overflow:hidden;
 }
 
-/* MOBILE */
+/* ===============================
+MOBILE
+=============================== */
+
 @media (max-width:600px){
   .info-bar{
     flex-direction:column;
   }
 
   .hero-slider{
-    height:200px; /* ✅ eklendi */
+    height:200px;
   }
 
   .hero-slide img{
@@ -205,7 +227,10 @@ body{
   }
 }
 
-/* FOOTER */
+/* ===============================
+FOOTER
+=============================== */
+
 .corporate-footer{
   text-align:center;
   padding:30px 20px 120px;
@@ -231,7 +256,10 @@ body{
   font-weight:600;
 }
 
-/* COOKIE */
+/* ===============================
+COOKIE
+=============================== */
+
 .cookie-bar{
   position:fixed;
   left:50%;
@@ -275,7 +303,7 @@ body{
 }
 
 /* ===============================
-GÜNDEM & HABER - PREMIUM BAR
+GÜNDEM & HABER - ULTRA PREMIUM
 =============================== */
 
 .news{
@@ -288,28 +316,34 @@ GÜNDEM & HABER - PREMIUM BAR
   justify-content:space-between;
 
   padding:14px 16px;
-  margin:0 12px 12px;
+  margin-bottom:12px;
 
-  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  background:linear-gradient(135deg,#1e3a5f,#224c7a);
   color:#fff;
 
   font-weight:700;
   font-size:14px;
   letter-spacing:.5px;
 
-  /* ❌ oval yok */
   border-radius:0;
 
-  /* premium hissi */
   box-shadow:
-    0 6px 18px rgba(37,99,235,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.15);
+    0 4px 12px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.08);
 
   position:relative;
   overflow:hidden;
+
+  backdrop-filter: blur(6px);
 }
 
-/* üst parlama efekti */
+/* başlık hizalama FIX */
+.news-title{
+  display:flex;
+  align-items:center;
+}
+
+/* üst parlama (soft) */
 .news-bar::after{
   content:"";
   position:absolute;
@@ -321,34 +355,31 @@ GÜNDEM & HABER - PREMIUM BAR
   background:linear-gradient(
     120deg,
     transparent 30%,
-    rgba(255,255,255,0.15),
+    rgba(255,255,255,0.08),
     transparent 70%
   );
 
   pointer-events:none;
 }
 
-/* sol accent çizgi */
+/* sol accent */
 .news-bar::before{
   content:"";
   position:absolute;
   left:0;
   top:0;
   bottom:0;
-  width:4px;
-  background:#60a5fa;
+  width:3px;
+  background:#3b82f6;
+  opacity:0.8;
 }
 
-/* opsiyonel ikon alanı */
+/* icon */
 .news-bar span{
   display:flex;
   align-items:center;
   gap:6px;
   opacity:.9;
-}
-
-.news-bar{
-  backdrop-filter: blur(6px);
 }
 
 </style>
