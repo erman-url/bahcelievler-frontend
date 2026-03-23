@@ -636,7 +636,7 @@ QUICK GRID - PREMIUM 2x2
       <div class="news-card">
           <div class="news-badge">CANLI</div>
         <img src="https://images.unsplash.com/photo-1494526585095-c41746248156" loading="lazy">
-        <div class="content">Semtte Yeni Park Açıldı</div>
+        <h3 class="content">Semtte Yeni Park Açıldı</h3>
       </div>
 
       <div class="news-card">
@@ -726,11 +726,6 @@ QUICK GRID - PREMIUM 2x2
 <script>
 
 /* SWIPE SUPPORT */
-let startX = 0;
-
-track.addEventListener("touchstart", e=>{
-  startX = e.touches[0].clientX;
-});
 
 track.addEventListener("touchend", e=>{
   let endX = e.changedTouches[0].clientX;
