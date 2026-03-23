@@ -28,12 +28,12 @@
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
-
 <style>
 
 /* SAFE AREA */
 body{
   padding-top: env(safe-area-inset-top);
+  background:#f3f6fb; /* ✅ eklendi */
 }
 
 /* DESKTOP BODY */
@@ -74,6 +74,12 @@ body{
   display:flex;
   flex-direction:column;
   justify-content:center;
+  transition:all .2s ease; /* ✅ eklendi */
+}
+
+.info-card:hover{
+  transform:translateY(-2px); /* ✅ eklendi */
+  box-shadow:0 8px 20px rgba(0,0,0,0.08); /* ✅ eklendi */
 }
 
 .info-title{
@@ -97,6 +103,22 @@ body{
   position:relative;
   overflow:hidden;
   height:220px;
+  border-radius:14px; /* ✅ eklendi */
+}
+
+.hero-slide{
+  position:absolute; /* ✅ eklendi */
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  transition:opacity .5s ease;
+}
+
+.hero-slide.active{
+  opacity:1;
+  position:relative;
 }
 
 .hero-slide img{
@@ -104,6 +126,44 @@ body{
   height:220px;
   object-fit:cover;
   display:block;
+}
+
+/* ✅ HERO OVERLAY EKLENDİ */
+.hero-overlay{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+
+  padding:16px 18px;
+
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,0.55),
+    rgba(0,0,0,0.15)
+  );
+
+  color:white;
+}
+
+.hero-overlay h1{
+  font-size:clamp(16px, 3.5vw, 22px);
+  line-height:1.2;
+  font-weight:700;
+  margin-bottom:6px;
+  text-shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+
+.hero-sub{
+  font-size:clamp(12px, 2.8vw, 15px);
+  line-height:1.3;
+  opacity:0.95;
+  text-shadow:0 2px 8px rgba(0,0,0,0.4);
 }
 
 /* NEWS */
@@ -115,13 +175,33 @@ body{
 }
 
 .news-slider{
-overflow:hidden;
+  overflow:hidden;
 }
 
 /* MOBILE */
 @media (max-width:600px){
   .info-bar{
     flex-direction:column;
+  }
+
+  .hero-slider{
+    height:200px; /* ✅ eklendi */
+  }
+
+  .hero-slide img{
+    height:200px;
+  }
+
+  .hero-overlay{
+    padding:12px;
+  }
+
+  .hero-overlay h1{
+    font-size:16px;
+  }
+
+  .hero-sub{
+    font-size:12px;
   }
 }
 
