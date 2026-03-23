@@ -205,21 +205,36 @@ BF.ui.renderSideMenu = function(){
     const menu = document.createElement("div");
     menu.className = "side-menu";
 
-    menu.innerHTML = `
-        <div class="side-menu-header">
-            <h2>MENÜ</h2>
-            <i id="closeMenu" class="fa-solid fa-xmark"></i>
-        </div>
+   menu.innerHTML = `
+    <div class="menu-header">
+        <div class="menu-title">MENÜ</div>
+        <i id="closeMenu" class="fa-solid fa-xmark menu-close"></i>
+    </div>
 
-        <ul>
-            <li><a href="index.html">Ana</a></li>
-            <li><a href="sosyal.html">Sosyal</a></li>
-            <li><a href="ilanlar.html">İlanlar</a></li>
-            <li><a href="hizmetler.html">Hizmetler</a></li>
-            <li><a href="oyunlar.html">Oyunlar</a></li>
-            <li><a href="iletisim.html">İletişim</a></li>
-        </ul>
-    `;
+    <div class="menu-item" onclick="location.href='index.html'">
+        <i class="fa-solid fa-house"></i> Ana
+    </div>
+
+    <div class="menu-item" onclick="location.href='sosyal.html'">
+        <i class="fa-solid fa-globe"></i> Sosyal
+    </div>
+
+    <div class="menu-item" onclick="location.href='ilanlar.html'">
+        <i class="fa-solid fa-tag"></i> İlanlar
+    </div>
+
+    <div class="menu-item" onclick="location.href='hizmetler.html'">
+        <i class="fa-solid fa-layer-group"></i> Hizmetler
+    </div>
+
+    <div class="menu-item" onclick="location.href='oyunlar.html'">
+        <i class="fa-solid fa-gamepad"></i> Oyunlar
+    </div>
+
+    <div class="menu-item" onclick="location.href='iletisim.html'">
+        <i class="fa-solid fa-envelope"></i> İletişim
+    </div>
+`;
 
     document.body.appendChild(overlay);
     document.body.appendChild(menu);
