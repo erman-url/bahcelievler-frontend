@@ -1,9 +1,10 @@
 /* ==========================================
    Bahçelievler Forum - Countdown
-   Kadir Gecesi Sayacı
+   Kurban Bayramı Arefe Sayacı (2026)
 ========================================== */
 
-const target = new Date("2026-03-16T00:00:00").getTime();
+/* ✅ AREFE GÜNÜ (26 Mayıs 2026) */
+const target = new Date("2026-05-26T00:00:00").getTime();
 
 /* elementler */
 
@@ -19,6 +20,8 @@ if(!daysEl || !hoursEl || !minutesEl || !secondsEl){
 console.debug("Countdown elementi bulunamadı, script durduruldu.");
 
 }else{
+
+let timer; /* ✅ scope fix */
 
 function updateCountdown(){
 
@@ -61,6 +64,6 @@ updateCountdown();
 
 /* interval */
 
-const timer = setInterval(updateCountdown,1000);
+timer = setInterval(updateCountdown,1000);
 
 }
