@@ -40,6 +40,6 @@ echo Deploy tamamlandi.
 echo Versiyon: v%newVersion%
 echo ----------------------------
 
-start https://bahcelievlerforum.pages.dev
+start https://bahcelievlerforum.com.tr
 
 pause
