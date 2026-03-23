@@ -284,10 +284,10 @@ BF.ui.bindMenuEvents = function(){
         }
 
         /* MENU LINK CLICK */
-        if(e.target.closest(".side-menu a")){
-            document.querySelector(".side-menu")?.classList.remove("active");
-            document.querySelector(".overlay")?.classList.remove("active");
-        }
+       if(e.target.closest(".menu-item")){
+    document.querySelector(".side-menu")?.classList.remove("active");
+    document.querySelector(".overlay")?.classList.remove("active");
+}
 
         /* 🔍 SEARCH TOGGLE (no prompt) */
         if(e.target.closest("#searchBtn")){
@@ -418,6 +418,34 @@ BF.utils.getRemainingTime = function(targetDate){
         seconds: Math.floor((diff % (1000*60)) / 1000)
     };
 };
+/* -------- COOKIE BAR -------- */
+BF.ui.renderCookieBar = function(){
+
+    if(localStorage.getItem("cookieAccepted")) return;
+
+    const bar = document.createElement("div");
+    bar.className = "cookie-bar";
+
+    bar.innerHTML = `
+        <div class="cookie-inner">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div class="cookie-text">
+                Bu site deneyiminizi geliştirmek için çerez kullanır.
+            </div>
+            <button id="acceptCookiesBtn">Kabul Et</button>
+        </div>
+    `;
+
+    document.body.appendChild(bar);
+
+    const btn = document.getElementById("acceptCookiesBtn");
+    if(btn){
+        btn.onclick = function(){
+            localStorage.setItem("cookieAccepted","1");
+            bar.remove();
+        };
+    }
+};
 
 
 /* ================= INIT ================= */
@@ -437,6 +465,7 @@ BF.init = function(){
     BF.ui.renderSideMenu();
     BF.ui.bindMenuEvents();
     BF.ui.renderFooter();
+    BF.ui.renderCookieBar(); // ✅ DOĞRU YER
 
     /* Core */
     BF.utils.setActiveNav();

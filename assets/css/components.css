@@ -1147,3 +1147,40 @@ SIDE MENU - GLOBAL PREMIUM
 .menu-item i{
   color:#2563eb;
 }
+
+.cookie-bar{
+  position:fixed;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%);
+  width:95%;
+  max-width:500px;
+
+  background:#fff;
+  border-radius:14px;
+  padding:12px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+
+  z-index:999;
+}
+
+.cookie-inner{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.cookie-text{
+  flex:1;
+  font-size:12px;
+}
+
+.cookie-bar button{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:12px;
+}
