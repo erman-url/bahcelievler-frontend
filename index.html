@@ -382,6 +382,93 @@ GÜNDEM & HABER - ULTRA PREMIUM
   opacity:.9;
 }
 
+/* ===============================
+NEWS SYSTEM - PREMIUM SCROLL
+=============================== */
+
+/* yatay scroll */
+.news-slider{
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:0 12px 10px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.news-track{
+  display:flex;
+  gap:12px;
+}
+
+/* kart */
+.news-card{
+  min-width:240px;
+  max-width:240px;
+  background:#fff;
+
+  border-radius:12px;
+  overflow:hidden;
+
+  box-shadow:0 4px 14px rgba(0,0,0,0.06);
+  border:1px solid rgba(0,0,0,0.04);
+
+  flex-shrink:0;
+
+  transition:all .25s ease;
+  cursor:pointer;
+}
+
+/* hover (desktop) */
+.news-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 26px rgba(0,0,0,0.12);
+}
+
+/* dokunma efekti (mobil) */
+.news-card:active{
+  transform:scale(0.97);
+}
+
+/* görsel */
+.news-card img{
+  width:100%;
+  height:130px;
+  object-fit:cover;
+}
+
+/* içerik */
+.news-card .content{
+  padding:10px;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.4;
+}
+
+/* badge */
+.news-badge{
+  position:absolute;
+  top:8px;
+  left:8px;
+
+  background:#ef4444;
+  color:#fff;
+
+  font-size:10px;
+  font-weight:700;
+
+  padding:4px 6px;
+  border-radius:6px;
+}
+
+/* badge için parent */
+.news-card{
+  position:relative;
+}
+
+/* scroll bar gizle (premium hissi) */
+.news-slider::-webkit-scrollbar{
+  display:none;
+}
+
 </style>
 
 </head>
@@ -476,21 +563,25 @@ GÜNDEM & HABER - ULTRA PREMIUM
     <div class="news-track" id="newsTrack">
 
       <div class="news-card">
+          <div class="news-badge">CANLI</div>
         <img src="https://images.unsplash.com/photo-1494526585095-c41746248156" loading="lazy">
         <div class="content">Semtte Yeni Park Açıldı</div>
       </div>
 
       <div class="news-card">
+          <div class="news-badge">CANLI</div>
         <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" loading="lazy">
         <div class="content">Trafik Düzenlemesi Başladı</div>
       </div>
 
       <div class="news-card">
+          <div class="news-badge">CANLI</div>
         <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" loading="lazy">
         <div class="content">Yeni Eğitim Merkezi Açılıyor</div>
       </div>
 
       <div class="news-card">
+          <div class="news-badge">CANLI</div>
         <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" loading="lazy">
         <div class="content">Ücretsiz Kurslar Başlıyor</div>
       </div>
