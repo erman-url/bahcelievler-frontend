@@ -350,28 +350,71 @@ document.addEventListener("click", function(e){
 
 })
 
-/* =========================
-SUBMIT (DEMO SAFE)
-========================= */
-window.submitDeal = function(){
+window.submitDeal = async function(){
 
+  const nickname = sanitize(document.getElementById("nickname").value)
   const title = sanitize(document.getElementById("dealTitle").value)
   const content = sanitize(document.getElementById("dealContent").value)
+  const store = sanitize(document.getElementById("storeName").value)
+  const link = sanitize(document.getElementById("dealLink").value)
+  const district = document.getElementById("district").value
 
-  if(!title || !content){
-    alert("Başlık ve açıklama zorunlu")
+  const isOnline = document.getElementById("linkBox").style.display !== "none"
+
+  const type = isOnline ? "online" : "store"
+
+  if(!nickname || nickname.length < 3){
+    alert("Nickname gerekli (min 3 karakter)")
     return
   }
 
-  console.log("DEAL SUBMIT:", {
-    title,
-    content
-  })
+  if(!title || title.length < 4){
+    alert("Başlık çok kısa")
+    return
+  }
 
-  alert("Fırsat gönderildi (demo)")
+  if(!content || content.length < 10){
+    alert("Açıklama çok kısa")
+    return
+  }
 
-  closeDealForm()
+  try{
+
+    const res = await fetch("/api/firsatlar",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        nickname,
+        title,
+        content,
+        store_name: store,
+        link,
+        district,
+        type
+      })
+    })
+
+    const data = await res.json()
+
+    if(!data.ok){
+      alert(data.error || "Hata oluştu")
+      return
+    }
+
+    alert("✅ Fırsat başarıyla eklendi")
+
+    closeDealForm()
+
+    location.reload()
+
+  }catch(e){
+    alert("Sunucu hatası")
+    console.error(e)
+  }
 }
+
 
 /* =========================
 FAKE DATA (TEST İÇİN)
