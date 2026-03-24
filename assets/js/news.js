@@ -209,6 +209,21 @@ document.addEventListener("visibilitychange", () => {
     startSlider();
   }
 });
+// ==============================
+// DATE FORMATTER
+// ==============================
+
+function formatDate(dateStr){
+  if(!dateStr) return "";
+
+  const d = new Date(dateStr);
+
+  return d.toLocaleDateString("tr-TR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+}
 
 // ==============================
 // MODAL
@@ -216,13 +231,23 @@ document.addEventListener("visibilitychange", () => {
 
 window.openNewsModal = function(news){
 
-  document.getElementById("modalImage").src = news.image;
-  document.getElementById("modalTitle").innerText = news.title;
-  document.getElementById("modalDate").innerText = news.date || "";
-  document.getElementById("modalContent").innerText = news.content;
+  const imageEl = document.getElementById("modalImage");
+  const titleEl = document.getElementById("modalTitle");
+  const dateEl = document.getElementById("modalDate");
+  const contentEl = document.getElementById("modalContent");
+
+  // güvenli set
+  imageEl.src = news.image || "";
+  titleEl.innerText = news.title || "";
+  contentEl.innerText = news.content || "";
+
+  // 🔥 KRİTİK FIX (created_at destek)
+  const date = news.created_at || news.date || "";
+  dateEl.innerText = formatDate(date);
 
   document.getElementById("newsModal").classList.add("active");
 
+  // scroll lock
   document.body.style.overflow = "hidden";
 };
 
