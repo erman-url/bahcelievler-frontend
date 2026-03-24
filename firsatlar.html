@@ -23,6 +23,19 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bahcelievlerforum.com.tr/firsatlar">
 
+<!-- 🔥 EKSTRA SEO -->
+<meta property="og:image" content="https://bahcelievlerforum.com.tr/assets/default.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"WebPage",
+ "name":"İndirim & Fırsatlar",
+ "url":"https://bahcelievlerforum.com.tr/firsatlar"
+}
+</script>
+
 <!-- CSS -->
 
 <link rel="stylesheet" href="assets/css/base.css">
@@ -30,6 +43,76 @@
 <link rel="stylesheet" href="assets/css/components.css">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* PREMIUM FAB */
+.deal-add-btn{
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  box-shadow:0 10px 25px rgba(0,0,0,0.25);
+  z-index:50;
+}
+
+/* TYPE MODAL */
+.deal-type-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  z-index:999;
+}
+
+.deal-type-modal.active{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.deal-type-box{
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+  width:90%;
+  max-width:320px;
+}
+
+.deal-type-grid{
+  display:flex;
+  gap:12px;
+  margin-top:15px;
+}
+
+.deal-type-card{
+  flex:1;
+  padding:20px;
+  border-radius:12px;
+  background:#f1f5f9;
+  text-align:center;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* SKELETON */
+.skeleton-card{
+  height:100px;
+  border-radius:12px;
+  background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
+  animation:loading 1.2s infinite;
+  margin-top:10px;
+}
+
+@keyframes loading{
+  0%{background-position:-200px}
+  100%{background-position:200px}
+}
+
+</style>
 
 </head>
 
@@ -70,35 +153,19 @@ Mağaza
 <div class="action-grid">
 
 <div class="action-card" onclick="openDealForm('online')">
-
 <div class="action-icon tavsiye">
 <i class="fa-solid fa-bolt"></i>
 </div>
-
-<div class="action-title">
-Online Fırsat Paylaş
-</div>
-
-<div class="action-desc">
-E-ticaret indirimini paylaş
-</div>
-
+<div class="action-title">Online Fırsat Paylaş</div>
+<div class="action-desc">E-ticaret indirimini paylaş</div>
 </div>
 
 <div class="action-card" onclick="openDealForm('store')">
-
 <div class="action-icon sikayet">
 <i class="fa-solid fa-store"></i>
 </div>
-
-<div class="action-title">
-Mağaza / Esnaf Fırsatı
-</div>
-
-<div class="action-desc">
-Yerel kampanyayı paylaş
-</div>
-
+<div class="action-title">Mağaza / Esnaf Fırsatı</div>
+<div class="action-desc">Yerel kampanyayı paylaş</div>
 </div>
 
 </div>
@@ -111,6 +178,10 @@ Yerel kampanyayı paylaş
 Fırsatlar yükleniyor...
 </div>
 
+<!-- 🔥 EKSTRA UX -->
+<div class="skeleton-card"></div>
+<div class="skeleton-card"></div>
+
 </section>
 
 </main>
@@ -121,10 +192,25 @@ Fırsatlar yükleniyor...
 <i class="fa-solid fa-plus"></i>
 </button>
 
-<!-- ADD DEAL MODAL -->
+<!-- 🔥 TYPE MODAL -->
+
+<div class="deal-type-modal" id="dealTypeModal">
+  <div class="deal-type-box">
+    <div class="deal-type-title">Fırsat Türünü Seç</div>
+    <div class="deal-type-grid">
+      <div class="deal-type-card" onclick="selectDealType('online')">
+        <i class="fa-solid fa-bolt"></i><br>Online
+      </div>
+      <div class="deal-type-card" onclick="selectDealType('store')">
+        <i class="fa-solid fa-store"></i><br>Mağaza
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DEAL MODAL (AYNI) -->
 
 <div class="modal" id="dealModal">
-
 <div class="modal-box">
 
 <button class="modal-close" onclick="closeDealForm()" aria-label="Kapat">
@@ -133,126 +219,49 @@ Fırsatlar yükleniyor...
 
 <h3 id="dealFormTitle">Fırsat Paylaş</h3>
 
-<!-- NICKNAME -->
-
 <div class="form-group">
 <label>Nickname</label>
-
-<input 
-type="text"
-id="nickname"
-maxlength="10"
-placeholder="örn: erman"
-autocomplete="off">
-
+<input type="text" id="nickname" maxlength="10" placeholder="örn: erman">
 </div>
-
-<!-- TITLE -->
 
 <div class="form-group">
 <label>Başlık</label>
-
-<input 
-type="text"
-id="dealTitle"
-maxlength="80"
-autocomplete="off">
-
+<input type="text" id="dealTitle" maxlength="80">
 </div>
-
-<!-- STORE -->
 
 <div class="form-group" id="storeBox">
-
 <label>Mağaza / Site</label>
-
-<input 
-type="text"
-id="storeName"
-autocomplete="off">
-
+<input type="text" id="storeName">
 </div>
-
-<!-- LINK -->
 
 <div class="form-group" id="linkBox">
-
 <label>Ürün Linki</label>
-
-<input 
-type="url"
-id="dealLink"
-placeholder="https://"
-autocomplete="off">
-
+<input type="url" id="dealLink">
 </div>
-
-<!-- DISTRICT -->
 
 <div class="form-group" id="districtBox">
-
 <label>Mahalle</label>
-
 <select id="district">
-
 <option value="">Seçiniz</option>
-
 <option>Zafer Mahallesi</option>
 <option>Kocasinan Mahallesi</option>
-<option>Soğanlı Mahallesi</option>
-<option>Siyavuşpaşa Mahallesi</option>
-<option>Bahçelievler Mahallesi</option>
-<option>Şirinevler Mahallesi</option>
-<option>Hürriyet Mahallesi</option>
-<option>Cumhuriyet Mahallesi</option>
-<option>Yenibosna Merkez Mahallesi</option>
-<option>Çobançeşme Mahallesi</option>
-<option>Fevzi Çakmak Mahallesi</option>
-<option>İlçe dışı bölge</option>
-
 </select>
-
 </div>
 
-<!-- DESCRIPTION -->
-
 <div class="form-group">
-
 <label>Açıklama</label>
-
-<textarea 
-id="dealContent"
-maxlength="500"></textarea>
-
+<textarea id="dealContent" maxlength="500"></textarea>
 </div>
-
-<!-- IMAGE -->
 
 <div class="form-group">
-
-<label>Fotoğraf (opsiyonel)</label>
-
-<label class="image-upload">
-
-<input 
-type="file"
-id="dealImage"
-accept="image/*">
-
-Fotoğraf yükle
-
-</label>
-
+<label>Fotoğraf</label>
+<input type="file" id="dealImage">
 </div>
 
-<button class="submit-btn" onclick="submitDeal()">
-Fırsatı Paylaş
-</button>
+<button class="submit-btn" onclick="submitDeal()">Fırsatı Paylaş</button>
 
 </div>
-
 </div>
-
 
 <!-- JS -->
 
@@ -265,45 +274,30 @@ Fırsatı Paylaş
 <script>
 
 /* FILTER */
-
 function filterDeals(type){
-
 const cards=document.querySelectorAll(".deal-card")
-
 cards.forEach(card=>{
-
-if(type==="all"){
-card.style.display="block"
-return
-}
-
-if(card.dataset.type===type){
-card.style.display="block"
-}else{
-card.style.display="none"
-}
-
+card.style.display=(type==="all"||card.dataset.type===type)?"block":"none"
 })
-
 }
 
-/* FAB SEÇİM */
-
+/* 🔥 NEW SELECTOR */
 function openDealSelector(){
-
-const choice = confirm(
-"Online fırsat paylaşmak için TAMAM.\nMağaza fırsatı için İPTAL."
-)
-
-if(choice){
-openDealForm("online")
-}else{
-openDealForm("store")
+document.getElementById("dealTypeModal").classList.add("active")
 }
 
+function selectDealType(type){
+document.getElementById("dealTypeModal").classList.remove("active")
+openDealForm(type)
+}
+
+/* 🔒 SECURITY */
+function sanitize(text){
+return text.replace(/[<>]/g,"")
 }
 
 </script>
+
 <div id="globalFooter"></div>
 </body>
 </html>
