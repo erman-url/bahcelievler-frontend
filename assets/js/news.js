@@ -18,6 +18,7 @@ const FALLBACK_NEWS = [
 
 let sliderIndex = 0;
 let sliderInterval = null;
+let startX = 0;
 
 // ==============================
 // LOAD NEWS
@@ -32,7 +33,7 @@ async function loadNews(){
   const CACHE_KEY = "news_cache_v1";
   const CACHE_TIME = 60000;
 
-  // CACHE OKU
+  // CACHE
   try{
     const cached = localStorage.getItem(CACHE_KEY);
     if(cached){
@@ -45,7 +46,7 @@ async function loadNews(){
     console.warn("CACHE READ ERROR", e);
   }
 
-  // API CALL
+  // API
   try{
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -94,12 +95,10 @@ function renderNews(data){
   const track = document.getElementById("newsTrack");
   if(!track) return;
 
-  // slider reset
-  if(sliderInterval){
-    clearInterval(sliderInterval);
-    sliderInterval = null;
-  }
+  // reset slider
+  stopSlider();
   sliderIndex = 0;
+  track.style.transform = "translateX(0)";
 
   if(!data || data.length === 0){
     track.innerHTML = `
@@ -134,12 +133,12 @@ function renderNews(data){
 
   track.appendChild(fragment);
 
-  // slider başlat
   startSlider();
+  initTouch(track);
 }
 
 // ==============================
-// SLIDER CORE (KRİTİK FIX)
+// SLIDER
 // ==============================
 
 function startSlider(){
@@ -150,18 +149,66 @@ function startSlider(){
   const total = track.children.length;
   if(total <= 1) return;
 
+  stopSlider();
+
   sliderInterval = setInterval(() => {
-
     sliderIndex++;
+    if(sliderIndex >= total) sliderIndex = 0;
 
-    if(sliderIndex >= total){
-      sliderIndex = 0;
+    track.style.transform = `translateX(-${sliderIndex * 100}%)`;
+  }, 4000);
+}
+
+function stopSlider(){
+  if(sliderInterval){
+    clearInterval(sliderInterval);
+    sliderInterval = null;
+  }
+}
+
+// ==============================
+// TOUCH (MOBILE)
+// ==============================
+
+function initTouch(track){
+
+  track.addEventListener("touchstart", e=>{
+    startX = e.touches[0].clientX;
+    stopSlider();
+  });
+
+  track.addEventListener("touchend", e=>{
+    let endX = e.changedTouches[0].clientX;
+    let diff = startX - endX;
+
+    const total = track.children.length;
+
+    if(diff > 50){
+      sliderIndex++;
+    }else if(diff < -50){
+      sliderIndex--;
     }
+
+    if(sliderIndex >= total) sliderIndex = 0;
+    if(sliderIndex < 0) sliderIndex = total - 1;
 
     track.style.transform = `translateX(-${sliderIndex * 100}%)`;
 
-  }, 4000);
+    startSlider();
+  });
 }
+
+// ==============================
+// VISIBILITY FIX (TAB SWITCH)
+// ==============================
+
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden){
+    stopSlider();
+  }else{
+    startSlider();
+  }
+});
 
 // ==============================
 // MODAL
