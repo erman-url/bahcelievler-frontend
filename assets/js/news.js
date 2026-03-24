@@ -103,31 +103,59 @@ async function loadNews(){
     renderNews(FALLBACK_NEWS);
   }
 }
-
-// ==============================
-// RENDER
-// ==============================
-
 function renderNews(data){
 
   const track = document.getElementById("newsTrack");
+  if(!track) return;
+
+  // =========================
+  // BOŞ DATA KONTROL
+  // =========================
+  if(!data || data.length === 0){
+    track.innerHTML = `
+      <div class="news-card">
+        <div class="content">Henüz haber bulunamadı</div>
+      </div>
+    `;
+    return;
+  }
+
+  // =========================
+  // TEMİZLE
+  // =========================
   track.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
+  // =========================
+  // RENDER
+  // =========================
   data.forEach(news => {
 
     const card = document.createElement("div");
     card.className = "news-card";
 
+    const image = news.image || "assets/images/default-news.jpg";
+
     card.innerHTML = `
       <div class="news-badge">YENİ</div>
-      <img src="${news.image}" loading="lazy">
+      <img src="${image}" loading="lazy" alt="${news.title}">
       <div class="content">${news.title}</div>
     `;
 
     card.onclick = () => openNewsModal(news);
 
-    track.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  track.appendChild(fragment);
+
+  // =========================
+  // SLIDER INIT (KRİTİK)
+  // =========================
+  if(typeof initNewsSlider === "function"){
+    initNewsSlider();
+  }
 
 }
 
