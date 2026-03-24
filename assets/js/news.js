@@ -2,7 +2,6 @@
 // NEWS SYSTEM (FRONTEND)
 // ==============================
 
-// fallback (API patlarsa boş ekran olmasın)
 const FALLBACK_NEWS = [
   {
     id: 1,
@@ -12,6 +11,13 @@ const FALLBACK_NEWS = [
     image: "https://images.unsplash.com/photo-1494526585095-c41746248156"
   }
 ];
+
+// ==============================
+// GLOBAL SLIDER STATE
+// ==============================
+
+let sliderIndex = 0;
+let sliderInterval = null;
 
 // ==============================
 // LOAD NEWS
@@ -24,32 +30,25 @@ async function loadNews(){
 
   const API_URL = "https://icy-thunder-44fb.erman-urel.workers.dev";
   const CACHE_KEY = "news_cache_v1";
-  const CACHE_TIME = 60000; // 60 sn
+  const CACHE_TIME = 60000;
 
-  // =========================
-  // 1. CACHE OKU (ANINDA UI)
-  // =========================
+  // CACHE OKU
   try{
     const cached = localStorage.getItem(CACHE_KEY);
-
     if(cached){
       const parsed = JSON.parse(cached);
-
       if(Date.now() - parsed.time < CACHE_TIME){
-        renderNews(parsed.data); // hızlı yükleme
+        renderNews(parsed.data);
       }
     }
   }catch(e){
     console.warn("CACHE READ ERROR", e);
   }
 
-  // =========================
-  // 2. API CALL (TIMEOUT)
-  // =========================
+  // API CALL
   try{
-
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000); // 5sn
+    const timeout = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(API_URL, {
       signal: controller.signal,
@@ -62,30 +61,17 @@ async function loadNews(){
 
     const data = await res.json();
 
-    // =========================
-    // 3. RENDER
-    // =========================
     renderNews(data);
 
-    // =========================
-    // 4. CACHE YAZ
-    // =========================
-    try{
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        data,
-        time: Date.now()
-      }));
-    }catch(e){
-      console.warn("CACHE WRITE ERROR", e);
-    }
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      data,
+      time: Date.now()
+    }));
 
   }catch(err){
 
     console.warn("NEWS API ERROR → FALLBACK", err);
 
-    // =========================
-    // 5. CACHE FALLBACK
-    // =========================
     try{
       const cached = localStorage.getItem(CACHE_KEY);
       if(cached){
@@ -93,24 +79,28 @@ async function loadNews(){
         renderNews(parsed.data);
         return;
       }
-    }catch(e){
-      console.warn("CACHE FAIL", e);
-    }
+    }catch(e){}
 
-    // =========================
-    // 6. SON ÇARE
-    // =========================
     renderNews(FALLBACK_NEWS);
   }
 }
+
+// ==============================
+// RENDER
+// ==============================
+
 function renderNews(data){
 
   const track = document.getElementById("newsTrack");
   if(!track) return;
 
-  // =========================
-  // BOŞ DATA KONTROL
-  // =========================
+  // slider reset
+  if(sliderInterval){
+    clearInterval(sliderInterval);
+    sliderInterval = null;
+  }
+  sliderIndex = 0;
+
   if(!data || data.length === 0){
     track.innerHTML = `
       <div class="news-card">
@@ -120,16 +110,10 @@ function renderNews(data){
     return;
   }
 
-  // =========================
-  // TEMİZLE
-  // =========================
   track.innerHTML = "";
 
   const fragment = document.createDocumentFragment();
 
-  // =========================
-  // RENDER
-  // =========================
   data.forEach(news => {
 
     const card = document.createElement("div");
@@ -150,29 +134,48 @@ function renderNews(data){
 
   track.appendChild(fragment);
 
-  // =========================
-  // SLIDER INIT (KRİTİK)
-  // =========================
-  if(typeof initNewsSlider === "function"){
-    initNewsSlider();
-  }
-
+  // slider başlat
+  startSlider();
 }
 
 // ==============================
-// MODAL (GLOBAL)
+// SLIDER CORE (KRİTİK FIX)
+// ==============================
+
+function startSlider(){
+
+  const track = document.getElementById("newsTrack");
+  if(!track) return;
+
+  const total = track.children.length;
+  if(total <= 1) return;
+
+  sliderInterval = setInterval(() => {
+
+    sliderIndex++;
+
+    if(sliderIndex >= total){
+      sliderIndex = 0;
+    }
+
+    track.style.transform = `translateX(-${sliderIndex * 100}%)`;
+
+  }, 4000);
+}
+
+// ==============================
+// MODAL
 // ==============================
 
 window.openNewsModal = function(news){
 
   document.getElementById("modalImage").src = news.image;
   document.getElementById("modalTitle").innerText = news.title;
-  document.getElementById("modalDate").innerText = news.date;
+  document.getElementById("modalDate").innerText = news.date || "";
   document.getElementById("modalContent").innerText = news.content;
 
   document.getElementById("newsModal").classList.add("active");
 
-  // scroll lock (premium UX)
   document.body.style.overflow = "hidden";
 };
 
@@ -183,7 +186,7 @@ window.closeNewsModal = function(){
   document.body.style.overflow = "";
 };
 
-// backdrop click kapatma
+// backdrop click
 document.addEventListener("click", function(e){
   const modal = document.getElementById("newsModal");
   if(e.target === modal){
