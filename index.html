@@ -382,7 +382,6 @@ GÜNDEM & HABER - ULTRA PREMIUM
   opacity:.9;
 }
 
-
 /* ===============================
 NEWS - SINGLE SLIDER MODE
 =============================== */
@@ -390,26 +389,119 @@ NEWS - SINGLE SLIDER MODE
 .news-slider{
   overflow:hidden;
   padding:0 12px;
+  position:relative;
 }
+
+/* ===============================
+TRACK (SLIDER CORE)
+=============================== */
 
 .news-track{
   display:flex;
-  transition:transform .4s ease;
+
+  transition:transform .45s cubic-bezier(.22,1,.36,1); /* 🔥 daha smooth */
+  will-change: transform; /* 🔥 performans */
+
+  touch-action: pan-y; /* 🔥 dikey scroll bozulmaz */
 }
+
+/* ===============================
+CARD
+=============================== */
 
 .news-card{
   min-width:100%;
   max-width:100%;
 
-  background:#fff;
-  border-radius:14px;
-  overflow:hidden;
-
-  box-shadow:0 6px 18px rgba(0,0,0,0.08);
-  border:1px solid rgba(0,0,0,0.04);
-
   flex-shrink:0;
   position:relative;
+
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  border:1px solid rgba(0,0,0,0.05);
+
+  /* 🔥 mobil performans */
+  transform:translateZ(0);
+}
+
+/* ===============================
+IMAGE
+=============================== */
+
+.news-card img{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+/* ===============================
+BADGE
+=============================== */
+
+.news-badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+
+  background:#ef4444;
+  color:#fff;
+
+  font-size:11px;
+  font-weight:600;
+
+  padding:4px 8px;
+  border-radius:6px;
+
+  z-index:2;
+}
+
+/* ===============================
+CONTENT
+=============================== */
+
+.news-card .content{
+  padding:12px 14px;
+
+  font-size:14px;
+  font-weight:600;
+
+  color:#1e293b;
+}
+
+/* ===============================
+MOBILE OPTIMIZATION
+=============================== */
+
+@media (max-width:600px){
+
+  .news-slider{
+    padding:0 10px;
+  }
+
+  .news-card{
+    border-radius:14px;
+  }
+
+  .news-card .content{
+    font-size:13px;
+  }
+
+}
+
+/* ===============================
+DESKTOP OPTIMIZATION
+=============================== */
+
+@media (min-width:1024px){
+
+  .news-slider{
+    max-width:600px;
+    margin:0 auto;
+  }
+
 }
 
 /* görsel büyüt */
