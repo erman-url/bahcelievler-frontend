@@ -385,13 +385,16 @@ GÜNDEM & HABER - ULTRA PREMIUM
 /* ===============================
 NEWS - SINGLE SLIDER MODE
 =============================== */
-
 .news-slider{
   overflow:hidden;
-  padding:0 12px;
   position:relative;
-}
 
+  /* 🔥 padding kaldırıldı (slider fix) */
+  padding:0;
+
+  /* 🔥 stabilite */
+  width:100%;
+}
 /* ===============================
 TRACK (SLIDER CORE)
 =============================== */
@@ -399,10 +402,15 @@ TRACK (SLIDER CORE)
 .news-track{
   display:flex;
 
-  transition:transform .45s cubic-bezier(.22,1,.36,1); /* 🔥 daha smooth */
-  will-change: transform; /* 🔥 performans */
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+  will-change: transform;
 
-  touch-action: pan-y; /* 🔥 dikey scroll bozulmaz */
+  touch-action: pan-y;
+
+  /* 🔥 kritik stabilite */
+  transform: translateX(0);          /* başlangıç fix */
+  backface-visibility: hidden;      /* flicker engeller */
+  perspective: 1000px;              /* GPU fix */
 }
 
 /* ===============================
