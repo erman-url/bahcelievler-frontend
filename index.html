@@ -553,6 +553,8 @@ QUICK GRID - PREMIUM 2x2
 }
 
 .news-modal-content{
+  position: relative; /* 🔥 EKLEDİK */
+
   background:#fff;
   width:100%;
   max-height:90%;
@@ -580,6 +582,8 @@ QUICK GRID - PREMIUM 2x2
   font-size:20px;
   cursor:pointer;
 }
+
+
 
 
 </style>
@@ -675,25 +679,25 @@ QUICK GRID - PREMIUM 2x2
   <div class="news-slider">
     <div class="news-track" id="newsTrack">
 
-      <div class="news-card">
+      <div class="news-track" id="newsTrack"></div>
           <div class="news-badge">YENİ</div>
         <img src="https://images.unsplash.com/photo-1494526585095-c41746248156" loading="lazy">
         <h3 class="content">Semtte Yeni Park Açıldı</h3>
       </div>
 
-      <div class="news-card">
+      <div class="news-track" id="newsTrack"></div>
           <div class="news-badge">YENİ</div>
         <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" loading="lazy">
         <div class="content">Trafik Düzenlemesi Başladı</div>
       </div>
 
-      <div class="news-card">
+      <div class="news-track" id="newsTrack"></div>
           <div class="news-badge">YENİ</div>
         <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" loading="lazy">
         <div class="content">Yeni Eğitim Merkezi Açılıyor</div>
       </div>
 
-      <div class="news-card">
+      <div class="news-track" id="newsTrack"></div>
           <div class="news-badge">YENİ</div>
         <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" loading="lazy">
         <div class="content">Ücretsiz Kurslar Başlıyor</div>
@@ -764,30 +768,6 @@ QUICK GRID - PREMIUM 2x2
 <script src="assets/js/dashboard.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
-<script>
-
-/* SWIPE SUPPORT */
-
-const track = document.getElementById("newsTrack");
-
-if(track){
-  track.addEventListener("touchend", e=>{
-    let endX = e.changedTouches[0].clientX;
-    let diff = startX - endX;
-
-    if(diff > 50){
-      index++;
-    }else if(diff < -50){
-      index--;
-    }
-
-    if(index < 0) index = 0;
-    if(index >= total) index = total - 1;
-
-    track.style.transform = `translateX(-${index * 100}%)`;
-  });
-}
-</script>
 
 <script src="assets/js/news.js" defer></script>
 
