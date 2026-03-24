@@ -294,13 +294,7 @@ function selectDealType(type){
   openDealForm(type)
 }
 
-/* modal dışına tıklayınca kapat */
-document.addEventListener("click", function(e){
-  const typeModal = document.getElementById("dealTypeModal")
-  if(e.target === typeModal){
-    typeModal.classList.remove("active")
-  }
-})
+
 
 /* =========================
 SECURITY
@@ -344,13 +338,22 @@ window.closeDealForm = function(){
   document.getElementById("dealModal").classList.remove("active")
 }
 
-/* modal dış click */
 document.addEventListener("click", function(e){
-  const modal = document.getElementById("dealModal")
-  if(e.target === modal){
+
+  const typeModal = document.getElementById("dealTypeModal")
+  const dealModal = document.getElementById("dealModal")
+
+  if(e.target === typeModal){
+    typeModal.classList.remove("active")
+  }
+
+  if(e.target === dealModal){
     closeDealForm()
   }
+
 })
+
+
 
 /* =========================
 SUBMIT (DEMO SAFE)
