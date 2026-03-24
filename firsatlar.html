@@ -272,57 +272,140 @@ Fırsatlar yükleniyor...
 
 <script>
 
-/* FILTER */
+/* =========================
+FILTER
+========================= */
 function filterDeals(type){
-const cards=document.querySelectorAll(".deal-card")
-cards.forEach(card=>{
-card.style.display=(type==="all"||card.dataset.type===type)?"block":"none"
-})
+  const cards=document.querySelectorAll(".deal-card")
+  cards.forEach(card=>{
+    card.style.display=(type==="all"||card.dataset.type===type)?"block":"none"
+  })
 }
 
-/* 🔥 NEW SELECTOR */
+/* =========================
+TYPE MODAL
+========================= */
 function openDealSelector(){
-document.getElementById("dealTypeModal").classList.add("active")
+  document.getElementById("dealTypeModal").classList.add("active")
 }
 
 function selectDealType(type){
-document.getElementById("dealTypeModal").classList.remove("active")
-openDealForm(type)
+  document.getElementById("dealTypeModal").classList.remove("active")
+  openDealForm(type)
 }
 
-/* 🔒 SECURITY */
+/* modal dışına tıklayınca kapat */
+document.addEventListener("click", function(e){
+  const typeModal = document.getElementById("dealTypeModal")
+  if(e.target === typeModal){
+    typeModal.classList.remove("active")
+  }
+})
+
+/* =========================
+SECURITY
+========================= */
 function sanitize(text){
-return text.replace(/[<>]/g,"")
+  if(!text) return ""
+  return text.replace(/[<>]/g,"")
 }
 
-
-
+/* =========================
+DEAL MODAL
+========================= */
 window.openDealForm = function(type){
 
-  console.log("openDealForm:", type);
+  console.log("openDealForm:", type)
 
-  const modal = document.getElementById("dealModal");
+  const modal = document.getElementById("dealModal")
 
   if(!modal){
-    console.warn("dealModal yok");
-    return;
+    console.warn("dealModal yok")
+    return
   }
 
-  modal.classList.add("active");
+  modal.classList.add("active")
 
-  // opsiyonel: type’a göre alan kontrolü
-  const linkBox = document.getElementById("linkBox");
-  const districtBox = document.getElementById("districtBox");
+  const linkBox = document.getElementById("linkBox")
+  const districtBox = document.getElementById("districtBox")
 
   if(type === "online"){
-    linkBox.style.display = "block";
-    districtBox.style.display = "none";
+    linkBox.style.display = "block"
+    districtBox.style.display = "none"
   }else{
-    linkBox.style.display = "none";
-    districtBox.style.display = "block";
+    linkBox.style.display = "none"
+    districtBox.style.display = "block"
   }
 
-};
+}
+
+/* 🔥 EKLENDİ */
+window.closeDealForm = function(){
+  document.getElementById("dealModal").classList.remove("active")
+}
+
+/* modal dış click */
+document.addEventListener("click", function(e){
+  const modal = document.getElementById("dealModal")
+  if(e.target === modal){
+    closeDealForm()
+  }
+})
+
+/* =========================
+SUBMIT (DEMO SAFE)
+========================= */
+window.submitDeal = function(){
+
+  const title = sanitize(document.getElementById("dealTitle").value)
+  const content = sanitize(document.getElementById("dealContent").value)
+
+  if(!title || !content){
+    alert("Başlık ve açıklama zorunlu")
+    return
+  }
+
+  console.log("DEAL SUBMIT:", {
+    title,
+    content
+  })
+
+  alert("Fırsat gönderildi (demo)")
+
+  closeDealForm()
+}
+
+/* =========================
+FAKE DATA (TEST İÇİN)
+========================= */
+function renderFakeDeals(){
+
+  const container = document.getElementById("dealList")
+
+  if(!container) return
+
+  container.innerHTML = ""
+
+  const data = [
+    {title:"Trendyol %50 İndirim", type:"online"},
+    {title:"A101 Haftalık Fırsat", type:"store"},
+    {title:"Gratis 1 Alana 1 Bedava", type:"store"}
+  ]
+
+  data.forEach(d=>{
+    const div = document.createElement("div")
+    div.className = "deal-card"
+    div.dataset.type = d.type
+    div.innerText = d.title
+
+    container.appendChild(div)
+  })
+}
+
+/* =========================
+INIT
+========================= */
+document.addEventListener("DOMContentLoaded", renderFakeDeals)
 
 </script>
 
