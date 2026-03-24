@@ -28,6 +28,8 @@
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
+
+
 <style>
 
 /* ===============================
@@ -435,15 +437,6 @@ CARD
   transform:translateZ(0);
 }
 
-/* ===============================
-IMAGE
-=============================== */
-
-.news-card img{
-  width:100%;
-  height:auto;
-  display:block;
-}
 
 /* ===============================
 BADGE
@@ -489,10 +482,6 @@ MOBILE OPTIMIZATION
     padding:0 10px;
   }
 
-  .news-card{
-    border-radius:14px;
-  }
-
   .news-card .content{
     font-size:13px;
   }
@@ -512,16 +501,32 @@ DESKTOP OPTIMIZATION
 
 }
 
-/* görsel büyüt */
 .news-card img{
   width:100%;
-  aspect-ratio:16/9;   /* 🔥 kritik */
+  aspect-ratio:16/9;
   object-fit:cover;
+  display:block;
 }
 
 .news-card{
+  min-width:100%;
+  max-width:100%;
+
+  flex-shrink:0;
+  position:relative;
+
   display:flex;
   flex-direction:column;
+
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  border:1px solid rgba(0,0,0,0.05);
+
+  transform:translateZ(0);
+  backface-visibility:hidden;
 }
 
 /* içerik */
