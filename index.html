@@ -768,21 +768,25 @@ QUICK GRID - PREMIUM 2x2
 
 /* SWIPE SUPPORT */
 
-track.addEventListener("touchend", e=>{
-  let endX = e.changedTouches[0].clientX;
-  let diff = startX - endX;
+const track = document.getElementById("newsTrack");
 
-  if(diff > 50){
-    index++;
-  }else if(diff < -50){
-    index--;
-  }
+if(track){
+  track.addEventListener("touchend", e=>{
+    let endX = e.changedTouches[0].clientX;
+    let diff = startX - endX;
 
-  if(index < 0) index = 0;
-  if(index >= total) index = total - 1;
+    if(diff > 50){
+      index++;
+    }else if(diff < -50){
+      index--;
+    }
 
-  track.style.transform = `translateX(-${index * 100}%)`;
-});
+    if(index < 0) index = 0;
+    if(index >= total) index = total - 1;
+
+    track.style.transform = `translateX(-${index * 100}%)`;
+  });
+}
 </script>
 
 <script src="assets/js/news.js" defer></script>

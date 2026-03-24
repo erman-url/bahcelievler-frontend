@@ -22,20 +22,86 @@ async function loadNews(){
   const track = document.getElementById("newsTrack");
   if(!track) return;
 
+  const API_URL = "https://icy-thunder-44fb.erman-urel.workers.dev";
+  const CACHE_KEY = "news_cache_v1";
+  const CACHE_TIME = 60000; // 60 sn
+
+  // =========================
+  // 1. CACHE OKU (ANINDA UI)
+  // =========================
   try{
-    const res = await fetch("/api/news");
+    const cached = localStorage.getItem(CACHE_KEY);
+
+    if(cached){
+      const parsed = JSON.parse(cached);
+
+      if(Date.now() - parsed.time < CACHE_TIME){
+        renderNews(parsed.data); // hızlı yükleme
+      }
+    }
+  }catch(e){
+    console.warn("CACHE READ ERROR", e);
+  }
+
+  // =========================
+  // 2. API CALL (TIMEOUT)
+  // =========================
+  try{
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000); // 5sn
+
+    const res = await fetch(API_URL, {
+      signal: controller.signal,
+      cache: "no-store"
+    });
+
+    clearTimeout(timeout);
 
     if(!res.ok) throw new Error("API error");
 
     const data = await res.json();
 
+    // =========================
+    // 3. RENDER
+    // =========================
     renderNews(data);
 
+    // =========================
+    // 4. CACHE YAZ
+    // =========================
+    try{
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data,
+        time: Date.now()
+      }));
+    }catch(e){
+      console.warn("CACHE WRITE ERROR", e);
+    }
+
   }catch(err){
-    console.warn("NEWS FALLBACK ACTIVE", err);
+
+    console.warn("NEWS API ERROR → FALLBACK", err);
+
+    // =========================
+    // 5. CACHE FALLBACK
+    // =========================
+    try{
+      const cached = localStorage.getItem(CACHE_KEY);
+      if(cached){
+        const parsed = JSON.parse(cached);
+        renderNews(parsed.data);
+        return;
+      }
+    }catch(e){
+      console.warn("CACHE FAIL", e);
+    }
+
+    // =========================
+    // 6. SON ÇARE
+    // =========================
     renderNews(FALLBACK_NEWS);
   }
-
 }
 
 // ==============================
