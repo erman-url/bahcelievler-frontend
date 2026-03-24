@@ -6,6 +6,10 @@ const CACHE_TIME = 10 * 60 * 1000;
 const WEATHER_KEY = "weather_cache_v2";
 const CURRENCY_KEY = "currency_cache_v2";
 
+// retry kontrol (🔥 yeni)
+let retryCount = 0;
+const MAX_RETRY = 10;
+
 // =======================================
 // CACHE
 // =======================================
@@ -43,13 +47,21 @@ function getCache(key){
 }
 
 // =======================================
-// FETCH HELPER
+// FETCH HELPER (timeout + safety)
 // =======================================
 
 async function fetchSafe(url){
 
   try{
-    const res = await fetch(url);
+
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 5000);
+
+    const res = await fetch(url, {
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
 
     if(!res.ok){
       throw new Error("HTTP " + res.status);
@@ -172,20 +184,33 @@ function renderCurrency(data){
 }
 
 // =======================================
-// INIT (SAFETY)
+// INIT (FIXED)
 // =======================================
 
 function initDashboard(){
 
   console.log("dashboard init");
 
-  // DOM kontrol
-  if(!document.getElementById("weatherBox")){
-    console.log("DOM hazır değil, retry");
-    setTimeout(initDashboard, 500);
+  const weatherEl = document.getElementById("weatherBox");
+  const currencyEl = document.getElementById("currencyBox");
+
+  // 🔥 kontrollü retry (sonsuz loop yok)
+  if(!weatherEl || !currencyEl){
+
+    if(retryCount < MAX_RETRY){
+      retryCount++;
+      console.log("DOM hazır değil, retry:", retryCount);
+      setTimeout(initDashboard, 200);
+      return;
+    }
+
+    console.warn("Dashboard init iptal edildi (DOM bulunamadı)");
     return;
   }
 
+  console.log("Dashboard başlatıldı");
+
+  // cache hızlı yükleme
   const weatherCache = getCache(WEATHER_KEY);
   const currencyCache = getCache(CURRENCY_KEY);
 
@@ -197,12 +222,13 @@ function initDashboard(){
     renderCurrency(currencyCache);
   }
 
+  // async fetch
   fetchWeather();
   fetchCurrency();
 }
 
 // =======================================
-// START
+// START (🔥 DEĞİŞTİ)
 // =======================================
 
-window.addEventListener("load", initDashboard);
+document.addEventListener("DOMContentLoaded", initDashboard);
