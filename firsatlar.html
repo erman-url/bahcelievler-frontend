@@ -268,7 +268,6 @@ Fırsatlar yükleniyor...
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/slider.js" defer></script>
 <script src="assets/js/countdown.js" defer></script>
-<script src="assets/js/dashboard.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
 <script>
@@ -296,7 +295,39 @@ function sanitize(text){
 return text.replace(/[<>]/g,"")
 }
 
+
+
+window.openDealForm = function(type){
+
+  console.log("openDealForm:", type);
+
+  const modal = document.getElementById("dealModal");
+
+  if(!modal){
+    console.warn("dealModal yok");
+    return;
+  }
+
+  modal.classList.add("active");
+
+  // opsiyonel: type’a göre alan kontrolü
+  const linkBox = document.getElementById("linkBox");
+  const districtBox = document.getElementById("districtBox");
+
+  if(type === "online"){
+    linkBox.style.display = "block";
+    districtBox.style.display = "none";
+  }else{
+    linkBox.style.display = "none";
+    districtBox.style.display = "block";
+  }
+
+};
+
 </script>
+
+
+
 
 <div id="globalFooter"></div>
 </body>
