@@ -15,9 +15,11 @@ const legalHTML = `
   </footer>
   `;
 
-/* footer container */
+/* footer container (her iki ihtimali de destekler) */
 
-const footer = document.getElementById("globalFooterLegal");
+const footer =
+  document.getElementById("globalFooterLegal") ||
+  document.getElementById("globalFooter");
 
 /* element yoksa script çalışmasın */
 
@@ -25,6 +27,16 @@ if(!footer){
 console.debug("Footer container bulunamadı.");
 return;
 }
+
+/* double render engelle */
+
+if(footer.dataset.loaded === "1"){
+return;
+}
+
+footer.dataset.loaded = "1";
+
+/* render */
 
 footer.innerHTML = legalHTML;
 
