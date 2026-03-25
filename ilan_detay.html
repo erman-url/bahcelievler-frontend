@@ -259,6 +259,49 @@ function slide(dir){
   index=(index+dir+total)%total;
   track.style.transform=`translateX(-${index*100}%)`;
 }
+
+/* ===============================
+İLAN DETAY GET
+=============================== */
+
+async function loadDetail(){
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if(!id) return;
+
+  try{
+
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar");
+
+    const data = await res.json();
+
+    const ad = data.find(x => String(x.id) === id);
+
+    if(!ad) return;
+
+    document.querySelector(".ad-title").innerText = ad.title;
+    document.querySelector(".price").innerText = ad.price + " TL";
+
+    const rows = document.querySelectorAll(".detail-row span:last-child");
+
+    if(rows[0]) rows[0].innerText = ad.category || "-";
+    if(rows[1]) rows[1].innerText = ad.condition || "-";
+    if(rows[2]) rows[2].innerText = ad.district || "-";
+    if(rows[3]) rows[3].innerText = ad.contact || "-";
+
+    document.querySelector(".description").innerText = ad.content || "";
+
+  }catch(e){
+    console.log("detail error", e);
+  }
+
+}
+
+document.addEventListener("DOMContentLoaded", loadDetail);
+
+
 </script>
 
 <script src="assets/js/layout.js"></script>
