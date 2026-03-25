@@ -292,7 +292,7 @@ async function loadAds(){
 
   try{
 
-    const res = await fetch("https://senin-worker-url/api/ilanlar");
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar");
     const data = await res.json();
 
     const grid = document.getElementById("adsGrid");
