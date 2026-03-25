@@ -213,7 +213,6 @@ BF.ui.renderFooterNav = function(){
     document.body.appendChild(nav);
 };
 
-
 /* -------- SIDE MENU -------- */
 BF.ui.renderSideMenu = function(){
 
@@ -232,19 +231,23 @@ BF.ui.renderSideMenu = function(){
         </div>
 
         <div class="menu-item" onclick="location.href='index.html'">
-            🏠 Ana Sayfa
-        </div>
-
-        <div class="menu-item" onclick="location.href='ilanlar.html'">
-            📌 İlanlar
+            🏠 Ana
         </div>
 
         <div class="menu-item" onclick="location.href='sosyal.html'">
             👥 Sosyal
         </div>
 
+        <div class="menu-item" onclick="location.href='ilanlar.html'">
+            📌 İlanlar
+        </div>
+
         <div class="menu-item" onclick="location.href='hizmetler.html'">
             🧰 Hizmetler
+        </div>
+
+        <div class="menu-item" onclick="location.href='oyunlar.html'">
+            🎮 Oyunlar
         </div>
 
         <div class="menu-item" onclick="location.href='iletisim.html'">
