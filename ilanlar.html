@@ -293,17 +293,31 @@ async function loadAds(){
   try{
 
     const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar");
+
+    if(!res.ok){
+      console.log("API hata:", res.status);
+      return;
+    }
+
     const data = await res.json();
 
     const grid = document.getElementById("adsGrid");
 
-    if(!data || data.length === 0) return;
+    if(!grid){
+      console.log("adsGrid bulunamadı");
+      return;
+    }
 
-    grid.innerHTML = "";
+    if(!data || data.length === 0){
+      grid.innerHTML = "<p style='padding:20px'>Henüz ilan yok</p>";
+      return;
+    }
+
+    let html = "";
 
     data.forEach(ad => {
 
-      const card = `
+      html += `
         <div class="ad-card" onclick="goDetail('${ad.id}')">
           <div class="ad-image">
             <img src="${ad.image_url || 'https://via.placeholder.com/300'}">
@@ -318,10 +332,9 @@ async function loadAds(){
           </div>
         </div>
       `;
-
-      grid.innerHTML += card;
-
     });
+
+    grid.innerHTML = html;
 
   }catch(e){
     console.log("İlan yükleme hatası", e);
