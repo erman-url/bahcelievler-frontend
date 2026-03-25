@@ -1268,3 +1268,39 @@ FOOTER NAV - PREMIUM FLOATING
   transform:scale(0.92);
 }
 
+/* CENTER ITEM (İLANLAR) */
+.nav-center{
+  position:relative;
+  top:-20px;
+}
+
+.nav-center-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+}
+
+.center-icon{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+
+  background:#2563eb;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#fff;
+  font-size:22px;
+
+  box-shadow:0 10px 25px rgba(0,0,0,0.35);
+}
+
+.nav-center-item span{
+  font-size:11px;
+  color:#e2e8f0;
+  font-weight:600;
+}
