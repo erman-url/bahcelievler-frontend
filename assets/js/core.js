@@ -225,7 +225,32 @@ BF.ui.renderSideMenu = function(){
     const menu = document.createElement("div");
     menu.className = "side-menu";
 
-    menu.innerHTML = `...`;
+    menu.innerHTML = `
+        <div class="menu-header">
+            <div class="menu-title">Menü</div>
+            <div id="closeMenu" class="menu-close">✕</div>
+        </div>
+
+        <div class="menu-item" onclick="location.href='index.html'">
+            🏠 Ana Sayfa
+        </div>
+
+        <div class="menu-item" onclick="location.href='ilanlar.html'">
+            📌 İlanlar
+        </div>
+
+        <div class="menu-item" onclick="location.href='sosyal.html'">
+            👥 Sosyal
+        </div>
+
+        <div class="menu-item" onclick="location.href='hizmetler.html'">
+            🧰 Hizmetler
+        </div>
+
+        <div class="menu-item" onclick="location.href='iletisim.html'">
+            ✉️ İletişim
+        </div>
+    `;
 
     document.body.appendChild(overlay);
     document.body.appendChild(menu);
