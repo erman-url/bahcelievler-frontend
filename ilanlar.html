@@ -278,16 +278,27 @@ AD MODAL
 
   </div>
 </div>
-
 <script>
 function goDetail(id){
   window.location.href = "ilan_detay.html?id=" + id;
 }
 
 /* ===============================
+TIME FORMAT
+=============================== */
+function timeAgo(dateString){
+  const date = new Date(dateString);
+  const diff = Math.floor((Date.now() - date) / 1000);
+
+  if(diff < 60) return "Az önce";
+  if(diff < 3600) return Math.floor(diff/60) + " dk";
+  if(diff < 86400) return Math.floor(diff/3600) + " sa";
+  return Math.floor(diff/86400) + " gün";
+}
+
+/* ===============================
 İLANLARI ÇEK + BAS
 =============================== */
-
 async function loadAds(){
 
   try{
@@ -343,69 +354,66 @@ async function loadAds(){
 }
 
 /* ===============================
-TIME FORMAT
+INIT (TEK MERKEZ)
 =============================== */
+document.addEventListener("DOMContentLoaded", () => {
 
-function timeAgo(dateString){
-  const date = new Date(dateString);
-  const diff = Math.floor((Date.now() - date) / 1000);
+  /* API LOAD */
+  loadAds();
 
-  if(diff < 60) return "Az önce";
-  if(diff < 3600) return Math.floor(diff/60) + " dk";
-  if(diff < 86400) return Math.floor(diff/3600) + " sa";
-  return Math.floor(diff/86400) + " gün";
-}
+  /* MODAL */
+  const modal = document.getElementById("adModal");
+  const openBtn = document.getElementById("openAdModal");
+  const closeBtn = document.getElementById("closeAdModal");
+  const submitBtn = document.getElementById("submitAdBtn");
 
-/* ===============================
-INIT
-=============================== */
-
-document.addEventListener("DOMContentLoaded", loadAds);
-
-
-
-/* MODAL */
-const modal = document.getElementById("adModal");
-
-document.getElementById("openAdModal").onclick = () => {
-  modal.classList.add("active");
-};
-
-document.getElementById("closeAdModal").onclick = () => {
-  modal.classList.remove("active");
-};
-
-window.addEventListener("click", (e)=>{
-  if(e.target === modal){
-    modal.classList.remove("active");
+  if(openBtn){
+    openBtn.onclick = () => {
+      if(modal) modal.classList.add("active");
+    };
   }
+
+  if(closeBtn){
+    closeBtn.onclick = () => {
+      if(modal) modal.classList.remove("active");
+    };
+  }
+
+  window.addEventListener("click", (e)=>{
+    if(e.target === modal){
+      modal.classList.remove("active");
+    }
+  });
+
+  /* VALIDATION */
+  if(submitBtn){
+    submitBtn.onclick = () => {
+
+      const title = document.getElementById("adTitle").value.trim();
+      const price = Number(document.getElementById("adPrice").value);
+      const district = document.getElementById("adDistrict").value;
+
+      if(title.length < 3 || title.length > 20){
+        alert("Başlık 3-20 karakter olmalı");
+        return;
+      }
+
+      if(price < 50 || price > 20000){
+        alert("Fiyat 50 - 20000 TL olmalı");
+        return;
+      }
+
+      if(!district){
+        alert("Mahalle seçiniz");
+        return;
+      }
+
+      alert("İlan oluşturuldu (demo)");
+      if(modal) modal.classList.remove("active");
+    };
+  }
+
 });
-
-/* VALIDATION */
-document.getElementById("submitAdBtn").onclick = () => {
-
-  const title = document.getElementById("adTitle").value.trim();
-  const price = Number(document.getElementById("adPrice").value);
-  const district = document.getElementById("adDistrict").value;
-
-  if(title.length < 3 || title.length > 20){
-    alert("Başlık 3-20 karakter olmalı");
-    return;
-  }
-
-  if(price < 50 || price > 20000){
-    alert("Fiyat 50 - 20000 TL olmalı");
-    return;
-  }
-
-  if(!district){
-    alert("Mahalle seçiniz");
-    return;
-  }
-
-  alert("İlan oluşturuldu (demo)");
-  modal.classList.remove("active");
-};
 </script>
 
 <script src="assets/js/layout.js"></script>
