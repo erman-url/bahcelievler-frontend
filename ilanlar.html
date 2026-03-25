@@ -102,6 +102,63 @@ body{
   }
 }
 
+/* ===============================
+AD MODAL
+=============================== */
+
+.ad-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.ad-modal.active{
+  display:flex;
+}
+
+.ad-modal-content{
+  width:95%;
+  max-width:500px;
+  max-height:90vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+}
+
+.ad-modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  font-weight:700;
+}
+
+#adModal input,
+#adModal select,
+#adModal textarea{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
+.submit-btn{
+  width:100%;
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:14px;
+  border-radius:12px;
+  font-weight:700;
+}
+
 </style>
 
 </head>
@@ -109,7 +166,6 @@ body{
 <body>
 
 <div id="globalHeader"></div> 
-
 
 <div class="page-wrapper">
 
@@ -135,7 +191,7 @@ body{
 
 <!-- İLAN VER -->
 <section style="margin:var(--space-md); text-align:center;">
-  <button class="quick-card" style="width:100%; font-size:15px;">
+  <button id="openAdModal" class="quick-card" style="width:100%; font-size:15px;">
     <i class="fas fa-plus"></i>
     <span>İlan Ver</span>
   </button>
@@ -179,11 +235,97 @@ body{
 </main>
 </div>
 
+<!-- MODAL -->
+<div id="adModal" class="ad-modal">
+  <div class="ad-modal-content">
+
+    <div class="ad-modal-header">
+      <span id="closeAdModal">✕</span>
+      <span>Yeni İlan</span>
+    </div>
+
+    <input type="text" id="adTitle" placeholder="İlan Başlığı (max 20)">
+    <input type="number" id="adPrice" placeholder="Fiyat (TL)">
+
+    <select id="adCategory">
+      <option value="">Kategori</option>
+      <option>Elektronik</option>
+      <option>Vasıta</option>
+      <option>Emlak</option>
+    </select>
+
+    <select id="adDistrict">
+      <option value="">Mahalle</option>
+      <option>Zafer Mah.</option>
+      <option>Şirinevler</option>
+    </select>
+
+    <select id="adCondition">
+      <option value="">Durum</option>
+      <option>2. El</option>
+      <option>Yeni</option>
+    </select>
+
+    <textarea id="adDesc" placeholder="Açıklama"></textarea>
+
+    <input type="file" id="adImages" multiple>
+
+    <input type="text" id="adContact" placeholder="İletişim">
+
+    <input type="password" id="deleteCode" placeholder="Silme Şifresi">
+
+    <button id="submitAdBtn" class="submit-btn">İLANI YAYINLA</button>
+
+  </div>
+</div>
 
 <script>
 function goDetail(id){
   window.location.href = "ilan_detay.html?id=" + id;
 }
+
+/* MODAL */
+const modal = document.getElementById("adModal");
+
+document.getElementById("openAdModal").onclick = () => {
+  modal.classList.add("active");
+};
+
+document.getElementById("closeAdModal").onclick = () => {
+  modal.classList.remove("active");
+};
+
+window.addEventListener("click", (e)=>{
+  if(e.target === modal){
+    modal.classList.remove("active");
+  }
+});
+
+/* VALIDATION */
+document.getElementById("submitAdBtn").onclick = () => {
+
+  const title = document.getElementById("adTitle").value.trim();
+  const price = document.getElementById("adPrice").value;
+  const district = document.getElementById("adDistrict").value;
+
+  if(title.length < 3 || title.length > 20){
+    alert("Başlık 3-20 karakter olmalı");
+    return;
+  }
+
+  if(price < 50 || price > 20000){
+    alert("Fiyat 50 - 20000 TL olmalı");
+    return;
+  }
+
+  if(!district){
+    alert("Mahalle seçiniz");
+    return;
+  }
+
+  alert("İlan oluşturuldu (demo)");
+  modal.classList.remove("active");
+};
 </script>
 
 <script src="assets/js/layout.js"></script>
