@@ -397,6 +397,8 @@ BF.init = function(){
         BF.ui.renderHeader();
         BF.ui.renderFooterNav();
         BF.ui.renderSideMenu();
+        document.querySelector(".side-menu")?.classList.remove("active");
+        document.querySelector(".overlay")?.classList.remove("active");
         BF.ui.bindMenuEvents();
         BF.ui.renderFooter();
         BF.ui.renderCookieBar();
