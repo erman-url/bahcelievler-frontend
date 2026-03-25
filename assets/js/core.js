@@ -397,10 +397,6 @@ if(document.readyState === "loading"){
     setTimeout(BF.init,0);
 }
 
-window.addEventListener("load", function(){
-    if(!BF.state.initialized){
-        BF.init();
-    }
-});
+
 
 })();
