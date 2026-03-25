@@ -12,7 +12,7 @@ window.__BF_CORE__ = true;
 
 window.BF = {
 
-    version: "1.4.1", // 🔥 version bump
+    version: "1.4.2", // 🔥 version bump
 
     config: {
         apiCacheMinutes: 30,
@@ -27,14 +27,13 @@ window.BF = {
         heroTimer: null,
         newsTimer: null,
         initialized: false,
-        eventsBound: false // 🔥 new
+        eventsBound: false
     },
 
     utils: {},
     cache: {},
     ui: {},
 
-    /* 🔥 MODULE SYSTEM */
     modules: {}
 };
 
@@ -47,7 +46,6 @@ BF.registerModule = function(name, init){
 };
 
 BF.runModules = function(){
-
     Object.keys(BF.modules).forEach(name=>{
         try{
             BF.modules[name]();
@@ -55,7 +53,6 @@ BF.runModules = function(){
             console.warn("Module error:", name, e);
         }
     });
-
 };
 
 
@@ -66,6 +63,20 @@ BF.utils.qa = (selector) => document.querySelectorAll(selector);
 
 BF.utils.formatNumber = (num, digits = 2) =>
     Number(num).toFixed(digits);
+
+/* 🔥 EKLENDİ */
+BF.utils.setActiveNav = function(){
+
+    let current = window.location.pathname.split("/").pop();
+    if(!current || current === "") current = "index.html";
+
+    document.querySelectorAll(".app-footer-nav a").forEach(link=>{
+        if(link.getAttribute("href") === current){
+            link.classList.add("active");
+        }
+    });
+
+};
 
 BF.utils.storage = {
     set(key, value){
@@ -122,13 +133,14 @@ BF.cache.setCached = function(key, value, minutes){
 
 
 /* ================= UI ENGINE ================= */
+
 /* -------- HEADER -------- */
 BF.ui.renderHeader = function(){
 
     const container = document.getElementById("globalHeader");
     if(!container) return;
 
-    if(container.innerHTML.trim() !== "") return; // 🔥 double render fix
+    if(container.innerHTML.trim() !== "") return;
 
     container.innerHTML = `
         <div class="top-header">
@@ -170,7 +182,7 @@ BF.ui.renderFooterNav = function(){
     const nav = document.createElement("nav");
     nav.className = "app-footer-nav";
 
-    nav.innerHTML = `...`; // aynen korunur
+    nav.innerHTML = `...`;
 
     document.body.appendChild(nav);
 };
@@ -210,10 +222,38 @@ BF.ui.renderFooter = function(){
 };
 
 
+/* 🔥 EKLENDİ (CRASH FIX) */
+BF.ui.renderCookieBar = function(){
+
+    if(localStorage.getItem("cookieAccepted")) return;
+    if(document.querySelector(".cookie-bar")) return;
+
+    const bar = document.createElement("div");
+    bar.className = "cookie-bar";
+
+    bar.innerHTML = `
+        <div class="cookie-inner">
+            Bu site çerez kullanır
+            <button id="cookieBtn">Kabul Et</button>
+        </div>
+    `;
+
+    document.body.appendChild(bar);
+
+    const btn = document.getElementById("cookieBtn");
+    if(btn){
+        btn.onclick = function(){
+            localStorage.setItem("cookieAccepted","1");
+            bar.remove();
+        };
+    }
+};
+
+
 /* -------- MENU EVENTS -------- */
 BF.ui.bindMenuEvents = function(){
 
-    if(BF.state.eventsBound) return; // 🔥 duplicate bind fix
+    if(BF.state.eventsBound) return;
     BF.state.eventsBound = true;
 
     document.addEventListener("click", function(e){
@@ -265,7 +305,7 @@ BF.utils.initHeroSlider = function(){
     if(slides.length < 2) return;
 
     if(BF.state.heroTimer){
-        clearInterval(BF.state.heroTimer); // 🔥 leak fix
+        clearInterval(BF.state.heroTimer);
     }
 
     let index = 0;
@@ -292,7 +332,7 @@ BF.utils.initNewsSlider = function(){
     if(cards.length < 2) return;
 
     if(BF.state.newsTimer){
-        clearInterval(BF.state.newsTimer); // 🔥 leak fix
+        clearInterval(BF.state.newsTimer);
     }
 
     let index = 0;
@@ -306,32 +346,7 @@ BF.utils.initNewsSlider = function(){
 
     BF.state.newsTimer = setInterval(move, BF.config.newsInterval);
 
-    track.addEventListener("mouseenter", ()=> clearInterval(BF.state.newsTimer));
-    track.addEventListener("mouseleave", ()=>{
-        BF.state.newsTimer = setInterval(move, BF.config.newsInterval);
-    });
-
 };
-
-
-/* ================= RESPONSIVE ================= */
-
-BF.utils.handleResize = BF.utils.debounce(function(){
-
-    const wasMobile = BF.state.isMobile;
-    BF.state.isMobile = window.innerWidth < 1024;
-
-    if(wasMobile !== BF.state.isMobile){
-
-        clearInterval(BF.state.newsTimer);
-
-        if(!BF.state.isMobile){
-            BF.utils.initNewsSlider();
-        }
-
-    }
-
-}, 300);
 
 
 /* ================= INIT ================= */
@@ -349,38 +364,29 @@ BF.init = function(){
 
     BF.state.isMobile = window.innerWidth < 1024;
 
-    BF.ui.renderHeader();
-    BF.ui.renderFooterNav();
-    BF.ui.renderSideMenu();
-    BF.ui.bindMenuEvents();
-    BF.ui.renderFooter();
-    BF.ui.renderCookieBar();
+    try{
+        BF.ui.renderHeader();
+        BF.ui.renderFooterNav();
+        BF.ui.renderSideMenu();
+        BF.ui.bindMenuEvents();
+        BF.ui.renderFooter();
+        BF.ui.renderCookieBar();
+    }catch(e){
+        console.error("UI crash:", e);
+    }
 
-    BF.utils.setActiveNav();
-    BF.utils.initHeroSlider();
-    BF.utils.initNewsSlider();
+    try{
+        BF.utils.setActiveNav();
+        BF.utils.initHeroSlider();
+        BF.utils.initNewsSlider();
+    }catch(e){}
 
-    window.addEventListener("resize", BF.utils.handleResize);
-
-    BF.runModules();
+    try{
+        BF.runModules();
+    }catch(e){}
 
     console.log("BF Core Ready v" + BF.version);
 };
-
-
-/* HEADER SCROLL EFFECT */
-window.addEventListener("scroll", function(){
-
-  const header = document.querySelector(".top-header");
-  if(!header) return;
-
-  if(window.scrollY > 20){
-    header.classList.add("scrolled");
-  }else{
-    header.classList.remove("scrolled");
-  }
-
-});
 
 
 /* ================= SAFE START ================= */
