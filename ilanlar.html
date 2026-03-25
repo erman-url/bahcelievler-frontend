@@ -385,7 +385,7 @@ window.addEventListener("click", (e)=>{
 document.getElementById("submitAdBtn").onclick = () => {
 
   const title = document.getElementById("adTitle").value.trim();
-  const price = document.getElementById("adPrice").value;
+  const price = Number(document.getElementById("adPrice").value);
   const district = document.getElementById("adDistrict").value;
 
   if(title.length < 3 || title.length > 20){
