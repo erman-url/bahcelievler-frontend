@@ -408,7 +408,73 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      alert("İlan oluşturuldu (demo)");
+      /* VALIDATION + API */
+if(submitBtn){
+  submitBtn.onclick = async () => {
+
+    const title = document.getElementById("adTitle").value.trim();
+    const price = Number(document.getElementById("adPrice").value);
+    const category = document.getElementById("adCategory").value;
+    const district = document.getElementById("adDistrict").value;
+    const condition = document.getElementById("adCondition").value;
+    const content = document.getElementById("adDesc").value.trim();
+    const contact = document.getElementById("adContact").value.trim();
+    const delete_token = document.getElementById("deleteCode").value;
+
+    if(title.length < 3 || title.length > 20){
+      alert("Başlık hatalı");
+      return;
+    }
+
+    if(price < 50 || price > 20000){
+      alert("Fiyat hatalı");
+      return;
+    }
+
+    if(!district){
+      alert("Mahalle seçiniz");
+      return;
+    }
+
+    if(!delete_token){
+      alert("Silme şifresi gir");
+      return;
+    }
+
+    const payload = {
+      title,
+      price,
+      category,
+      district,
+      condition,
+      content,
+      contact,
+      delete_token
+    };
+
+    try{
+
+      const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if(data.ok){
+        alert("İlan yayınlandı ✅");
+        location.reload();
+      }else{
+        alert(data.error || "Hata oluştu");
+      }
+
+    }catch(e){
+      alert("Sunucu hatası");
+    }
+
+  };
+}
       if(modal) modal.classList.remove("active");
     };
   }
