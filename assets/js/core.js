@@ -193,11 +193,14 @@ BF.ui.renderFooterNav = function(){
             <span>Sosyal</span>
         </a>
 
-        <div class="nav-center">
-            <button id="quickAddBtn">
-                <i class="fa-solid fa-plus"></i>
-            </button>
+       <div class="nav-center">
+    <div class="nav-center-item" id="marketBtn">
+        <div class="center-icon">
+            <i class="fa-solid fa-cart-shopping"></i>
         </div>
+        <span>İlanlar</span>
+    </div>
+</div>
 
         <a href="hizmet-rehberi.html" class="nav-item">
             <i class="fa-solid fa-layer-group"></i>
