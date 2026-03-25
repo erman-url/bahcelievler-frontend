@@ -314,21 +314,25 @@ BF.ui.bindMenuEvents = function(){
 
     document.addEventListener("click", function(e){
 
+        /* ☰ MENU OPEN */
         if(e.target.closest("#menuBtn")){
             document.querySelector(".side-menu")?.classList.add("active");
             document.querySelector(".overlay")?.classList.add("active");
         }
 
+        /* MENU CLOSE */
         if(e.target.closest("#closeMenu") || e.target.classList.contains("overlay")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
 
+        /* MENU ITEM CLICK */
         if(e.target.closest(".menu-item")){
             document.querySelector(".side-menu")?.classList.remove("active");
             document.querySelector(".overlay")?.classList.remove("active");
         }
 
+        /* SEARCH PANEL */
         if(e.target.closest("#searchBtn")){
             const panel = document.querySelector(".search-panel");
             if(panel){
@@ -340,13 +344,14 @@ BF.ui.bindMenuEvents = function(){
             }
         }
 
-        /* 🔥 QUICK ADD BUTTON (EKLENDİ) */
-        if(e.target.closest("#quickAddBtn")){
-            window.location.href = "ilan-ekle.html";
+        /* 🔥 YENİ: MARKET / İLANLAR BUTTON */
+        if(e.target.closest("#marketBtn")){
+            window.location.href = "ilanlar.html";
         }
 
     });
 
+    /* SEARCH ENTER */
     document.addEventListener("keydown", function(e){
         if(e.target.id === "globalSearchInput" && e.key === "Enter"){
             const q = e.target.value.trim();
