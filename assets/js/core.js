@@ -182,7 +182,33 @@ BF.ui.renderFooterNav = function(){
     const nav = document.createElement("nav");
     nav.className = "app-footer-nav";
 
-    nav.innerHTML = `...`;
+    nav.innerHTML = `
+        <a href="index.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Ana</span>
+        </a>
+
+        <a href="sosyal.html" class="nav-item">
+            <i class="fa-solid fa-globe"></i>
+            <span>Sosyal</span>
+        </a>
+
+        <div class="nav-center">
+            <button id="quickAddBtn">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+
+        <a href="hizmet-rehberi.html" class="nav-item">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Hizmet</span>
+        </a>
+
+        <a href="iletisim.html" class="nav-item">
+            <i class="fa-solid fa-envelope"></i>
+            <span>İletişim</span>
+        </a>
+    `;
 
     document.body.appendChild(nav);
 };
@@ -249,7 +275,6 @@ BF.ui.renderCookieBar = function(){
     }
 };
 
-
 /* -------- MENU EVENTS -------- */
 BF.ui.bindMenuEvents = function(){
 
@@ -284,6 +309,11 @@ BF.ui.bindMenuEvents = function(){
             }
         }
 
+        /* 🔥 QUICK ADD BUTTON (EKLENDİ) */
+        if(e.target.closest("#quickAddBtn")){
+            window.location.href = "ilan-ekle.html";
+        }
+
     });
 
     document.addEventListener("keydown", function(e){
@@ -295,7 +325,6 @@ BF.ui.bindMenuEvents = function(){
     });
 
 };
-
 
 /* ================= HERO ================= */
 

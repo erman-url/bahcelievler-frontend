@@ -1184,3 +1184,86 @@ SIDE MENU - GLOBAL PREMIUM
   border-radius:8px;
   font-size:12px;
 }
+
+/* ===============================
+FOOTER NAV - PREMIUM FLOATING
+=============================== */
+
+.app-footer-nav{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:95%;
+  max-width:420px;
+
+  height:70px;
+
+  background:linear-gradient(135deg,#1e3a5f,#224c7a);
+
+  border-radius:40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 18px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+
+  z-index:999;
+}
+
+/* item */
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  color:#cbd5e1;
+  font-size:12px;
+  text-decoration:none;
+  gap:4px;
+}
+
+.nav-item i{
+  font-size:18px;
+}
+
+/* active */
+.nav-item.active{
+  color:#ffffff;
+}
+
+/* CENTER BUTTON */
+.nav-center{
+  position:relative;
+  top:-18px;
+}
+
+#quickAddBtn{
+  width:60px;
+  height:60px;
+
+  border-radius:50%;
+
+  background:#2563eb;
+  border:none;
+
+  color:white;
+  font-size:22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  box-shadow:0 10px 25px rgba(0,0,0,0.35);
+
+  cursor:pointer;
+}
+
+#quickAddBtn:active{
+  transform:scale(0.92);
+}
