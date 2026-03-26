@@ -4,9 +4,8 @@
 
 const CACHE_TIME = 10 * 60 * 1000;
 const WEATHER_KEY = "weather_cache_v2";
-const CURRENCY_KEY = "currency_cache_v2";
+const CURRENCY_KEY = "currency_cache_v3"; // 🔥 version artırıldı
 
-// retry kontrol (🔥 yeni)
 let retryCount = 0;
 const MAX_RETRY = 10;
 
@@ -48,7 +47,7 @@ function getCache(key){
 }
 
 // =======================================
-// FETCH HELPER (timeout + safety)
+// FETCH HELPER
 // =======================================
 
 async function fetchSafe(url){
@@ -60,7 +59,7 @@ async function fetchSafe(url){
 
     timeoutId = setTimeout(()=>{
       controller.abort();
-    }, 7000); // 🔥 artırıldı (abort hatası fix)
+    }, 7000);
 
     const res = await fetch(url, {
       signal: controller.signal
@@ -70,9 +69,7 @@ async function fetchSafe(url){
       throw new Error("HTTP " + res.status);
     }
 
-    const data = await res.json();
-
-    return data;
+    return await res.json();
 
   }catch(e){
 
@@ -103,10 +100,6 @@ async function fetchWeather(){
       "https://api.open-meteo.com/v1/forecast?latitude=41.003&longitude=28.859&current_weather=true"
     );
 
-    if(!data || !data.current_weather){
-      throw new Error("weather empty");
-    }
-
     const temp = data.current_weather.temperature;
     const wind = data.current_weather.windspeed;
 
@@ -123,28 +116,20 @@ async function fetchWeather(){
 
     const cache = getCache(WEATHER_KEY);
 
-    if(cache){
-      renderWeather(cache);
-    }else{
-      renderWeather("Veri yok");
-    }
+    renderWeather(cache || "Veri yok");
   }
 }
 
 function renderWeather(data){
   const el = document.getElementById("weatherBox");
-
-  if(!el){
-    console.log("weatherBox yok");
-    return;
-  }
+  if(!el) return;
 
   el.textContent = data;
   el.classList.remove("loading");
 }
 
 // =======================================
-// DÖVİZ
+// DÖVİZ (🔥 TAM FIX)
 // =======================================
 
 async function fetchCurrency(){
@@ -153,22 +138,21 @@ async function fetchCurrency(){
 
   try{
 
+    // 🔥 DOĞRU API KULLANIMI
     const data = await fetchSafe(
-      "https://api.frankfurter.app/latest?from=TRY&to=USD,EUR"
+      "https://api.frankfurter.app/latest?from=EUR&to=TRY,USD"
     );
 
-    if(!data || !data.rates){
-      throw new Error("currency empty");
-    }
+    if(!data || !data.rates) throw new Error("currency empty");
 
-    if(!data.rates.USD || !data.rates.EUR){
-      throw new Error("currency missing rates");
-    }
+    const TRY = data.rates.TRY;
+    const USD = data.rates.USD;
 
-    const usd = (1 / data.rates.USD).toFixed(2);
-    const eur = (1 / data.rates.EUR).toFixed(2);
+    // 🔥 DOĞRU HESAPLAMA
+    const usdTry = (TRY / USD).toFixed(2);
+    const eurTry = TRY.toFixed(2);
 
-    const result = `USD ${usd} • EUR ${eur}`;
+    const result = `USD ${usdTry} • EUR ${eurTry}`;
 
     console.log("currency OK", result);
 
@@ -181,28 +165,20 @@ async function fetchCurrency(){
 
     const cache = getCache(CURRENCY_KEY);
 
-    if(cache){
-      renderCurrency(cache);
-    }else{
-      renderCurrency("Veri yok");
-    }
+    renderCurrency(cache || "Veri yok");
   }
 }
 
 function renderCurrency(data){
   const el = document.getElementById("currencyBox");
-
-  if(!el){
-    console.log("currencyBox yok");
-    return;
-  }
+  if(!el) return;
 
   el.textContent = data;
   el.classList.remove("loading");
 }
 
 // =======================================
-// INIT (FIXED)
+// INIT
 // =======================================
 
 function initDashboard(){
@@ -212,50 +188,38 @@ function initDashboard(){
   const weatherEl = document.getElementById("weatherBox");
   const currencyEl = document.getElementById("currencyBox");
 
-  // 🔥 kontrollü retry (stabil hale getirildi)
   if(!weatherEl || !currencyEl){
 
     if(retryCount < MAX_RETRY){
       retryCount++;
-      console.log("DOM hazır değil, retry:", retryCount);
-
-      setTimeout(()=>{
-        initDashboard();
-      }, 250); // 🔥 daha stabil interval
-
+      setTimeout(initDashboard, 250);
       return;
     }
 
-    console.warn("Dashboard init iptal edildi (DOM bulunamadı)");
+    console.warn("Dashboard init iptal edildi");
     return;
   }
 
   console.log("Dashboard başlatıldı");
 
-  // cache hızlı yükleme
+  // 🔥 CACHE FIRST (instant UI)
   const weatherCache = getCache(WEATHER_KEY);
   const currencyCache = getCache(CURRENCY_KEY);
 
-  if(weatherCache){
-    renderWeather(weatherCache);
-  }
+  if(weatherCache) renderWeather(weatherCache);
+  if(currencyCache) renderCurrency(currencyCache);
 
-  if(currencyCache){
-    renderCurrency(currencyCache);
-  }
-
-  // async fetch (non-blocking)
+  // 🔥 ASYNC UPDATE
   fetchWeather();
   fetchCurrency();
 }
 
 // =======================================
-// START (🔥 HARD FIX)
+// START
 // =======================================
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initDashboard);
 } else {
-  // 🔥 bazı durumlarda DOMContentLoaded kaçabilir (SPA / partial load)
   setTimeout(initDashboard, 0);
 }
