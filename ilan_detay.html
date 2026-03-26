@@ -447,16 +447,27 @@ async function loadDetail(){
 
     const data = await res.json();
 
-    // 🔥 TOLERANSLI MATCH (EN KRİTİK FIX)
-    const ad = data.find(x =>
-      String(x.id) === String(id) ||
-      String(x.id).includes(id)
-    );
+   // 🔥 STABİL MATCH (KESİN EŞLEŞME + FALLBACK)
 
-    if(!ad){
-      alert("İlan bulunamadı");
-      return;
-    }
+let ad = data.find(x => String(x.id) === String(id));
+
+// fallback (tip farkı vs için)
+if(!ad){
+  ad = data.find(x => Number(x.id) === Number(id));
+}
+
+// hala yoksa
+if(!ad){
+  console.warn("İlan bulunamadı", { id, data });
+
+  document.body.innerHTML = `
+    <div style="padding:20px;text-align:center">
+      <h2>İlan bulunamadı</h2>
+      <p>Lütfen ilan listesinden tekrar deneyin.</p>
+    </div>
+  `;
+  return;
+}
 
     const titleEl = document.querySelector(".ad-title");
     const priceEl = document.querySelector(".price");
