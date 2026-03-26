@@ -296,33 +296,90 @@ function shareAd(ad){
     alert("Link kopyalandı");
   }
 }
-
 /* EKLENDİ */
 async function sendComment(){
-const id=new URLSearchParams(location.search).get("id");
-const name=document.getElementById("commentName").value;
-const text=document.querySelector(".comments textarea").value;
 
-await fetch("/api/comment-ekle",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({ilan_id:id,nickname:name,comment:text})
+const id = new URLSearchParams(location.search).get("id");
+const name = document.getElementById("commentName").value.trim();
+const text = document.querySelector(".comments textarea").value.trim();
+
+// VALIDATION
+if(!name) return alert("İsim giriniz");
+if(!text) return alert("Yorum boş olamaz");
+
+try{
+
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/comment-ekle",{
+  method:"POST",
+  mode:"cors",
+  headers:{
+    "Content-Type":"application/json"
+  },
+  body: JSON.stringify({
+    ilan_id:id,
+    nickname:name,
+    comment:text
+  })
 });
 
-loadComments();
+const result = await res.json();
+
+if(!result.ok){
+  alert(result.error || "Yorum gönderilemedi");
+  return;
 }
 
-async function loadComments(){
-const id=new URLSearchParams(location.search).get("id");
-const res=await fetch("/api/comments/"+id,{cache:"no-store"});
-const data=await res.json();
+// INPUT TEMİZLE
+document.getElementById("commentName").value = "";
+document.querySelector(".comments textarea").value = "";
 
-document.getElementById("commentList").innerHTML=data.map(c=>`
+// YORUMLARI YENİLE
+loadComments();
+
+}catch(e){
+console.log("comment error", e);
+alert("Bağlantı hatası");
+}
+
+}
+
+
+async function loadComments(){
+
+const id = new URLSearchParams(location.search).get("id");
+
+try{
+
+const res = await fetch(
+  "https://bahcelievler-api.erman-urel.workers.dev/api/comments/" + id,
+  { cache:"no-store", mode:"cors" }
+);
+
+const data = await res.json();
+
+const box = document.getElementById("commentList");
+
+if(!box) return;
+
+if(!data || data.length === 0){
+  box.innerHTML = "<div style='padding:10px;color:#777'>Henüz yorum yok</div>";
+  return;
+}
+
+box.innerHTML = data.map(c=>`
 <div style="padding:10px;border-bottom:1px solid #eee">
-<b>${c.nickname}</b>
-<div>${c.comment}</div>
+  <b>${c.nickname}</b>
+  <div style="font-size:12px;color:#777">
+    ${new Date(c.created_at).toLocaleString("tr-TR")}
+  </div>
+  <div>${c.comment}</div>
 </div>
 `).join("");
+
+}catch(e){
+console.log("loadComments error", e);
+}
+
 }
 
 async function loadDetail(){
