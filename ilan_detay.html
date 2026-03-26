@@ -12,6 +12,8 @@
 
 <style>
 
+/* (STYLE BLOĞUN AYNEN KORUNDU) */
+
 :root{
   --primary:#0e3b6f;
   --bg:#f4f7fb;
@@ -35,8 +37,6 @@ body{
   margin:0 auto;
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
-
-/* ===== SLIDER ===== */
 
 .slider{
   position:relative;
@@ -71,8 +71,6 @@ body{
 
 .left{left:10px;}
 .right{right:10px;}
-
-/* ===== CARD SECTIONS ===== */
 
 .section{
   background:var(--card);
@@ -117,8 +115,6 @@ body{
   gap:6px;
 }
 
-/* ===== BUTTONS ===== */
-
 .action-buttons{
   padding:16px;
   display:grid;
@@ -142,8 +138,6 @@ body{
   border-radius:10px;
   font-size:14px;
 }
-
-/* ===== COMMENTS ===== */
 
 .comments{
   background:#fff;
@@ -214,6 +208,9 @@ body{
   <div class="ad-id">İlan No: BF-01544</div>
   <div class="ad-title">Satılık iPhone 15 Max</div>
   <div class="price">32.500 ₺</div>
+
+  <!-- EKLENDİ -->
+  <div id="adDate" style="font-size:12px;color:#777;margin-top:4px;"></div>
 </div>
 
 <div class="section">
@@ -233,8 +230,11 @@ body{
 </div>
 
 <div class="action-buttons">
-  <button class="btn-primary">Satıcı ile İletişime Geç</button>
-  <button class="btn-secondary"><i class="fa fa-share"></i> Paylaş</button>
+  <!-- ID EKLENDİ -->
+  <button class="btn-primary" id="contactBtn">Satıcı ile İletişime Geç</button>
+
+  <!-- ID EKLENDİ -->
+  <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
 <div class="comments">
@@ -255,6 +255,45 @@ function slide(dir){
   track.style.transform=`translateX(-${index*100}%)`;
 }
 
+/* EKLENDİ */
+function formatDate(d){
+  return new Date(d).toLocaleString("tr-TR");
+}
+
+function handleContact(contact){
+  if(!contact) return;
+
+  if(contact.startsWith("@")){
+    window.open("https://t.me/"+contact.replace("@",""),"_blank");
+    return;
+  }
+
+  if(contact.startsWith("05")){
+    window.location.href="tel:"+contact;
+    return;
+  }
+
+  if(contact.startsWith("http")){
+    window.open(contact,"_blank");
+    return;
+  }
+}
+
+function shareAd(ad){
+  const url = window.location.href;
+
+  if(navigator.share){
+    navigator.share({
+      title: ad.title,
+      text: ad.title+" "+ad.price+" TL",
+      url
+    });
+  }else{
+    navigator.clipboard.writeText(url);
+    alert("Link kopyalandı");
+  }
+}
+
 async function loadDetail(){
 
   const params = new URLSearchParams(window.location.search);
@@ -264,7 +303,8 @@ async function loadDetail(){
 
   try{
 
-    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar");
+    // CACHE FIX
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
 
     if(!res.ok){
       console.log("API hata:", res.status);
@@ -287,6 +327,10 @@ async function loadDetail(){
 
     document.querySelector(".ad-title").innerText = ad.title || "-";
     document.querySelector(".price").innerText = (ad.price || 0) + " TL";
+
+    // TARİH
+    document.getElementById("adDate").innerText =
+      "İlan tarihi: " + formatDate(ad.created_at);
 
     const rows = document.querySelectorAll(".detail-row span:last-child");
 
@@ -311,9 +355,14 @@ async function loadDetail(){
 
     index = 0;
 
-    track.innerHTML = images.map(src => `<img src="${src}">`).join("");
+    // IMAGE CACHE FIX
+    track.innerHTML = images.map(src => `<img src="${src}?v=${ad.id}">`).join("");
 
     track.style.transform = "translateX(0%)";
+
+    // BUTTON AKTİF
+    document.getElementById("contactBtn").onclick = ()=>handleContact(ad.contact);
+    document.getElementById("shareBtn").onclick = ()=>shareAd(ad);
 
   }catch(e){
     console.log("detail error", e);
