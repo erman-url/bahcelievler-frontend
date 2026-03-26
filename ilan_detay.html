@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>İlan Detayı | Bahçelievler Forum</title>
 
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/layout.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/responsive.css">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="./assets/css/base.css">
-<link rel="stylesheet" href="./assets/css/layout.css">
-<link rel="stylesheet" href="./assets/css/components.css">
-<link rel="stylesheet" href="./assets/css/responsive.css">
+
 
 <style>
 
@@ -175,7 +178,8 @@ body{
 
 <body>
 
-<div id="globalHeader"></div> 
+  
+<div id="globalHeader"></div>
 
 <div class="page-wrapper">
 
@@ -237,20 +241,38 @@ body{
 
 let index=0;
 
+/* ===============================
+SLIDER
+=============================== */
 function slide(dir){
   const track=document.getElementById("sliderTrack");
   if(!track || track.children.length === 0) return;
+
   const total=track.children.length;
   index=(index+dir+total)%total;
+
   track.style.transform=`translateX(-${index*100}%)`;
 }
 
+/* ===============================
+DATE FORMAT
+=============================== */
 function formatDate(d){
+  if(!d) return "-";
   return new Date(d).toLocaleString("tr-TR");
 }
 
+/* ===============================
+CONTACT (FIXED)
+=============================== */
 function handleContact(contact){
-  if(!contact) return;
+
+  if(!contact){
+    alert("İletişim bilgisi yok");
+    return;
+  }
+
+  contact = String(contact).trim();
 
   if(contact.startsWith("@")){
     window.open("https://t.me/"+contact.replace("@",""),"_blank");
@@ -266,15 +288,21 @@ function handleContact(contact){
     window.open(contact,"_blank");
     return;
   }
+
+  alert("Geçersiz iletişim bilgisi");
 }
 
+/* ===============================
+SHARE (FIXED)
+=============================== */
 function shareAd(ad){
+
   const url = window.location.href;
 
   if(navigator.share){
     navigator.share({
-      title: ad.title,
-      text: ad.title+" "+ad.price+" TL",
+      title: ad?.title || "İlan",
+      text: (ad?.title || "") + " " + (ad?.price || "") + " TL",
       url
     });
   }else{
@@ -282,15 +310,17 @@ function shareAd(ad){
     alert("Link kopyalandı");
   }
 }
-/* EKLENDİ - STABİL VERSİYON */
 
+/* ===============================
+GET ID (SAFE)
+=============================== */
 function getAdId(){
   const id = new URLSearchParams(location.search).get("id");
   if(!id){
     console.warn("ID bulunamadı");
     return null;
   }
-  return id;
+  return id.trim();
 }
 
 /* ===============================
@@ -312,7 +342,6 @@ async function sendComment(){
   const name = nameInput.value.trim();
   const text = textarea.value.trim();
 
-  // VALIDATION
   if(!name) return alert("İsim giriniz");
   if(!text) return alert("Yorum boş olamaz");
 
@@ -341,11 +370,9 @@ async function sendComment(){
       return;
     }
 
-    // INPUT TEMİZLE
     nameInput.value = "";
     textarea.value = "";
 
-    // YORUMLARI YENİLE
     loadComments();
 
   }catch(e){
@@ -353,7 +380,6 @@ async function sendComment(){
     alert("Sunucu bağlantı hatası");
   }
 }
-
 
 /* ===============================
 LOAD COMMENTS
@@ -384,7 +410,6 @@ async function loadComments(){
       return;
     }
 
-    // PERFORMANS: tek join
     let html = "";
 
     for(const c of data){
@@ -392,7 +417,7 @@ async function loadComments(){
       <div style="padding:10px;border-bottom:1px solid #eee">
         <b>${c.nickname || "-"}</b>
         <div style="font-size:12px;color:#777">
-          ${new Date(c.created_at).toLocaleString("tr-TR")}
+          ${formatDate(c.created_at)}
         </div>
         <div>${c.comment || ""}</div>
       </div>`;
@@ -405,9 +430,8 @@ async function loadComments(){
   }
 }
 
-
 /* ===============================
-LOAD DETAIL
+LOAD DETAIL (CRITICAL FIX)
 =============================== */
 async function loadDetail(){
 
@@ -427,7 +451,11 @@ async function loadDetail(){
 
     const data = await res.json();
 
-    const ad = data.find(x => String(x.id) === String(id));
+    // 🔥 TOLERANSLI MATCH (EN KRİTİK FIX)
+    const ad = data.find(x =>
+      String(x.id) === String(id) ||
+      String(x.id).includes(id)
+    );
 
     if(!ad){
       alert("İlan bulunamadı");
@@ -437,11 +465,23 @@ async function loadDetail(){
     const titleEl = document.querySelector(".ad-title");
     const priceEl = document.querySelector(".price");
     const dateEl = document.getElementById("adDate");
+    const metaEl = document.querySelector(".ad-id");
     const slider = document.getElementById("sliderTrack");
 
     if(titleEl) titleEl.innerText = ad.title || "-";
     if(priceEl) priceEl.innerText = (ad.price || 0) + " TL";
-    if(dateEl) dateEl.innerText = "İlan tarihi: " + formatDate(ad.created_at);
+
+    // 🔥 İLAN NO + TARİH
+    if(metaEl){
+      metaEl.innerText =
+        "İlan No: " + (ad.id || "-") +
+        " • " +
+        formatDate(ad.created_at);
+    }
+
+    if(dateEl){
+      dateEl.innerText = "";
+    }
 
     let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
     if(images.length === 0) images = ["https://picsum.photos/600"];
@@ -453,10 +493,14 @@ async function loadDetail(){
     const contactBtn = document.getElementById("contactBtn");
     const shareBtn = document.getElementById("shareBtn");
 
-    if(contactBtn) contactBtn.onclick = ()=>handleContact(ad.contact);
-    if(shareBtn) shareBtn.onclick = ()=>shareAd(ad);
+    if(contactBtn){
+      contactBtn.onclick = () => handleContact(ad.contact);
+    }
 
-    // yorumları yükle
+    if(shareBtn){
+      shareBtn.onclick = () => shareAd(ad);
+    }
+
     loadComments();
 
   }catch(e){
@@ -464,7 +508,6 @@ async function loadDetail(){
     alert("İlan yüklenemedi");
   }
 }
-
 
 /* ===============================
 INIT
