@@ -274,125 +274,202 @@ function shareAd(ad){
     alert("Link kopyalandı");
   }
 }
-/* EKLENDİ */
+/* EKLENDİ - STABİL VERSİYON */
+
+function getAdId(){
+  const id = new URLSearchParams(location.search).get("id");
+  if(!id){
+    console.warn("ID bulunamadı");
+    return null;
+  }
+  return id;
+}
+
+/* ===============================
+COMMENT SEND
+=============================== */
 async function sendComment(){
 
-const id = new URLSearchParams(location.search).get("id");
-const name = document.getElementById("commentName").value.trim();
-const text = document.querySelector(".comments textarea").value.trim();
+  const id = getAdId();
+  if(!id) return alert("İlan bulunamadı");
 
-// VALIDATION
-if(!name) return alert("İsim giriniz");
-if(!text) return alert("Yorum boş olamaz");
+  const nameInput = document.getElementById("commentName");
+  const textarea = document.querySelector(".comments textarea");
 
-try{
+  if(!nameInput || !textarea){
+    console.warn("Form elemanları bulunamadı");
+    return;
+  }
 
-const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/comment-ekle",{
-  method:"POST",
-  mode:"cors",
-  headers:{
-    "Content-Type":"application/json"
-  },
-  body: JSON.stringify({
-    ilan_id:id,
-    nickname:name,
-    comment:text
-  })
-});
+  const name = nameInput.value.trim();
+  const text = textarea.value.trim();
 
-const result = await res.json();
+  // VALIDATION
+  if(!name) return alert("İsim giriniz");
+  if(!text) return alert("Yorum boş olamaz");
 
-if(!result.ok){
-  alert(result.error || "Yorum gönderilemedi");
-  return;
+  try{
+
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/comment-ekle",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({
+        ilan_id:id,
+        nickname:name,
+        comment:text
+      })
+    });
+
+    if(!res.ok){
+      throw new Error("HTTP hata: " + res.status);
+    }
+
+    const result = await res.json();
+
+    if(!result || !result.ok){
+      alert(result?.error || "Yorum gönderilemedi");
+      return;
+    }
+
+    // INPUT TEMİZLE
+    nameInput.value = "";
+    textarea.value = "";
+
+    // YORUMLARI YENİLE
+    loadComments();
+
+  }catch(e){
+    console.log("comment error", e);
+    alert("Sunucu bağlantı hatası");
+  }
 }
 
-// INPUT TEMİZLE
-document.getElementById("commentName").value = "";
-document.querySelector(".comments textarea").value = "";
 
-// YORUMLARI YENİLE
-loadComments();
-
-}catch(e){
-console.log("comment error", e);
-alert("Bağlantı hatası");
-}
-
-}
-
-
+/* ===============================
+LOAD COMMENTS
+=============================== */
 async function loadComments(){
 
-const id = new URLSearchParams(location.search).get("id");
+  const id = getAdId();
+  if(!id) return;
 
-try{
+  try{
 
-const res = await fetch(
-  "https://bahcelievler-api.erman-urel.workers.dev/api/comments/" + id,
-  { cache:"no-store", mode:"cors" }
-);
+    const res = await fetch(
+      "https://bahcelievler-api.erman-urel.workers.dev/api/comments/" + id,
+      { cache:"no-store" }
+    );
 
-const data = await res.json();
+    if(!res.ok){
+      throw new Error("HTTP hata: " + res.status);
+    }
 
-const box = document.getElementById("commentList");
+    const data = await res.json();
 
-if(!box) return;
+    const box = document.getElementById("commentList");
+    if(!box) return;
 
-if(!data || data.length === 0){
-  box.innerHTML = "<div style='padding:10px;color:#777'>Henüz yorum yok</div>";
-  return;
+    if(!data || data.length === 0){
+      box.innerHTML = "<div style='padding:10px;color:#777'>Henüz yorum yok</div>";
+      return;
+    }
+
+    // PERFORMANS: tek join
+    let html = "";
+
+    for(const c of data){
+      html += `
+      <div style="padding:10px;border-bottom:1px solid #eee">
+        <b>${c.nickname || "-"}</b>
+        <div style="font-size:12px;color:#777">
+          ${new Date(c.created_at).toLocaleString("tr-TR")}
+        </div>
+        <div>${c.comment || ""}</div>
+      </div>`;
+    }
+
+    box.innerHTML = html;
+
+  }catch(e){
+    console.log("loadComments error", e);
+  }
 }
 
-box.innerHTML = data.map(c=>`
-<div style="padding:10px;border-bottom:1px solid #eee">
-  <b>${c.nickname}</b>
-  <div style="font-size:12px;color:#777">
-    ${new Date(c.created_at).toLocaleString("tr-TR")}
-  </div>
-  <div>${c.comment}</div>
-</div>
-`).join("");
 
-}catch(e){
-console.log("loadComments error", e);
-}
-
-}
-
+/* ===============================
+LOAD DETAIL
+=============================== */
 async function loadDetail(){
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+  const id = getAdId();
+  if(!id) return;
 
-if(!id) return;
+  try{
 
-const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
-const data = await res.json();
+    const res = await fetch(
+      "https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",
+      { cache:"no-store" }
+    );
 
-const ad = data.find(x => String(x.id) === String(id));
+    if(!res.ok){
+      throw new Error("HTTP hata: " + res.status);
+    }
 
-document.querySelector(".ad-title").innerText = ad.title || "-";
-document.querySelector(".price").innerText = (ad.price || 0) + " TL";
+    const data = await res.json();
 
-document.getElementById("adDate").innerText =
-  "İlan tarihi: " + formatDate(ad.created_at);
+    const ad = data.find(x => String(x.id) === String(id));
 
-let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
-if(images.length === 0) images = ["https://picsum.photos/600"];
+    if(!ad){
+      alert("İlan bulunamadı");
+      return;
+    }
 
-document.getElementById("sliderTrack").innerHTML =
-images.map(src => `<img src="${src}?v=${ad.id}">`).join("");
+    const titleEl = document.querySelector(".ad-title");
+    const priceEl = document.querySelector(".price");
+    const dateEl = document.getElementById("adDate");
+    const slider = document.getElementById("sliderTrack");
 
-document.getElementById("contactBtn").onclick = ()=>handleContact(ad.contact);
-document.getElementById("shareBtn").onclick = ()=>shareAd(ad);
+    if(titleEl) titleEl.innerText = ad.title || "-";
+    if(priceEl) priceEl.innerText = (ad.price || 0) + " TL";
+    if(dateEl) dateEl.innerText = "İlan tarihi: " + formatDate(ad.created_at);
 
-loadComments();
+    let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
+    if(images.length === 0) images = ["https://picsum.photos/600"];
+
+    if(slider){
+      slider.innerHTML = images.map(src => `<img src="${src}?v=${ad.id}">`).join("");
+    }
+
+    const contactBtn = document.getElementById("contactBtn");
+    const shareBtn = document.getElementById("shareBtn");
+
+    if(contactBtn) contactBtn.onclick = ()=>handleContact(ad.contact);
+    if(shareBtn) shareBtn.onclick = ()=>shareAd(ad);
+
+    // yorumları yükle
+    loadComments();
+
+  }catch(e){
+    console.log("loadDetail error", e);
+    alert("İlan yüklenemedi");
+  }
 }
 
+
+/* ===============================
+INIT
+=============================== */
 document.addEventListener("DOMContentLoaded",()=>{
-loadDetail();
-document.getElementById("sendCommentBtn").onclick=sendComment;
+
+  loadDetail();
+
+  const btn = document.getElementById("sendCommentBtn");
+  if(btn){
+    btn.onclick = sendComment;
+  }
+
 });
 </script>
 
