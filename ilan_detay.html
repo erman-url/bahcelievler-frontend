@@ -469,20 +469,11 @@ if(!ad){
   return;
 }
 
- // 🔥 CACHE + SAFE QUERY (TEK SEFERDE TOPLA)
-
-const el = {
-  title: document.querySelector(".ad-title"),
-  price: document.querySelector(".price"),
-  date: document.getElementById("adDate"),
-  meta: document.querySelector(".ad-id"),
-  slider: document.getElementById("sliderTrack")
-};
-
-// 🔒 DOM GÜVENLİK KONTROLÜ
-if(!el.title || !el.price || !el.meta){
-  console.warn("DOM elementleri eksik", el);
-}
+    const titleEl = document.querySelector(".ad-title");
+    const priceEl = document.querySelector(".price");
+    const dateEl = document.getElementById("adDate");
+    const metaEl = document.querySelector(".ad-id");
+    const slider = document.getElementById("sliderTrack");
 
     if(titleEl) titleEl.innerText = ad.title || "-";
     if(priceEl) priceEl.innerText = (ad.price || 0) + " TL";
