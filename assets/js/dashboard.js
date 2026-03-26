@@ -4,7 +4,7 @@
 
 const CACHE_TIME = 10 * 60 * 1000;
 const WEATHER_KEY = "weather_cache_v2";
-const CURRENCY_KEY = "currency_cache_v5"; // 🔥 artırıldı
+const CURRENCY_KEY = "currency_cache_v6"; // 🔥 artırıldı
 
 let retryCount = 0;
 const MAX_RETRY = 10;
@@ -61,7 +61,7 @@ async function fetchSafe(url){
     timeoutId = setTimeout(()=>{
       console.log("FETCH TIMEOUT:", url);
       controller.abort();
-    }, 12000); // 🔥 artırıldı
+    }, 15000); // 🔥 15sn yapıldı
 
     console.log("FETCH START:", url);
 
@@ -150,7 +150,7 @@ function renderWeather(data){
 }
 
 // =======================================
-// DÖVİZ (🔥 GENİŞLETİLDİ)
+// DÖVİZ (🔥 OPTİMİZE EDİLDİ)
 // =======================================
 
 async function fetchCurrency(){
@@ -159,9 +159,9 @@ async function fetchCurrency(){
 
   try{
 
-    // 🔥 PRIMARY API
+    // 🔥 PRIMARY ARTIK ER-API (daha hızlı)
     const data = await fetchSafe(
-      "https://api.frankfurter.app/latest?from=EUR&to=TRY,USD"
+      "https://open.er-api.com/v6/latest/EUR"
     );
 
     if(!data || !data.rates){
@@ -176,7 +176,7 @@ async function fetchCurrency(){
 
     const result = `USD ${usdTry} • EUR ${eurTry}`;
 
-    console.log("currency OK (primary)", result);
+    console.log("currency OK (primary fast)", result);
 
     setCache(CURRENCY_KEY, result);
     renderCurrency(result);
@@ -187,22 +187,15 @@ async function fetchCurrency(){
 
     try{
 
-      // 🔥 FALLBACK API
+      // 🔥 FALLBACK
       const data = await fetchSafe(
-        "https://open.er-api.com/v6/latest/EUR"
+        "https://api.frankfurter.app/latest?from=EUR&to=TRY,USD"
       );
-
-      if(!data || !data.rates){
-        throw new Error("fallback empty");
-      }
 
       const TRY = data.rates.TRY;
       const USD = data.rates.USD;
 
-      const usdTry = (TRY / USD).toFixed(2);
-      const eurTry = TRY.toFixed(2);
-
-      const result = `USD ${usdTry} • EUR ${eurTry}`;
+      const result = `USD ${(TRY / USD).toFixed(2)} • EUR ${TRY.toFixed(2)}`;
 
       console.log("currency OK (fallback)", result);
 
@@ -238,7 +231,7 @@ function renderCurrency(data){
 }
 
 // =======================================
-// INIT
+// INIT (🔥 PERFORMANS FIX)
 // =======================================
 
 function initDashboard(){
@@ -264,7 +257,6 @@ function initDashboard(){
 
   console.log("Dashboard başlatıldı");
 
-  // CACHE FIRST
   const weatherCache = getCache(WEATHER_KEY);
   const currencyCache = getCache(CURRENCY_KEY);
 
@@ -278,9 +270,19 @@ function initDashboard(){
     renderCurrency(currencyCache);
   }
 
-  // ASYNC FETCH
-  fetchWeather();
-  fetchCurrency();
+  // 🔥 SADECE CACHE YOKSA FETCH
+  if(!weatherCache){
+    fetchWeather();
+  }else{
+    // arka planda refresh (hafif gecikmeli)
+    setTimeout(fetchWeather, 2000);
+  }
+
+  if(!currencyCache){
+    fetchCurrency();
+  }else{
+    setTimeout(fetchCurrency, 3000);
+  }
 }
 
 // =======================================
