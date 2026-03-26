@@ -12,7 +12,7 @@
 
 <style>
 
-/* (STYLE BLOĞUN AYNEN KORUNDU) */
+/* === SENİN STYLE BLOĞUN AYNEN === */
 
 :root{
   --primary:#0e3b6f;
@@ -208,8 +208,6 @@ body{
   <div class="ad-id">İlan No: BF-01544</div>
   <div class="ad-title">Satılık iPhone 15 Max</div>
   <div class="price">32.500 ₺</div>
-
-  <!-- EKLENDİ -->
   <div id="adDate" style="font-size:12px;color:#777;margin-top:4px;"></div>
 </div>
 
@@ -230,16 +228,22 @@ body{
 </div>
 
 <div class="action-buttons">
-  <!-- ID EKLENDİ -->
   <button class="btn-primary" id="contactBtn">Satıcı ile İletişime Geç</button>
-
-  <!-- ID EKLENDİ -->
   <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
 <div class="comments">
-  <textarea placeholder="Yorum yaz..."></textarea>
-  <button>Yorum Gönder</button>
+
+<!-- EKLENDİ -->
+<input type="text" id="commentName" placeholder="Adınız / Nickname" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;">
+
+<textarea placeholder="Yorum yaz..."></textarea>
+
+<button id="sendCommentBtn">Yorum Gönder</button>
+
+<!-- EKLENDİ -->
+<div id="commentList"></div>
+
 </div>
 
 </div>
@@ -255,7 +259,6 @@ function slide(dir){
   track.style.transform=`translateX(-${index*100}%)`;
 }
 
-/* EKLENDİ */
 function formatDate(d){
   return new Date(d).toLocaleString("tr-TR");
 }
@@ -294,91 +297,69 @@ function shareAd(ad){
   }
 }
 
-async function loadDetail(){
+/* EKLENDİ */
+async function sendComment(){
+const id=new URLSearchParams(location.search).get("id");
+const name=document.getElementById("commentName").value;
+const text=document.querySelector(".comments textarea").value;
 
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
+await fetch("/api/comment-ekle",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({ilan_id:id,nickname:name,comment:text})
+});
 
-  if(!id) return;
-
-  try{
-
-    // CACHE FIX
-    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
-
-    if(!res.ok){
-      console.log("API hata:", res.status);
-      return;
-    }
-
-    const data = await res.json();
-
-    if(!Array.isArray(data)){
-      console.log("Data array değil");
-      return;
-    }
-
-    const ad = data.find(x => String(x.id) === String(id));
-
-    if(!ad){
-      console.log("İlan bulunamadı");
-      return;
-    }
-
-    document.querySelector(".ad-title").innerText = ad.title || "-";
-    document.querySelector(".price").innerText = (ad.price || 0) + " TL";
-
-    // TARİH
-    document.getElementById("adDate").innerText =
-      "İlan tarihi: " + formatDate(ad.created_at);
-
-    const rows = document.querySelectorAll(".detail-row span:last-child");
-
-    if(rows[0]) rows[0].innerText = ad.category || "-";
-    if(rows[1]) rows[1].innerText = ad.condition || "-";
-    if(rows[2]) rows[2].innerText = ad.district || "-";
-    if(rows[3]) rows[3].innerText = ad.contact || "-";
-
-    document.querySelector(".description").innerText = ad.content || "";
-
-    const track = document.getElementById("sliderTrack");
-
-    let images = [];
-
-    if(ad.image_url) images.push(ad.image_url);
-    if(ad.image_url_2) images.push(ad.image_url_2);
-    if(ad.image_url_3) images.push(ad.image_url_3);
-
-    if(images.length === 0){
-      images = ["https://picsum.photos/600"];
-    }
-
-    index = 0;
-
-    // IMAGE CACHE FIX
-    track.innerHTML = images.map(src => `<img src="${src}?v=${ad.id}">`).join("");
-
-    track.style.transform = "translateX(0%)";
-
-    // BUTTON AKTİF
-    document.getElementById("contactBtn").onclick = ()=>handleContact(ad.contact);
-    document.getElementById("shareBtn").onclick = ()=>shareAd(ad);
-
-  }catch(e){
-    console.log("detail error", e);
-  }
-
+loadComments();
 }
 
-document.addEventListener("DOMContentLoaded", loadDetail);
+async function loadComments(){
+const id=new URLSearchParams(location.search).get("id");
+const res=await fetch("/api/comments/"+id,{cache:"no-store"});
+const data=await res.json();
+
+document.getElementById("commentList").innerHTML=data.map(c=>`
+<div style="padding:10px;border-bottom:1px solid #eee">
+<b>${c.nickname}</b>
+<div>${c.comment}</div>
+</div>
+`).join("");
+}
+
+async function loadDetail(){
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+if(!id) return;
+
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
+const data = await res.json();
+
+const ad = data.find(x => String(x.id) === String(id));
+
+document.querySelector(".ad-title").innerText = ad.title || "-";
+document.querySelector(".price").innerText = (ad.price || 0) + " TL";
+
+document.getElementById("adDate").innerText =
+  "İlan tarihi: " + formatDate(ad.created_at);
+
+let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
+if(images.length === 0) images = ["https://picsum.photos/600"];
+
+document.getElementById("sliderTrack").innerHTML =
+images.map(src => `<img src="${src}?v=${ad.id}">`).join("");
+
+document.getElementById("contactBtn").onclick = ()=>handleContact(ad.contact);
+document.getElementById("shareBtn").onclick = ()=>shareAd(ad);
+
+loadComments();
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+loadDetail();
+document.getElementById("sendCommentBtn").onclick=sendComment;
+});
 </script>
-
-<script src="./assets/js/layout.js"></script>
-<script src="./assets/js/menu.js"></script>
-<script src="./assets/js/core.js" defer></script>
-<script src="./assets/js/footerNav.js"></script>
-
-<div id="globalFooter"></div>
 
 </body>
 </html>
