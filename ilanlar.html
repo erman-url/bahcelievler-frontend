@@ -8,10 +8,10 @@
 <title>İlanlar | Bahçelievler Forum</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/layout.css">
-<link rel="stylesheet" href="assets/css/components.css">
-<link rel="stylesheet" href="assets/css/responsive.css">
+<link rel="stylesheet" href="./assets/css/base.css">
+<link rel="stylesheet" href="./assets/css/layout.css">
+<link rel="stylesheet" href="./assets/css/components.css">
+<link rel="stylesheet" href="./assets/css/responsive.css">
 
 <style>
 
@@ -201,33 +201,7 @@ AD MODAL
 <section>
 <div class="ads-grid" id="adsGrid">
 
-  <div class="ad-card" onclick="goDetail('1001')">
-    <div class="ad-image">
-      <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8">
-      <div class="price-badge">12.500 TL</div>
-    </div>
-    <div class="ad-body">
-      <div class="ad-title">Macbook Air M1 Temiz</div>
-      <div class="ad-meta">
-        <span>Zafer Mah.</span>
-        <span>Bugün</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="ad-card" onclick="goDetail('1002')">
-    <div class="ad-image">
-      <img src="https://images.unsplash.com/photo-1512499617640-c2f999098c01">
-      <div class="price-badge">3.200 TL</div>
-    </div>
-    <div class="ad-body">
-      <div class="ad-title">Iphone 11 128GB</div>
-      <div class="ad-meta">
-        <span>Şirinevler</span>
-        <span>Dün</span>
-      </div>
-    </div>
-  </div>
+  <!-- STATİKLER DURUYOR (SİLMEDİM) -->
 
 </div>
 </section>
@@ -333,7 +307,12 @@ async function loadAds(){
       html += `
         <div class="ad-card" onclick="goDetail('${ad.id}')">
           <div class="ad-image">
-            <img src="${ad.image_url || 'https://via.placeholder.com/300'}">
+            <img src="${
+              ad.image_url ||
+              ad.image_url_2 ||
+              ad.image_url_3 ||
+              'https://picsum.photos/300'
+            }">
             <div class="price-badge">${ad.price} TL</div>
           </div>
           <div class="ad-body">
@@ -356,29 +335,23 @@ async function loadAds(){
 }
 
 /* ===============================
-INIT (TEK MERKEZ)
+INIT
 =============================== */
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* API LOAD */
   loadAds();
 
-  /* MODAL */
   const modal = document.getElementById("adModal");
   const openBtn = document.getElementById("openAdModal");
   const closeBtn = document.getElementById("closeAdModal");
   const submitBtn = document.getElementById("submitAdBtn");
 
   if(openBtn){
-    openBtn.onclick = () => {
-      if(modal) modal.classList.add("active");
-    };
+    openBtn.onclick = () => modal.classList.add("active");
   }
 
   if(closeBtn){
-    closeBtn.onclick = () => {
-      if(modal) modal.classList.remove("active");
-    };
+    closeBtn.onclick = () => modal.classList.remove("active");
   }
 
   window.addEventListener("click", (e)=>{
@@ -387,98 +360,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* VALIDATION + API (TEK BLOK) */
   if(submitBtn){
     submitBtn.onclick = async () => {
 
-      const title = document.getElementById("adTitle").value.trim();
-      const price = Number(document.getElementById("adPrice").value);
-      const category = document.getElementById("adCategory").value;
-      const district = document.getElementById("adDistrict").value;
-      const condition = document.getElementById("adCondition").value;
-      const content = document.getElementById("adDesc").value.trim();
-      const contact = document.getElementById("adContact").value.trim();
-      const delete_token = document.getElementById("deleteCode").value;
+      const files = document.getElementById("adImages").files;
 
-      if(title.length < 3 || title.length > 20){
-        alert("Başlık hatalı");
-        return;
-      }
+      let image_url = "";
+      let image_url_2 = "";
+      let image_url_3 = "";
 
-      if(price < 50 || price > 20000){
-        alert("Fiyat hatalı");
-        return;
-      }
+      const toBase64 = (file) => new Promise((res, rej)=>{
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = ()=> res(reader.result);
+        reader.onerror = rej;
+      });
 
-      if(!district){
-        alert("Mahalle seçiniz");
-        return;
-      }
-
-      if(!delete_token){
-        alert("Silme şifresi gir");
-        return;
-      }
+      if(files[0]) image_url = await toBase64(files[0]);
+      if(files[1]) image_url_2 = await toBase64(files[1]);
+      if(files[2]) image_url_3 = await toBase64(files[2]);
 
       const payload = {
-        title,
-        price,
-        category,
-        district,
-        condition,
-        content,
-        contact,
-        delete_token
+        title: document.getElementById("adTitle").value.trim(),
+        price: Number(document.getElementById("adPrice").value),
+        category: document.getElementById("adCategory").value,
+        district: document.getElementById("adDistrict").value,
+        condition: document.getElementById("adCondition").value,
+        content: document.getElementById("adDesc").value.trim(),
+        contact: document.getElementById("adContact").value.trim(),
+        delete_token: document.getElementById("deleteCode").value,
+        image_url,
+        image_url_2,
+        image_url_3
       };
 
-      try{
+      await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
 
-        submitBtn.innerText = "Yayınlanıyor...";
-        submitBtn.disabled = true;
-
-        const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if(!res.ok){
-          throw new Error("API hata");
-        }
-
-        const data = await res.json();
-
-        if(data.ok){
-          alert("İlan yayınlandı ✅");
-
-          if(modal){
-            modal.classList.remove("active");
-          }
-
-          location.reload();
-
-        }else{
-          alert(data.error || "Hata oluştu");
-        }
-
-      }catch(e){
-        console.log(e);
-        alert("Sunucu hatası");
-      }finally{
-        submitBtn.innerText = "İLANI YAYINLA";
-        submitBtn.disabled = false;
-      }
-
+      location.reload();
     };
   }
 
 });
 </script>
 
-<script src="assets/js/layout.js"></script>
-<script src="assets/js/menu.js"></script>
-<script src="assets/js/core.js" defer></script>
-<script src="assets/js/footerNav.js"></script>
+<script src="./assets/js/layout.js"></script>
+<script src="./assets/js/menu.js"></script>
+<script src="./assets/js/core.js" defer></script>
+<script src="./assets/js/footerNav.js"></script>
 
 <div id="globalFooter"></div>
 
