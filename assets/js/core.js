@@ -202,7 +202,7 @@ BF.ui.renderFooterNav = function(){
     </div>
 </div>
 
-        <a href="hizmet-rehberi.html" class="nav-item">
+        <a href="hizmetler.html" class="nav-item">
             <i class="fa-solid fa-layer-group"></i>
             <span>Hizmet</span>
         </a>
