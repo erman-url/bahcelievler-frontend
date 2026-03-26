@@ -253,9 +253,11 @@ body{
 
 <script>
 let index=0;
+
 function slide(dir){
   const track=document.getElementById("sliderTrack");
   const total=track.children.length;
+  if(total === 0) return;
   index=(index+dir+total)%total;
   track.style.transform=`translateX(-${index*100}%)`;
 }
@@ -275,14 +277,31 @@ async function loadDetail(){
 
     const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar");
 
+    if(!res.ok){
+      console.log("API hata:", res.status);
+      return;
+    }
+
     const data = await res.json();
 
-    const ad = data.find(x => String(x.id) === id);
+    if(!Array.isArray(data)){
+      console.log("Data array değil");
+      return;
+    }
 
-    if(!ad) return;
+    const ad = data.find(x => String(x.id) === String(id));
 
-    document.querySelector(".ad-title").innerText = ad.title;
-    document.querySelector(".price").innerText = ad.price + " TL";
+    if(!ad){
+      console.log("İlan bulunamadı");
+      return;
+    }
+
+    /* ===============================
+    TEXT DATA
+    =============================== */
+
+    document.querySelector(".ad-title").innerText = ad.title || "-";
+    document.querySelector(".price").innerText = (ad.price || 0) + " TL";
 
     const rows = document.querySelectorAll(".detail-row span:last-child");
 
@@ -293,6 +312,37 @@ async function loadDetail(){
 
     document.querySelector(".description").innerText = ad.content || "";
 
+    /* ===============================
+    IMAGE SLIDER FIX (KRİTİK)
+    =============================== */
+
+    const track = document.getElementById("sliderTrack");
+
+    if(!track){
+      console.log("sliderTrack yok");
+      return;
+    }
+
+    let images = [];
+
+    if(ad.image_url) images.push(ad.image_url);
+    if(ad.image_url_2) images.push(ad.image_url_2);
+    if(ad.image_url_3) images.push(ad.image_url_3);
+
+    // fallback (boşsa)
+    if(images.length === 0){
+      images = ["https://via.placeholder.com/600"];
+    }
+
+    // slider reset
+    index = 0;
+
+    track.innerHTML = images.map(src => `
+      <img src="${src}">
+    `).join("");
+
+    track.style.transform = "translateX(0%)";
+
   }catch(e){
     console.log("detail error", e);
   }
@@ -300,8 +350,6 @@ async function loadDetail(){
 }
 
 document.addEventListener("DOMContentLoaded", loadDetail);
-
-
 </script>
 
 <script src="assets/js/layout.js"></script>
