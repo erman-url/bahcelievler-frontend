@@ -145,4 +145,17 @@ body{
   margin:0 auto;
 }
 
+.input-field{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.confirm-btn{
+  width:100%;
+}
+
+
+
 </style>
