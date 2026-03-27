@@ -204,7 +204,7 @@ body{
   <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
-<div class="comments">
+<div class="action-buttons">
 
 <input type="password" id="deletePassword" placeholder="Silme şifresi" 
 style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
@@ -381,7 +381,6 @@ if(contactBtn && ad.contact){
       shareBtn.onclick = () => shareAd(ad);
     }
 
-    loadComments();
 
   }catch(e){
     console.log("loadDetail error", e);
@@ -461,13 +460,15 @@ document.addEventListener("DOMContentLoaded",()=>{
 const deleteBtn = document.getElementById("deleteAdBtn");
 const confirmBtn = document.getElementById("confirmDeleteBtn");
 
-deleteBtn.onclick = () => {
-  const pass = document.getElementById("deletePassword");
-  if(pass){
-    pass.scrollIntoView({behavior:"smooth"});
-    pass.focus();
-  }
-};
+if(deleteBtn){
+  deleteBtn.onclick = () => {
+    const pass = document.getElementById("deletePassword");
+    if(pass){
+      pass.scrollIntoView({behavior:"smooth"});
+      pass.focus();
+    }
+  };
+}
 
 if(confirmBtn){
   confirmBtn.onclick = confirmDelete;
@@ -478,7 +479,6 @@ if(confirmBtn){
 });
 
 </script>
-
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
