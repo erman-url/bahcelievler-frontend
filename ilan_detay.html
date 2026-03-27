@@ -22,9 +22,9 @@
 <div class="page-wrapper">
 <div class="slider">
 
+  <div class="slider-track" id="sliderTrack"></div>
+
   <button class="slider-btn left" onclick="slide(-1)">
-    <i class="fa fa-chevron-left"></i>
-  </button>
 
   <button class="slider-btn right" onclick="slide(1)">
     <i class="fa fa-chevron-right"></i>
@@ -179,7 +179,7 @@ async function loadDetail(){
 
     let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
 
-    if(images.length === 0) images = ["https://picsum.photos/600"];
+if(images.length === 0) return;
 
     const slider = document.getElementById("sliderTrack");
 
