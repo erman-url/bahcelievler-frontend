@@ -400,8 +400,8 @@ if(!passEl) return alert("Şifre alanı yok");
 
 const password = passEl.value;
 
-if(password.length < 3){
-  return alert("Şifre çok kısa");
+if(!password || password.length < 3){
+  return alert("Geçerli şifre gir");
 }
 
   if(!password) return alert("Şifre gir");
@@ -419,7 +419,14 @@ if(password.length < 3){
         })
       }
     );
-const result = await res.json();
+let result = null;
+
+try{
+  result = await res.json();
+}catch(e){
+  alert("Sunucu geçersiz cevap verdi");
+  return;
+}
 
 // HTTP hata kontrolü
 if(!res.ok){
