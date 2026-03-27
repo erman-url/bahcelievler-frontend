@@ -181,7 +181,13 @@ async function loadDetail(){
 
     let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
 
-if(images.length === 0) return;
+if(images.length === 0){
+  const slider = document.getElementById("sliderTrack");
+  if(slider){
+    slider.innerHTML = `<div style="width:100%;aspect-ratio:1;background:#eee;"></div>`;
+  }
+  return;
+}
 
     const slider = document.getElementById("sliderTrack");
 
@@ -192,7 +198,9 @@ if(images.length === 0) return;
 
         let safe = String(src).trim().replace(/"/g,"");
 
-        if(!safe.startsWith("http")) safe = "https://picsum.photos/600";
+        if(!safe.startsWith("http")){
+  return;
+}
 
         const img = document.createElement("img");
         img.src = safe + "?v=" + ad.id;
@@ -415,10 +423,13 @@ document.addEventListener("DOMContentLoaded",()=>{
     const delete_token=document.getElementById("deleteCode").value;
 
     if(title.length<5) return alert("Başlık kısa");
-    if(price<=0) return alert("Fiyat gir");
-    if(content.length<10) return alert("Açıklama kısa");
-    if(delete_token.length<3) return alert("Şifre kısa");
-    if(contact.length>100) return alert("Geçersiz iletişim");
+if(price<=0) return alert("Fiyat gir");
+if(content.length<10) return alert("Açıklama kısa");
+if(delete_token.length<3) return alert("Şifre kısa");
+
+if(!contact || contact.length < 3 || contact.length > 100){
+  return alert("Geçersiz iletişim");
+}
 
     const files=document.getElementById("adImages").files;
 
