@@ -394,53 +394,77 @@ window.handleContact = function(contact){
 </div>
 
 <script>
-
 function openModal(){
-  document.getElementById("adModal").style.display="flex";
-}
-function closeModal(){
-  document.getElementById("adModal").style.display="none";
+  const modal = document.getElementById("adModal");
+  if(modal) modal.style.display="flex";
 }
 
-let lastSubmit=0;
+function closeModal(){
+  const modal = document.getElementById("adModal");
+  if(modal) modal.style.display="none";
+}
+
+let lastSubmit = 0;
 
 document.addEventListener("DOMContentLoaded",()=>{
 
-  const btn=document.getElementById("submitAdBtn");
+  const btn = document.getElementById("submitAdBtn");
   if(!btn) return;
 
-  btn.onclick=async()=>{
+  btn.onclick = async ()=>{
 
-    const now=Date.now();
-    if(now-lastSubmit<10000){
+    const now = Date.now();
+    if(now - lastSubmit < 10000){
       return alert("10 sn bekle");
     }
 
-    const title=document.getElementById("adTitle").value.trim();
-    const price=document.getElementById("adPrice").value;
-    const content=document.getElementById("adDesc").value.trim();
-    const contact=document.getElementById("adContact").value.trim();
-    const delete_token=document.getElementById("deleteCode").value;
+    const titleEl = document.getElementById("adTitle");
+    const priceEl = document.getElementById("adPrice");
+    const contentEl = document.getElementById("adDesc");
+    const contactEl = document.getElementById("adContact");
+    const deleteEl = document.getElementById("deleteCode");
 
-    if(title.length<5) return alert("Başlık kısa");
-if(price<=0) return alert("Fiyat gir");
-if(content.length<10) return alert("Açıklama kısa");
-if(delete_token.length<3) return alert("Şifre kısa");
+    if(!titleEl || !priceEl || !contentEl || !contactEl || !deleteEl){
+      return alert("Form hatası");
+    }
 
-if(!contact || contact.length < 3 || contact.length > 100){
-  return alert("Geçersiz iletişim");
-}
+    const title = titleEl.value.trim();
+    const price = Number(priceEl.value);
+    const content = contentEl.value.trim();
+    const contact = contactEl.value.trim();
+    const delete_token = deleteEl.value;
 
-    const files=document.getElementById("adImages").files;
+    if(title.length < 5) return alert("Başlık kısa");
+    if(price <= 0 || isNaN(price)) return alert("Fiyat gir");
+    if(content.length < 10) return alert("Açıklama kısa");
+    if(delete_token.length < 3) return alert("Şifre kısa");
 
-   const toBase64=(file)=>new Promise((res)=>{
-  if(file.size > 2 * 1024 * 1024){
-    alert("Max 2MB");
-    return res(""); 
-  }
-      const reader=new FileReader();
-      reader.onload=()=>res(reader.result);
-      reader.readAsDataURL(file);
+    if(!contact || contact.length < 3 || contact.length > 100){
+      return alert("Geçersiz iletişim");
+    }
+
+    const filesEl = document.getElementById("adImages");
+    const files = filesEl ? filesEl.files : [];
+
+    const toBase64 = (file) => new Promise((res)=>{
+      try{
+        if(!file) return res("");
+
+        if(file.size > 2 * 1024 * 1024){
+          alert("Max 2MB");
+          return res("");
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => res(reader.result || "");
+        reader.onerror = () => res("");
+
+        reader.readAsDataURL(file);
+
+      }catch(e){
+        res("");
+      }
     });
 
     let image_url="",image_url_2="",image_url_3="";
