@@ -141,6 +141,15 @@ body{
   font-size:14px;
 }
 
+.btn-danger{
+  background:#dc2626;
+  color:#fff;
+  border:none;
+  padding:12px;
+  border-radius:10px;
+  font-weight:700;
+}
+
 .comments{
   background:#fff;
   padding:14px;
@@ -223,14 +232,23 @@ body{
   <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
+
+
 <div class="comments">
 
+
+
+
+<input type="password" id="deletePassword" placeholder="Silme şifresi" 
+style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+<button id="confirmDeleteBtn" style="background:#dc2626;color:#fff;border:none;padding:12px;border-radius:8px;">
+Silmeyi Onayla
+</button>
 
 <div class="action-buttons">
   <button class="btn-danger" id="deleteAdBtn">İlanı Sil</button>
   <button class="btn-secondary" id="editAdBtn">Düzenle</button>
 </div>
-
 
 <!-- EKLENDİ -->
 <input type="text" id="commentName" placeholder="Adınız / Nickname" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;">
@@ -341,7 +359,8 @@ async function sendComment(){
   if(!id) return alert("İlan bulunamadı");
 
   const nameInput = document.getElementById("commentName");
-  const textarea = document.querySelector(".comments textarea");
+const textarea = document.querySelector(".comments textarea");
+if(!textarea) return alert("Textarea bulunamadı");
 
   if(!nameInput || !textarea){
     console.warn("Form elemanları bulunamadı");
@@ -381,6 +400,7 @@ async function sendComment(){
 
     nameInput.value = "";
     textarea.value = "";
+    textarea.blur();
 
     loadComments();
 
@@ -476,6 +496,9 @@ async function loadDetail(){
     const dateEl = document.getElementById("adDate");
     const metaEl = document.querySelector(".ad-id");
     const slider = document.getElementById("sliderTrack");
+    if(!slider){
+  console.warn("slider yok");
+}
 
     if(titleEl) titleEl.innerText = ad.title || "-";
     if(priceEl) priceEl.innerText = (ad.price || 0) + " TL";
@@ -502,7 +525,7 @@ async function loadDetail(){
     const contactBtn = document.getElementById("contactBtn");
     const shareBtn = document.getElementById("shareBtn");
 
-    if(contactBtn){
+if(contactBtn && ad.contact){
       contactBtn.onclick = () => handleContact(ad.contact);
     }
 
@@ -521,7 +544,10 @@ async function loadDetail(){
 async function confirmDelete(){
 
   const id = getAdId();
-  const password = document.getElementById("deletePassword").value;
+const passEl = document.getElementById("deletePassword");
+if(!passEl) return alert("Şifre alanı yok");
+
+const password = passEl.value;
 
   if(!password) return alert("Şifre gir");
 
@@ -560,6 +586,18 @@ INIT
 =============================== */
 document.addEventListener("DOMContentLoaded",()=>{
 
+const deleteBtn = document.getElementById("deleteAdBtn");
+const confirmBtn = document.getElementById("confirmDeleteBtn");
+
+if(deleteBtn){
+  deleteBtn.onclick = () => {
+    document.getElementById("deletePassword").focus();
+  };
+}
+
+if(confirmBtn){
+  confirmBtn.onclick = confirmDelete;
+}
   loadDetail();
 
   const btn = document.getElementById("sendCommentBtn");
