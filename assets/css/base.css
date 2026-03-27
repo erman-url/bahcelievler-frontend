@@ -1,11 +1,21 @@
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-background:#f4f7fb;
-color:#1b2b45;
-overflow-x:hidden;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --primary:#0e3b6f;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --border:#e6e6e6;
+  --text:#1b2b45;
 }
 
 body{
-padding-top:env(safe-area-inset-top);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  padding-top:env(safe-area-inset-top);
 }
