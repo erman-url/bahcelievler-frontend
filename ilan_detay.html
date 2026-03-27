@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="tr" class="no-js">
 <head>
 <meta charset="UTF-8">
@@ -13,6 +14,7 @@
 <link rel="stylesheet" href="assets/css/components.css">
 <link rel="stylesheet" href="assets/css/ilandetay.css">
 
+<meta name="description" content="Bahçelievler Forum ilan detay sayfası">
 </head>
 <body>
 <div id="globalHeader"></div>
@@ -42,18 +44,18 @@
 </div>
 
 <div class="section">
-  <div class="detail-row"><span>Kategori</span><span>Elektronik</span></div>
-  <div class="detail-row"><span>Durum</span><span>2. El - İyi</span></div>
-  <div class="detail-row"><span>Mahalle</span><span>Yenibosna</span></div>
-  <div class="detail-row"><span>Satıcı</span><span>@TechSelim</span></div>
+  <div class="detail-row"><span>Kategori</span><span id="adCategory">Elektronik</span></div>
+  <div class="detail-row"><span>Durum</span><span id="adCondition">2. El - İyi</span></div>
+  <div class="detail-row"><span>Mahalle</span><span id="adDistrict">Yenibosna</span></div>
+  <div class="detail-row"><span>Satıcı</span><span id="adSeller">@TechSelim</span></div>
 </div>
 
-<div class="section description">
+<div class="section description" id="adDescription">
   Ürün temiz kullanılmıştır. Herhangi bir arızası yoktur.
   Elden teslim tercih edilir.
 </div>
 
-<div class="section location">
+<div class="section location" id="adLocation">
   <i class="fa fa-location-dot"></i> Bahçelievler / İstanbul
 </div>
 
@@ -62,21 +64,16 @@
   <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
-<!-- 🔥 ACTION 1: DELETE / EDIT -->
-
 <div class="action-buttons">
   <button class="btn-danger" id="deleteAdBtn">İlanı Sil</button>
   <button class="btn-secondary" id="editAdBtn">Düzenle</button>
 </div>
 
-<!-- 🔥 ACTION 2: PASSWORD + CONFIRM -->
-
 <div class="action-buttons">
 
 <input type="password" id="deletePassword" class="input-field">
-<button id="confirmDeleteBtn" class="btn-danger confirm-btn">
 
-<button id="confirmDeleteBtn" style="background:#dc2626;color:#fff;border:none;padding:12px;border-radius:8px;">
+<button id="confirmDeleteBtn" class="btn-danger confirm-btn">
 Silmeyi Onayla
 </button>
 
@@ -88,35 +85,22 @@ Silmeyi Onayla
 
 let index=0;
 
-/* ===============================
-SLIDER
-=============================== */
 function slide(dir){
   const track=document.getElementById("sliderTrack");
   if(!track || track.children.length === 0) return;
 
   const total=track.children.length;
   index=(index+dir+total)%total;
-
   track.style.transform=`translateX(-${index*100}%)`;
 }
 
-/* ===============================
-DATE FORMAT
-=============================== */
 function formatDate(d){
   if(!d) return "-";
   return new Date(d).toLocaleString("tr-TR");
 }
-/* ===============================
-CONTACT (FIXED)
-=============================== */
-function handleContact(contact){
 
-  if(!contact){
-    alert("İletişim bilgisi yok");
-    return;
-  }
+function handleContact(contact){
+  if(!contact) return alert("İletişim bilgisi yok");
 
   contact = String(contact).trim();
 
@@ -138,11 +122,7 @@ function handleContact(contact){
   alert("Geçersiz iletişim bilgisi");
 }
 
-/* ===============================
-SHARE (FIXED)
-=============================== */
 function shareAd(ad){
-
   const url = window.location.href;
 
   if(navigator.share){
@@ -157,21 +137,11 @@ function shareAd(ad){
   }
 }
 
-/* ===============================
-GET ID (SAFE)
-=============================== */
 function getAdId(){
   const id = new URLSearchParams(location.search).get("id");
-  if(!id){
-    console.warn("ID bulunamadı");
-    return null;
-  }
-  return id.trim();
+  return id ? id.trim() : null;
 }
 
-/* ===============================
-LOAD DETAIL (CRITICAL FIX)
-=============================== */
 async function loadDetail(){
 
   const id = getAdId();
@@ -181,39 +151,29 @@ async function loadDetail(){
 
     const res = await fetch(
       "https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",
-      { cache:"no-store" }
+      { cache:"force-cache" }
     );
 
-    if(!res.ok){
-      throw new Error("HTTP hata: " + res.status);
-    }
+    if(!res.ok) throw new Error();
 
     const data = await res.json();
 
-    // 🔥 TOLERANSLI MATCH (EN KRİTİK FIX)
-    const ad = data.find(x =>
-      String(x.id) === String(id) ||
-      String(x.id) === String(id)
-    );
+    const ad = data.find(x => String(x.id) === String(id));
 
     if(!ad){
       alert("İlan bulunamadı");
       return;
     }
 
+    document.title = ad.title + " | Bahçelievler Forum";
+
     const titleEl = document.querySelector(".ad-title");
     const priceEl = document.querySelector(".price");
-    const dateEl = document.getElementById("adDate");
     const metaEl = document.querySelector(".ad-id");
-    const slider = document.getElementById("sliderTrack");
-    if(!slider){
-  console.warn("slider yok");
-}
 
     if(titleEl) titleEl.innerText = ad.title || "-";
     if(priceEl) priceEl.innerText = (ad.price || 0) + " TL";
 
-    // 🔥 İLAN NO + TARİH
     if(metaEl){
       metaEl.innerText =
         "İlan No: " + (ad.id || "-") +
@@ -221,58 +181,37 @@ async function loadDetail(){
         formatDate(ad.created_at);
     }
 
-    if(dateEl){
-      dateEl.innerText = "";
+    let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
+
+    if(images.length === 0) images = ["https://picsum.photos/600"];
+
+    const slider = document.getElementById("sliderTrack");
+
+    if(slider){
+      slider.innerHTML = "";
+
+      images.forEach(src => {
+
+        let safe = String(src).trim().replace(/"/g,"");
+
+        if(!safe.startsWith("http")) safe = "https://picsum.photos/600";
+
+        const img = document.createElement("img");
+        img.src = safe + "?v=" + ad.id;
+        img.loading = "lazy";
+
+        img.onerror = () => {
+          img.src = "https://picsum.photos/600";
+        };
+
+        slider.appendChild(img);
+      });
     }
-
-  let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
-
-if(images.length === 0) images = ["https://picsum.photos/600"];
-
-// 🔥 URL sanitize + fallback koruma
-images = images.map(src => {
-  try{
-    let safe = String(src).trim();
-
-    // boş / null kontrol
-    if(!safe) return "https://picsum.photos/600";
-
-    // javascript: vb. XSS engelle
-    if(safe.startsWith("javascript:")) return "https://picsum.photos/600";
-
-    // quote temizleme
-    safe = safe.replace(/"/g, "");
-
-    return safe;
-  }catch(e){
-    return "https://picsum.photos/600";
-  }
-});
-
-if(slider){
-
-  // 🔥 DOM güvenli render (innerHTML yerine kontrollü)
-  slider.innerHTML = "";
-
-  images.forEach(src => {
-    const img = document.createElement("img");
-    img.src = src + "?v=" + (ad.id || "");
-    img.loading = "lazy";
-
-    // 🔥 kırık görsel fallback
-    img.onerror = () => {
-      img.src = "https://picsum.photos/600";
-    };
-
-    slider.appendChild(img);
-  });
-
-}
 
     const contactBtn = document.getElementById("contactBtn");
     const shareBtn = document.getElementById("shareBtn");
 
-if(contactBtn && ad.contact){
+    if(contactBtn && ad.contact){
       contactBtn.onclick = () => handleContact(ad.contact);
     }
 
@@ -280,9 +219,7 @@ if(contactBtn && ad.contact){
       shareBtn.onclick = () => shareAd(ad);
     }
 
-
   }catch(e){
-    console.log("loadDetail error", e);
     alert("İlan yüklenemedi");
   }
 }
@@ -290,14 +227,15 @@ if(contactBtn && ad.contact){
 async function confirmDelete(){
 
   const id = getAdId();
-const passEl = document.getElementById("deletePassword");
-if(!passEl) return alert("Şifre alanı yok");
+  const passEl = document.getElementById("deletePassword");
 
-const password = passEl.value;
+  if(!passEl) return alert("Şifre alanı yok");
 
-if(!password || password.length < 3){
-  return alert("Geçerli şifre gir");
-}
+  const password = passEl.value;
+
+  if(!password || password.length < 3){
+    return alert("Geçerli şifre gir");
+  }
 
   try{
 
@@ -312,53 +250,45 @@ if(!password || password.length < 3){
         })
       }
     );
-let result = null;
 
-try{
-  result = await res.json();
-}catch(e){
-  alert("Sunucu geçersiz cevap verdi");
-  return;
+    let result = null;
+
+    try{
+      result = await res.json();
+    }catch(e){
+      alert("Sunucu geçersiz cevap verdi");
+      return;
+    }
+
+    if(!res.ok){
+      alert("Silme işlemi başarısız (API)");
+      return;
+    }
+
+    if(!result || typeof result.ok === "undefined"){
+      alert("Geçersiz sunucu cevabı");
+      return;
+    }
+
+    if(result.ok){
+
+      if(passEl) passEl.value = "";
+
+      alert("İlan silindi");
+
+      setTimeout(()=>{
+        window.location.href = "ilanlar.html";
+      }, 300);
+
+    }else{
+      alert(result.error || "Şifre yanlış");
+    }
+
+  }catch(e){
+    alert("Sunucu hatası");
+  }
 }
 
-// HTTP hata kontrolü
-if(!res.ok){
-  alert("Silme işlemi başarısız (API)");
-  return;
-}
-
-// response güvenlik kontrolü
-if(!result || typeof result.ok === "undefined"){
-  alert("Geçersiz sunucu cevabı");
-  return;
-}
-
-if(result.ok){
-
-  // input temizle
-  const passEl = document.getElementById("deletePassword");
-  if(passEl) passEl.value = "";
-
-  alert("İlan silindi");
-
-  // yönlendirme (gecikmeli UX daha iyi)
-  setTimeout(()=>{
-    window.location.href = "ilanlar.html";
-  }, 300);
-
-}else{
-  alert(result.error || "Şifre yanlış");
-}
-
-}catch(e){
-  console.log("delete error:", e);
-  alert("Sunucu hatası");
-}
-}
-
-/* ===============================
-INIT
-=============================== */
 document.addEventListener("DOMContentLoaded",()=>{
 
 const deleteBtn = document.getElementById("deleteAdBtn");
@@ -377,16 +307,21 @@ if(deleteBtn){
 if(confirmBtn){
   confirmBtn.onclick = confirmDelete;
 }
-  loadDetail();
+
+loadDetail();
 
 });
 
 </script>
 
 <script src="assets/js/core.js" defer></script>
+
 <script src="assets/js/dashboard.js" defer></script>
+
 <script src="assets/js/news.js" defer></script>
+
 <script src="assets/js/countdown.js" defer></script>
+
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
