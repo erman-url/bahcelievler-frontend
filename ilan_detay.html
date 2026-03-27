@@ -335,7 +335,7 @@ async function loadDetail(){
     // 🔥 TOLERANSLI MATCH (EN KRİTİK FIX)
     const ad = data.find(x =>
       String(x.id) === String(id) ||
-      String(x.id).includes(id)
+      String(x.id) === String(id)
     );
 
     if(!ad){
@@ -367,12 +367,49 @@ async function loadDetail(){
       dateEl.innerText = "";
     }
 
-    let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
-    if(images.length === 0) images = ["https://picsum.photos/600"];
+  let images = [ad.image_url, ad.image_url_2, ad.image_url_3].filter(Boolean);
 
-    if(slider){
-      slider.innerHTML = images.map(src => `<img src="${src}?v=${ad.id}">`).join("");
-    }
+if(images.length === 0) images = ["https://picsum.photos/600"];
+
+// 🔥 URL sanitize + fallback koruma
+images = images.map(src => {
+  try{
+    let safe = String(src).trim();
+
+    // boş / null kontrol
+    if(!safe) return "https://picsum.photos/600";
+
+    // javascript: vb. XSS engelle
+    if(safe.startsWith("javascript:")) return "https://picsum.photos/600";
+
+    // quote temizleme
+    safe = safe.replace(/"/g, "");
+
+    return safe;
+  }catch(e){
+    return "https://picsum.photos/600";
+  }
+});
+
+if(slider){
+
+  // 🔥 DOM güvenli render (innerHTML yerine kontrollü)
+  slider.innerHTML = "";
+
+  images.forEach(src => {
+    const img = document.createElement("img");
+    img.src = src + "?v=" + (ad.id || "");
+    img.loading = "lazy";
+
+    // 🔥 kırık görsel fallback
+    img.onerror = () => {
+      img.src = "https://picsum.photos/600";
+    };
+
+    slider.appendChild(img);
+  });
+
+}
 
     const contactBtn = document.getElementById("contactBtn");
     const shareBtn = document.getElementById("shareBtn");
@@ -403,8 +440,6 @@ const password = passEl.value;
 if(!password || password.length < 3){
   return alert("Geçerli şifre gir");
 }
-
-  if(!password) return alert("Şifre gir");
 
   try{
 
