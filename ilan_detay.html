@@ -422,11 +422,11 @@ document.addEventListener("DOMContentLoaded",()=>{
 
     const files=document.getElementById("adImages").files;
 
-    const toBase64=(file)=>new Promise((res)=>{
-      if(file.size > 2 * 1024 * 1024){
-        alert("Max 2MB");
-        return;
-      }
+   const toBase64=(file)=>new Promise((res)=>{
+  if(file.size > 2 * 1024 * 1024){
+    alert("Max 2MB");
+    return res(""); 
+  }
       const reader=new FileReader();
       reader.onload=()=>res(reader.result);
       reader.readAsDataURL(file);
