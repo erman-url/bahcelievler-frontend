@@ -212,7 +212,7 @@ async function loadDetail(){
     const shareBtn = document.getElementById("shareBtn");
 
     if(contactBtn && ad.contact){
-      contactBtn.onclick = () => handleContact(ad.contact);
+      contactBtn.onclick = () => window.handleContact(ad.contact);
     }
 
     if(shareBtn){
@@ -312,6 +312,43 @@ loadDetail();
 
 });
 
+/* ===============================
+GELİŞMİŞ CONTACT OVERRIDE
+=============================== */
+window.handleContact = function(contact){
+
+  if(!contact) return alert("İletişim yok");
+
+  contact = String(contact).trim();
+
+  if(contact.startsWith("@")){
+    window.open("https://t.me/"+contact.replace("@",""),"_blank");
+    return;
+  }
+
+  if(contact.startsWith("05")){
+    window.location.href="tel:"+contact;
+    return;
+  }
+
+  if(contact.startsWith("5") && contact.length===10){
+    window.open("https://wa.me/90"+contact,"_blank");
+    return;
+  }
+
+  if(contact.includes("wa.me")){
+    window.open(contact,"_blank");
+    return;
+  }
+
+  if(contact.startsWith("http")){
+    window.open(contact,"_blank");
+    return;
+  }
+
+  alert("Geçersiz iletişim");
+};
+
 </script>
 
 <script src="assets/js/core.js" defer></script>
@@ -325,6 +362,112 @@ loadDetail();
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
+
+<!-- ===========================
+İLAN VERME MODAL + GELİŞMİŞ SİSTEM
+=========================== -->
+
+<div id="adModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;width:95%;max-width:500px;padding:16px;border-radius:16px;">
+
+<h3>İlan Ver</h3>
+
+<input id="adTitle" placeholder="Başlık" class="input-field">
+<input id="adPrice" type="number" placeholder="Fiyat" class="input-field">
+<textarea id="adDesc" placeholder="Açıklama" class="input-field"></textarea>
+
+<input id="adContact" placeholder="Telefon / WhatsApp / Telegram" class="input-field">
+
+<input type="file" id="adImages" multiple>
+
+<input id="deleteCode" type="password" placeholder="Silme Şifresi" class="input-field">
+
+<button id="submitAdBtn" class="btn-primary">Yayınla</button> <button onclick="closeModal()" class="btn-secondary">Kapat</button>
+
+  </div>
+</div>
+
+<script>
+
+function openModal(){
+  document.getElementById("adModal").style.display="flex";
+}
+function closeModal(){
+  document.getElementById("adModal").style.display="none";
+}
+
+let lastSubmit=0;
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const btn=document.getElementById("submitAdBtn");
+  if(!btn) return;
+
+  btn.onclick=async()=>{
+
+    const now=Date.now();
+    if(now-lastSubmit<10000){
+      return alert("10 sn bekle");
+    }
+
+    const title=document.getElementById("adTitle").value.trim();
+    const price=document.getElementById("adPrice").value;
+    const content=document.getElementById("adDesc").value.trim();
+    const contact=document.getElementById("adContact").value.trim();
+    const delete_token=document.getElementById("deleteCode").value;
+
+    if(title.length<5) return alert("Başlık kısa");
+    if(price<=0) return alert("Fiyat gir");
+    if(content.length<10) return alert("Açıklama kısa");
+    if(delete_token.length<3) return alert("Şifre kısa");
+    if(contact.length>100) return alert("Geçersiz iletişim");
+
+    const files=document.getElementById("adImages").files;
+
+    const toBase64=(file)=>new Promise((res)=>{
+      if(file.size > 2 * 1024 * 1024){
+        alert("Max 2MB");
+        return;
+      }
+      const reader=new FileReader();
+      reader.onload=()=>res(reader.result);
+      reader.readAsDataURL(file);
+    });
+
+    let image_url="",image_url_2="",image_url_3="";
+
+    if(files[0]) image_url=await toBase64(files[0]);
+    if(files[1]) image_url_2=await toBase64(files[1]);
+    if(files[2]) image_url_3=await toBase64(files[2]);
+
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        title,
+        price:Number(price),
+        content,
+        contact,
+        delete_token,
+        image_url,
+        image_url_2,
+        image_url_3
+      })
+    });
+
+    if(!res.ok){
+      return alert("İlan eklenemedi");
+    }
+
+    lastSubmit=Date.now();
+
+    alert("İlan eklendi");
+    location.reload();
+
+  };
+
+});
+</script>
 
 </body>
 </html>
