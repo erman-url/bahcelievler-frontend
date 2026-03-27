@@ -225,6 +225,13 @@ body{
 
 <div class="comments">
 
+
+<div class="action-buttons">
+  <button class="btn-danger" id="deleteAdBtn">İlanı Sil</button>
+  <button class="btn-secondary" id="editAdBtn">Düzenle</button>
+</div>
+
+
 <!-- EKLENDİ -->
 <input type="text" id="commentName" placeholder="Adınız / Nickname" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;">
 
@@ -510,6 +517,43 @@ async function loadDetail(){
     alert("İlan yüklenemedi");
   }
 }
+
+async function confirmDelete(){
+
+  const id = getAdId();
+  const password = document.getElementById("deletePassword").value;
+
+  if(!password) return alert("Şifre gir");
+
+  try{
+
+    const res = await fetch(
+      "https://bahcelievler-api.erman-urel.workers.dev/api/ilan-sil",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          id,
+          delete_token: password
+        })
+      }
+    );
+
+    const result = await res.json();
+
+    if(result.ok){
+      alert("İlan silindi");
+      window.location.href = "ilanlar.html";
+    }else{
+      alert("Şifre yanlış");
+    }
+
+  }catch(e){
+    alert("Sunucu hatası");
+  }
+
+}
+
 
 /* ===============================
 INIT
