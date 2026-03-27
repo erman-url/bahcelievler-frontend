@@ -394,13 +394,34 @@ document.addEventListener("DOMContentLoaded", () => {
         image_url_3
       };
 
-      await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
+   const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify(payload)
+});
 
-      location.reload();
+let result = null;
+
+try{
+  result = await res.json();
+}catch(e){
+  alert("Sunucu cevap vermedi");
+  return;
+}
+
+if(!res.ok){
+  alert("İlan eklenemedi (API hata)");
+  return;
+}
+
+if(!result || result.ok !== true){
+  alert(result?.error || "İlan kaydedilemedi");
+  return;
+}
+
+alert("İlan başarıyla eklendi");
+
+location.reload();
     };
   }
 
