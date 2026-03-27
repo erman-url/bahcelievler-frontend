@@ -224,16 +224,6 @@ Silmeyi Onayla
   <button class="btn-secondary" id="editAdBtn">Düzenle</button>
 </div>
 
-<!-- EKLENDİ -->
-<input type="text" id="commentName" placeholder="Adınız / Nickname" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;">
-
-<textarea placeholder="Yorum yaz..."></textarea>
-
-<button id="sendCommentBtn">Yorum Gönder</button>
-
-<!-- EKLENDİ -->
-<div id="commentList"></div>
-
 </div>
 
 </div>
@@ -324,119 +314,6 @@ function getAdId(){
   return id.trim();
 }
 
-/* ===============================
-COMMENT SEND
-=============================== */
-async function sendComment(){
-
-  const id = getAdId();
-  if(!id) return alert("İlan bulunamadı");
-
-  const nameInput = document.getElementById("commentName");
-const textarea = document.querySelector(".comments textarea");
-if(!textarea) return alert("Textarea bulunamadı");
-
-  if(!nameInput || !textarea){
-    console.warn("Form elemanları bulunamadı");
-    return;
-  }
-
-  const name = nameInput.value.trim();
-  const text = textarea.value.trim();
-
-  if(!name) return alert("İsim giriniz");
-  if(!text) return alert("Yorum boş olamaz");
-
-  try{
-
-    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/comment-ekle",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify({
-        ilan_id:id,
-        nickname:name,
-        comment:text
-      })
-    });
-
-    if(!res.ok){
-      throw new Error("HTTP hata: " + res.status);
-    }
-
-    const result = await res.json();
-
-    if(!result || !result.ok){
-      alert(result?.error || "Yorum gönderilemedi");
-      return;
-    }
-
-    nameInput.value = "";
-    textarea.value = "";
-    textarea.blur();
-
-    loadComments();
-
-if(!res.ok){
-  alert("Yorum gönderilemedi (API)");
-  return;
-}
-
-  }catch(e){
-    console.log("comment error", e);
-    alert("Sunucu bağlantı hatası");
-  }
-}
-
-/* ===============================
-LOAD COMMENTS
-=============================== */
-async function loadComments(){
-
-  const id = getAdId();
-  if(!id) return;
-
-  try{
-
-    const res = await fetch(
-      "https://bahcelievler-api.erman-urel.workers.dev/api/comments/" + id,
-      { cache:"no-store" }
-    );
-
-    if(!res.ok){
-      throw new Error("HTTP hata: " + res.status);
-    }
-
-    const data = await res.json();
-
-    const box = document.getElementById("commentList");
-    if(!box) return;
-
-    if(!data || data.length === 0){
-      box.innerHTML = "<div style='padding:10px;color:#777'>Henüz yorum yok</div>";
-      return;
-    }
-
-    let html = "";
-
-    for(const c of data){
-      html += `
-      <div style="padding:10px;border-bottom:1px solid #eee">
-        <b>${c.nickname || "-"}</b>
-        <div style="font-size:12px;color:#777">
-          ${formatDate(c.created_at)}
-        </div>
-        <div>${c.comment || ""}</div>
-      </div>`;
-    }
-
-    box.innerHTML = html;
-
-  }catch(e){
-    console.log("loadComments error", e);
-  }
-}
 
 /* ===============================
 LOAD DETAIL (CRITICAL FIX)
