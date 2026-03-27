@@ -189,6 +189,7 @@ body{
 
 <body>
 
+  
 <div id="globalHeader"></div>
 
 <div class="page-wrapper">
@@ -231,24 +232,22 @@ body{
   <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
-<!-- 🔥 DELETE / EDIT BLOĞU (DOĞRU YER) -->
+
+<div class="comments">
+
+
+<input type="password" id="deletePassword" placeholder="Silme şifresi" 
+style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+<button id="confirmDeleteBtn" style="background:#dc2626;color:#fff;border:none;padding:12px;border-radius:8px;">
+Silmeyi Onayla
+</button>
 
 <div class="action-buttons">
   <button class="btn-danger" id="deleteAdBtn">İlanı Sil</button>
   <button class="btn-secondary" id="editAdBtn">Düzenle</button>
-
-<input type="password" id="deletePassword" placeholder="Silme şifresi" 
-style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
-
-  <button id="confirmDeleteBtn" style="background:#dc2626;color:#fff;border:none;padding:12px;border-radius:8px;">
-  Silmeyi Onayla
-  </button>
 </div>
 
-<div class="comments">
-
 <!-- EKLENDİ -->
-
 <input type="text" id="commentName" placeholder="Adınız / Nickname" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;">
 
 <textarea placeholder="Yorum yaz..."></textarea>
@@ -256,13 +255,11 @@ style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
 <button id="sendCommentBtn">Yorum Gönder</button>
 
 <!-- EKLENDİ -->
-
 <div id="commentList"></div>
 
 </div>
 
 </div>
-
 
 <script>
 
