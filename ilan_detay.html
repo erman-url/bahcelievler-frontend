@@ -233,10 +233,7 @@ body{
 </div>
 
 
-
 <div class="comments">
-
-
 
 
 <input type="password" id="deletePassword" placeholder="Silme şifresi" 
@@ -403,6 +400,11 @@ if(!textarea) return alert("Textarea bulunamadı");
     textarea.blur();
 
     loadComments();
+
+if(!res.ok){
+  alert("Yorum gönderilemedi (API)");
+  return;
+}
 
   }catch(e){
     console.log("comment error", e);
@@ -589,11 +591,13 @@ document.addEventListener("DOMContentLoaded",()=>{
 const deleteBtn = document.getElementById("deleteAdBtn");
 const confirmBtn = document.getElementById("confirmDeleteBtn");
 
-if(deleteBtn){
-  deleteBtn.onclick = () => {
-    document.getElementById("deletePassword").focus();
-  };
-}
+deleteBtn.onclick = () => {
+  const pass = document.getElementById("deletePassword");
+  if(pass){
+    pass.scrollIntoView({behavior:"smooth"});
+    pass.focus();
+  }
+};
 
 if(confirmBtn){
   confirmBtn.onclick = confirmDelete;
