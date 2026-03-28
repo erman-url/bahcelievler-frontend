@@ -142,7 +142,13 @@ function getAdId(){
 
 async function loadDetail(){
 
-  const id = getAdId();
+  const rawId = getAdId();
+const id = Number(rawId);
+
+if(!id || isNaN(id)){
+  alert("Geçersiz ilan ID");
+  return;
+}
   if(!id) return;
 
   try{
