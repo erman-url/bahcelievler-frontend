@@ -99,46 +99,68 @@
 
 <script>
 
-/* SECURITY */
+/* ===============================
+SECURITY
+=============================== */
 function escapeHTML(str){
   if(!str) return "";
-  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return str.replace(/[&<>"']/g, m => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[m]));
 }
 
 function safeImage(url){
   if(!url) return "https://picsum.photos/300";
+  if(typeof url !== "string") return "https://picsum.photos/300";
   if(url.startsWith("data:")) return url;
-  if(url.startsWith("http://") || url.startsWith("https://")) return url;
+  if(url.startsWith("http")) return url;
   return "https://picsum.photos/300";
 }
 
 function goDetail(id){
+  if(!id) return;
   window.location.href = "ilan_detay.html?id=" + encodeURIComponent(id);
 }
 
-/* TIME */
+/* ===============================
+TIME
+=============================== */
 function timeAgo(dateString){
   if(!dateString) return "";
-  const d=new Date(dateString);
+  const d = new Date(dateString);
   if(isNaN(d)) return "";
-  const diff=Math.floor((Date.now()-d)/1000);
-  if(diff<60) return "Az önce";
-  if(diff<3600) return Math.floor(diff/60)+" dk";
-  if(diff<86400) return Math.floor(diff/3600)+" sa";
+  const diff = Math.floor((Date.now()-d)/1000);
+
+  if(diff < 60) return "Az önce";
+  if(diff < 3600) return Math.floor(diff/60)+" dk";
+  if(diff < 86400) return Math.floor(diff/3600)+" sa";
   return Math.floor(diff/86400)+" gün";
 }
 
-/* FETCH */
+/* ===============================
+FETCH SAFE
+=============================== */
 async function fetchWithTimeout(url,opt={},t=8000){
-  const c=new AbortController();
-  const id=setTimeout(()=>c.abort(),t);
+  const c = new AbortController();
+  const id = setTimeout(()=>c.abort(),t);
+
   try{
-    const r=await fetch(url,{...opt,signal:c.signal});
+    const r = await fetch(url,{...opt,signal:c.signal});
     clearTimeout(id);
     return r;
-  }catch(e){clearTimeout(id);throw e;}
+  }catch(e){
+    clearTimeout(id);
+    throw e;
+  }
 }
-/* LOAD ADS */
+
+/* ===============================
+LOAD ADS
+=============================== */
 async function loadAds(){
   try{
     const res = await fetchWithTimeout(
@@ -160,11 +182,11 @@ async function loadAds(){
 
     let html = "";
 
-    data.slice(0,50).forEach(ad => {
+    data.slice(0,50).forEach(ad=>{
 
       if(!ad) return;
 
-      let img = safeImage(
+      const img = safeImage(
         ad.image_url || ad.image_url_2 || ad.image_url_3
       );
 
@@ -172,12 +194,12 @@ async function loadAds(){
       <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
         <div class="ad-image">
           <img src="${img}" loading="lazy">
-          <div class="price-badge">${escapeHTML(String(ad.price || ""))} TL</div>
+          <div class="price-badge">${escapeHTML(String(ad.price||""))} TL</div>
         </div>
         <div class="ad-body">
-          <div class="ad-title">${escapeHTML(ad.title || "")}</div>
+          <div class="ad-title">${escapeHTML(ad.title||"")}</div>
           <div class="ad-meta">
-            <span>${escapeHTML(ad.district || "")}</span>
+            <span>${escapeHTML(ad.district||"")}</span>
             <span>${timeAgo(ad.created_at)}</span>
           </div>
         </div>
@@ -191,8 +213,9 @@ async function loadAds(){
   }
 }
 
-
-/* INIT */
+/* ===============================
+INIT
+=============================== */
 document.addEventListener("DOMContentLoaded",()=>{
 
   loadAds();
@@ -219,83 +242,76 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   if(!btn) return;
 
-  btn.onclick = async ()=>{
+/* ===============================
+SUBMIT (FULL FIX)
+=============================== */
+btn.onclick = async ()=>{
 
-    if(btn.disabled) return;
+  if(btn.disabled) return;
 
-    const titleEl = document.getElementById("adTitle");
-    const descEl = document.getElementById("adDesc");
-    const priceEl = document.getElementById("adPrice");
+  try{
 
-    if(!titleEl || !descEl || !priceEl){
-      alert("Form elemanları eksik");
-      return;
-    }
-
-    const title = titleEl.value.trim();
-    const desc = descEl.value;
-
-    /* 🔥 FİYAT NORMALİZASYON (EN KRİTİK FIX) */
-    let rawPrice = priceEl.value.trim();
-
-    rawPrice = rawPrice
-      .replace(/\s/g,"")   // boşluk sil
-      .replace(/\./g,"")   // 50.000 → 50000
-      .replace(",", ".");  // 50,5 → 50.5
-
-    const price = Number(rawPrice);
-
-    /* VALIDATION */
-    if(title.length < 3){
-      alert("Başlık çok kısa (min 3 karakter)");
-      return;
-    }
-
-    if(title.length > 50){
-      alert("Başlık max 50 karakter");
-      return;
-    }
-
-    if(!rawPrice || isNaN(price) || price < 50){
-      alert("Geçerli fiyat gir (min 50 TL)");
-      return;
-    }
-
-    if(price > 25000000){
-      alert("Fiyat maksimum 25.000.000 TL olabilir");
-      return;
-    }
-
-    if(desc.length > 500){
-      alert("Açıklama çok uzun (max 500 karakter)");
-      return;
-    }
+    const title = document.getElementById("adTitle")?.value.trim();
+    const desc = document.getElementById("adDesc")?.value || "";
+    const rawInput = document.getElementById("adPrice")?.value || "";
 
     const category = document.getElementById("adCategory")?.value;
     const district = document.getElementById("adDistrict")?.value;
     const condition = document.getElementById("adCondition")?.value;
     const contact = document.getElementById("adContact")?.value.trim();
-    const deleteCode = document.getElementById("deleteCode")?.value;
+    const delete_token = document.getElementById("deleteCode")?.value;
 
-    if(!category){
-      alert("Kategori seçmelisin");
-      return;
-    }
+    /* PRICE NORMALIZE */
+    let rawPrice = rawInput.trim()
+      .replace(/\s/g,"")
+      .replace(/\./g,"")
+      .replace(",", ".");
 
-    if(!district){
-      alert("Mahalle seçmelisin");
-      return;
-    }
+    const price = Number(rawPrice);
 
-    if(!deleteCode || deleteCode.length < 3){
-      alert("Silme şifresi en az 3 karakter olmalı");
-      return;
-    }
+    /* VALIDATION */
+    if(!title || title.length < 3) throw "Başlık kısa";
+    if(title.length > 50) throw "Başlık çok uzun";
 
-    /* BUTTON STATE */
-    btn.disabled = true;
-    btn.innerText = "Gönderiliyor...";
+    if(!rawPrice || isNaN(price) || price < 50)
+      throw "Geçerli fiyat gir";
 
+    if(price > 25000000)
+      throw "Fiyat çok yüksek";
+
+    if(desc.length > 500)
+      throw "Açıklama çok uzun";
+
+    if(!category) throw "Kategori seç";
+    if(!district) throw "Mahalle seç";
+
+    if(!delete_token || delete_token.length < 3)
+      throw "Şifre min 3 karakter";
+
+    /* IMAGE BASE64 */
+    const files = document.getElementById("adImages")?.files || [];
+
+    const toBase64 = file => new Promise(res=>{
+      if(!file) return res("");
+
+      if(file.size > 2*1024*1024){
+        alert("Max 2MB");
+        return res("");
+      }
+
+      const r = new FileReader();
+      r.onload = ()=>res(r.result||"");
+      r.onerror = ()=>res("");
+      r.readAsDataURL(file);
+    });
+
+    let image_url="",image_url_2="",image_url_3="";
+
+    if(files[0]) image_url = await toBase64(files[0]);
+    if(files[1]) image_url_2 = await toBase64(files[1]);
+    if(files[2]) image_url_3 = await toBase64(files[2]);
+
+    /* PAYLOAD */
     const payload = {
       title,
       price,
@@ -304,54 +320,42 @@ document.addEventListener("DOMContentLoaded",()=>{
       condition,
       content: desc.trim(),
       contact,
-      delete_token: deleteCode,
-      image_url:"",
-      image_url_2:"",
-      image_url_3:""
+      delete_token,
+      image_url,
+      image_url_2,
+      image_url_3
     };
 
-    let res;
+    btn.disabled = true;
+    btn.innerText = "Gönderiliyor...";
 
-    try{
-      res = await fetchWithTimeout(
-        "https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",
-        {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify(payload)
-        }
-      );
-    }catch(e){
-      alert("Sunucuya ulaşılamıyor");
-      btn.disabled = false;
-      btn.innerText = "İLANI YAYINLA";
-      return;
-    }
+    const res = await fetch(
+      "https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      }
+    );
 
-    let result;
-
-    try{
-      result = await res.json();
-    }catch(e){
-      alert("Sunucu cevap vermedi");
-      btn.disabled = false;
-      btn.innerText = "İLANI YAYINLA";
-      return;
-    }
+    const result = await res.json();
 
     if(!res.ok || !result?.ok){
-      alert(result?.error || "İlan eklenemedi");
-      btn.disabled = false;
-      btn.innerText = "İLANI YAYINLA";
-      return;
+      throw result?.error || "İlan eklenemedi";
     }
 
-    alert("İlan başarıyla eklendi");
+    alert("İlan eklendi");
     location.reload();
-  };
+
+  }catch(err){
+    alert(err);
+    btn.disabled = false;
+    btn.innerText = "İLANI YAYINLA";
+  }
+
+};
 
 });
-
 </script>
 
 <script src="assets/js/core.js" defer></script>
