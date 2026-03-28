@@ -138,55 +138,78 @@ async function fetchWithTimeout(url,opt={},t=8000){
     return r;
   }catch(e){clearTimeout(id);throw e;}
 }
-
 /* LOAD ADS */
 async function loadAds(){
   try{
-    const res=await fetchWithTimeout("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
-    if(!res.ok) return;
+    const res = await fetchWithTimeout(
+      "https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",
+      { cache:"no-store" }
+    );
 
-    const data=await res.json();
-    const grid=document.getElementById("adsGrid");
+    if(!res || !res.ok) return;
 
-    if(!data || data.length===0){
-      grid.innerHTML="<p style='padding:20px'>Henüz ilan yok</p>";
+    const data = await res.json();
+    const grid = document.getElementById("adsGrid");
+
+    if(!grid) return;
+
+    if(!Array.isArray(data) || data.length === 0){
+      grid.innerHTML = "<p style='padding:20px'>Henüz ilan yok</p>";
       return;
     }
 
-    let html="";
-    data.slice(0,50).forEach(ad=>{
-      let img=safeImage(ad.image_url||ad.image_url_2||ad.image_url_3);
+    let html = "";
 
-      html+=`
+    data.slice(0,50).forEach(ad => {
+
+      if(!ad) return;
+
+      let img = safeImage(
+        ad.image_url || ad.image_url_2 || ad.image_url_3
+      );
+
+      html += `
       <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
         <div class="ad-image">
           <img src="${img}" loading="lazy">
-          <div class="price-badge">${escapeHTML(String(ad.price||""))} TL</div>
+          <div class="price-badge">${escapeHTML(String(ad.price || ""))} TL</div>
         </div>
         <div class="ad-body">
-          <div class="ad-title">${escapeHTML(ad.title)}</div>
+          <div class="ad-title">${escapeHTML(ad.title || "")}</div>
           <div class="ad-meta">
-            <span>${escapeHTML(ad.district||"")}</span>
+            <span>${escapeHTML(ad.district || "")}</span>
             <span>${timeAgo(ad.created_at)}</span>
           </div>
         </div>
       </div>`;
     });
 
-    grid.innerHTML=html;
+    grid.innerHTML = html;
 
-  }catch(e){console.log(e);}
+  }catch(e){
+    console.log("LOAD ADS ERROR:", e);
+  }
 }
+
 
 /* INIT */
 document.addEventListener("DOMContentLoaded",()=>{
+
   loadAds();
 
-  const modal=document.getElementById("adModal");
-  const btn=document.getElementById("submitAdBtn");
+  const modal = document.getElementById("adModal");
+  const btn = document.getElementById("submitAdBtn");
 
-  document.getElementById("openAdModal").onclick=()=>modal.classList.add("active");
-  document.getElementById("closeAdModal").onclick=()=>modal.classList.remove("active");
+  const openBtn = document.getElementById("openAdModal");
+  const closeBtn = document.getElementById("closeAdModal");
+
+  if(openBtn && modal){
+    openBtn.onclick = ()=> modal.classList.add("active");
+  }
+
+  if(closeBtn && modal){
+    closeBtn.onclick = ()=> modal.classList.remove("active");
+  }
 
   window.addEventListener("click",(e)=>{
     if(e.target === modal){
@@ -194,71 +217,94 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   });
 
-  btn.onclick=async ()=>{
+  if(!btn) return;
+
+  btn.onclick = async ()=>{
+
     if(btn.disabled) return;
 
-    const title=document.getElementById("adTitle").value.trim();
-    const desc=document.getElementById("adDesc").value;
-    const price = Number(document.getElementById("adPrice").value);
+    const titleEl = document.getElementById("adTitle");
+    const descEl = document.getElementById("adDesc");
+    const priceEl = document.getElementById("adPrice");
+
+    if(!titleEl || !descEl || !priceEl){
+      alert("Form elemanları eksik");
+      return;
+    }
+
+    const title = titleEl.value.trim();
+    const desc = descEl.value;
+
+    /* 🔥 FİYAT NORMALİZASYON (EN KRİTİK FIX) */
+    let rawPrice = priceEl.value.trim();
+
+    rawPrice = rawPrice
+      .replace(/\s/g,"")   // boşluk sil
+      .replace(/\./g,"")   // 50.000 → 50000
+      .replace(",", ".");  // 50,5 → 50.5
+
+    const price = Number(rawPrice);
 
     /* VALIDATION */
-if(title.length < 3){
-  alert("Başlık çok kısa (min 3 karakter)");
-  return;
-}
+    if(title.length < 3){
+      alert("Başlık çok kısa (min 3 karakter)");
+      return;
+    }
 
-if(title.length > 50){
-  alert("Başlık max 50 karakter");
-  return;
-}
+    if(title.length > 50){
+      alert("Başlık max 50 karakter");
+      return;
+    }
 
-if(isNaN(price) || price < 50){
-  alert("Fiyat en az 50 TL olmalı");
-  return;
-}
+    if(!rawPrice || isNaN(price) || price < 50){
+      alert("Geçerli fiyat gir (min 50 TL)");
+      return;
+    }
 
-if(price > 25000000){
-  alert("Fiyat maksimum 25.000.000 TL olabilir");
-  return;
-}
+    if(price > 25000000){
+      alert("Fiyat maksimum 25.000.000 TL olabilir");
+      return;
+    }
 
-if(desc.length > 500){
-  alert("Açıklama çok uzun (max 500 karakter)");
-  return;
-}
+    if(desc.length > 500){
+      alert("Açıklama çok uzun (max 500 karakter)");
+      return;
+    }
 
-/* KATEGORİ & MAHALLE KONTROL (EKSTRA GÜVENLİK) */
-if(!document.getElementById("adCategory").value){
-  alert("Kategori seçmelisin");
-  return;
-}
+    const category = document.getElementById("adCategory")?.value;
+    const district = document.getElementById("adDistrict")?.value;
+    const condition = document.getElementById("adCondition")?.value;
+    const contact = document.getElementById("adContact")?.value.trim();
+    const deleteCode = document.getElementById("deleteCode")?.value;
 
-if(!document.getElementById("adDistrict").value){
-  alert("Mahalle seçmelisin");
-  return;
-}
+    if(!category){
+      alert("Kategori seçmelisin");
+      return;
+    }
 
-/* SİLME ŞİFRESİ KONTROL */
-const deleteCode = document.getElementById("deleteCode").value;
+    if(!district){
+      alert("Mahalle seçmelisin");
+      return;
+    }
 
-if(!deleteCode || deleteCode.length < 3){
-  alert("Silme şifresi en az 3 karakter olmalı");
-  return;
-}
+    if(!deleteCode || deleteCode.length < 3){
+      alert("Silme şifresi en az 3 karakter olmalı");
+      return;
+    }
 
-/* BUTTON STATE */
-btn.disabled = true;
-btn.innerText = "Gönderiliyor...";
+    /* BUTTON STATE */
+    btn.disabled = true;
+    btn.innerText = "Gönderiliyor...";
 
     const payload = {
-      title: title,
-      price: price, // 🔥 FIX
-      category: document.getElementById("adCategory").value,
-      district: document.getElementById("adDistrict").value,
-      condition: document.getElementById("adCondition").value,
+      title,
+      price,
+      category,
+      district,
+      condition,
       content: desc.trim(),
-      contact: document.getElementById("adContact").value.trim(),
-      delete_token: document.getElementById("deleteCode").value,
+      contact,
+      delete_token: deleteCode,
       image_url:"",
       image_url_2:"",
       image_url_3:""
@@ -277,8 +323,8 @@ btn.innerText = "Gönderiliyor...";
       );
     }catch(e){
       alert("Sunucuya ulaşılamıyor");
-      btn.disabled=false;
-      btn.innerText="İLANI YAYINLA";
+      btn.disabled = false;
+      btn.innerText = "İLANI YAYINLA";
       return;
     }
 
@@ -288,15 +334,15 @@ btn.innerText = "Gönderiliyor...";
       result = await res.json();
     }catch(e){
       alert("Sunucu cevap vermedi");
-      btn.disabled=false;
-      btn.innerText="İLANI YAYINLA";
+      btn.disabled = false;
+      btn.innerText = "İLANI YAYINLA";
       return;
     }
 
-    if(!res.ok || !result.ok){
+    if(!res.ok || !result?.ok){
       alert(result?.error || "İlan eklenemedi");
-      btn.disabled=false;
-      btn.innerText="İLANI YAYINLA";
+      btn.disabled = false;
+      btn.innerText = "İLANI YAYINLA";
       return;
     }
 
