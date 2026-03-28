@@ -307,10 +307,10 @@ async function confirmDelete(){
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          id,
-          delete_token: password
-        })
+       body: JSON.stringify({
+  id,
+  delete_token: password
+})
       }
     );
 
