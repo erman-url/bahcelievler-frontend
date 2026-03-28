@@ -210,20 +210,25 @@ document.addEventListener("DOMContentLoaded",()=>{
     btn.innerText="Gönderiliyor...";
 
     setTimeout(()=>{btn.disabled=false;btn.innerText="İLANI YAYINLA"},5000);
+const priceNumber = Number(price);
 
-    const payload = {
-      title,
-      price,
-      category: document.getElementById("adCategory").value,
-      district: document.getElementById("adDistrict").value,
-      condition: document.getElementById("adCondition").value,
-      content: desc.trim(),
-      contact: document.getElementById("adContact").value.trim(),
-      delete_token: document.getElementById("deleteCode").value,
-      image_url:"",
-      image_url_2:"",
-      image_url_3:""
-    };
+if(isNaN(priceNumber) || priceNumber < 50){
+  return alert("Geçerli fiyat gir (min 50)");
+}
+
+const payload = {
+  title: title.trim(),
+  price: priceNumber,   // 🔥 EN KRİTİK FIX
+  category: document.getElementById("adCategory").value,
+  district: document.getElementById("adDistrict").value,
+  condition: document.getElementById("adCondition").value,
+  content: desc.trim(),
+  contact: document.getElementById("adContact").value.trim(),
+  delete_token: document.getElementById("deleteCode").value,
+  image_url:"",
+  image_url_2:"",
+  image_url_3:""
+};
 
     let res;
 
