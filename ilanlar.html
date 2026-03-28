@@ -7,6 +7,15 @@
 
 <title>İlanlar | Bahçelievler Forum</title>
 
+<!-- SEO -->
+<meta name="description" content="Bahçelievler Forum ilanlar sayfası. 2. el, emlak, vasıta ve elektronik ilanları keşfedin.">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Bahçelievler Forum İlanlar">
+<meta property="og:description" content="Bahçelievler bölgesindeki ilanları incele ve ilan ver.">
+<meta property="og:type" content="website">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <link rel="stylesheet" href="assets/css/base.css">
@@ -199,11 +208,7 @@ AD MODAL
 
 <!-- VİTRİN -->
 <section>
-<div class="ads-grid" id="adsGrid">
-
-  <!-- STATİKLER DURUYOR (SİLMEDİM) -->
-
-</div>
+<div class="ads-grid" id="adsGrid"></div>
 </section>
 
 </main>
@@ -253,17 +258,29 @@ AD MODAL
   </div>
 </div>
 
-
 <script>
+
+/* ===============================
+SECURITY
+=============================== */
+function escapeHTML(str){
+  if(!str) return "";
+  return str.replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
 function goDetail(id){
-  window.location.href = "ilan_detay.html?id=" + id;
+  window.location.href = "ilan_detay.html?id=" + encodeURIComponent(id);
 }
 
 /* ===============================
 TIME FORMAT
 =============================== */
 function timeAgo(dateString){
+  if(!dateString) return "";
   const date = new Date(dateString);
+  if(isNaN(date)) return "";
   const diff = Math.floor((Date.now() - date) / 1000);
 
   if(diff < 60) return "Az önce";
@@ -271,168 +288,88 @@ function timeAgo(dateString){
   if(diff < 86400) return Math.floor(diff/3600) + " sa";
   return Math.floor(diff/86400) + " gün";
 }
+
 /* ===============================
-İLANLARI ÇEK + BAS
+FETCH TIMEOUT
+=============================== */
+async function fetchWithTimeout(url, options={}, timeout=8000){
+  const controller = new AbortController();
+  const t = setTimeout(()=>controller.abort(), timeout);
+  try{
+    const res = await fetch(url,{...options,signal:controller.signal});
+    clearTimeout(t);
+    return res;
+  }catch(e){
+    clearTimeout(t);
+    throw e;
+  }
+}
+
+/* ===============================
+İLANLARI ÇEK
 =============================== */
 async function loadAds(){
-
   try{
-
-    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar", {
-      cache: "no-store"
-    });
-
-    if(!res.ok){
-      console.log("API hata:", res.status);
-      return;
-    }
+    const res = await fetchWithTimeout("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
+    if(!res.ok) return;
 
     const data = await res.json();
-
     const grid = document.getElementById("adsGrid");
 
-    if(!grid){
-      console.log("adsGrid bulunamadı");
-      return;
-    }
-
-    if(!data || data.length === 0){
+    if(!data || data.length===0){
       grid.innerHTML = "<p style='padding:20px'>Henüz ilan yok</p>";
       return;
     }
 
-    let html = "";
+    let html="";
 
-    data.forEach(ad => {
+    data.forEach(ad=>{
+      let img = ad.image_url || ad.image_url_2 || ad.image_url_3;
+      if(!img) img="https://picsum.photos/300";
+      else if(!img.startsWith("data:")) img += "?v="+ad.id;
 
-      html += `
-        <div class="ad-card" onclick="goDetail('${ad.id}')">
-          <div class="ad-image">
-            <img src="${
-              ad.image_url ||
-              ad.image_url_2 ||
-              ad.image_url_3 ||
-              'https://picsum.photos/300'
-            }?v=${ad.id}">
-            <div class="price-badge">${ad.price} TL</div>
-          </div>
-          <div class="ad-body">
-            <div class="ad-title">${ad.title}</div>
-            <div class="ad-meta">
-              <span>${ad.district || ''}</span>
-              <span>${timeAgo(ad.created_at)}</span>
-            </div>
+      html+=`
+      <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
+        <div class="ad-image">
+          <img src="${img}" loading="lazy">
+          <div class="price-badge">${escapeHTML(String(ad.price||""))} TL</div>
+        </div>
+        <div class="ad-body">
+          <div class="ad-title">${escapeHTML(ad.title)}</div>
+          <div class="ad-meta">
+            <span>${escapeHTML(ad.district||"")}</span>
+            <span>${timeAgo(ad.created_at)}</span>
           </div>
         </div>
-      `;
+      </div>`;
     });
 
-    grid.innerHTML = html;
+    grid.innerHTML=html;
 
   }catch(e){
-    console.log("İlan yükleme hatası", e);
+    console.log(e);
   }
-
 }
-/* ===============================
-INIT
-=============================== */
-document.addEventListener("DOMContentLoaded", () => {
 
+/* INIT */
+document.addEventListener("DOMContentLoaded",()=>{
   loadAds();
 
-  const modal = document.getElementById("adModal");
-  const openBtn = document.getElementById("openAdModal");
-  const closeBtn = document.getElementById("closeAdModal");
-  const submitBtn = document.getElementById("submitAdBtn");
+  const modal=document.getElementById("adModal");
 
-  if(openBtn){
-    openBtn.onclick = () => modal.classList.add("active");
-  }
+  document.getElementById("openAdModal").onclick=()=>modal.classList.add("active");
+  document.getElementById("closeAdModal").onclick=()=>modal.classList.remove("active");
 
-  if(closeBtn){
-    closeBtn.onclick = () => modal.classList.remove("active");
-  }
-
-  window.addEventListener("click", (e)=>{
-    if(e.target === modal){
-      modal.classList.remove("active");
-    }
+  window.addEventListener("click",(e)=>{
+    if(e.target===modal) modal.classList.remove("active");
   });
-
-  if(submitBtn){
-    submitBtn.onclick = async () => {
-
-      const files = document.getElementById("adImages").files;
-
-      let image_url = "";
-      let image_url_2 = "";
-      let image_url_3 = "";
-
-      const toBase64 = (file) => new Promise((res, rej)=>{
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = ()=> res(reader.result);
-        reader.onerror = rej;
-      });
-
-      if(files[0]) image_url = await toBase64(files[0]);
-      if(files[1]) image_url_2 = await toBase64(files[1]);
-      if(files[2]) image_url_3 = await toBase64(files[2]);
-
-      const payload = {
-        title: document.getElementById("adTitle").value.trim(),
-        price: Number(document.getElementById("adPrice").value),
-        category: document.getElementById("adCategory").value,
-        district: document.getElementById("adDistrict").value,
-        condition: document.getElementById("adCondition").value,
-        content: document.getElementById("adDesc").value.trim(),
-        contact: document.getElementById("adContact").value.trim(),
-        delete_token: document.getElementById("deleteCode").value,
-        image_url,
-        image_url_2,
-        image_url_3
-      };
-
-   const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body: JSON.stringify(payload)
 });
 
-let result = null;
-
-try{
-  result = await res.json();
-}catch(e){
-  alert("Sunucu cevap vermedi");
-  return;
-}
-
-if(!res.ok){
-  alert("İlan eklenemedi (API hata)");
-  return;
-}
-
-if(!result || result.ok !== true){
-  alert(result?.error || "İlan kaydedilemedi");
-  return;
-}
-
-alert("İlan başarıyla eklendi");
-
-location.reload();
-    };
-  }
-
-});
 </script>
-
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
 <script src="assets/js/news.js" defer></script>
-<script src="assets/js/countdown.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
