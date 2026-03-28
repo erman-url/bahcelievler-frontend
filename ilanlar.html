@@ -202,15 +202,53 @@ document.addEventListener("DOMContentLoaded",()=>{
     const price = Number(document.getElementById("adPrice").value);
 
     /* VALIDATION */
-    if(title.length<3){alert("Başlık çok kısa");return;}
-    if(title.length>50){alert("Başlık max 50 karakter");return;}
-    if(isNaN(price) || price < 50){
-      return alert("Geçerli fiyat gir (min 50)");
-    }
-    if(desc.length>500){alert("Açıklama çok uzun");return;}
+if(title.length < 3){
+  alert("Başlık çok kısa (min 3 karakter)");
+  return;
+}
 
-    btn.disabled=true;
-    btn.innerText="Gönderiliyor...";
+if(title.length > 50){
+  alert("Başlık max 50 karakter");
+  return;
+}
+
+if(isNaN(price) || price < 50){
+  alert("Fiyat en az 50 TL olmalı");
+  return;
+}
+
+if(price > 25000000){
+  alert("Fiyat maksimum 25.000.000 TL olabilir");
+  return;
+}
+
+if(desc.length > 500){
+  alert("Açıklama çok uzun (max 500 karakter)");
+  return;
+}
+
+/* KATEGORİ & MAHALLE KONTROL (EKSTRA GÜVENLİK) */
+if(!document.getElementById("adCategory").value){
+  alert("Kategori seçmelisin");
+  return;
+}
+
+if(!document.getElementById("adDistrict").value){
+  alert("Mahalle seçmelisin");
+  return;
+}
+
+/* SİLME ŞİFRESİ KONTROL */
+const deleteCode = document.getElementById("deleteCode").value;
+
+if(!deleteCode || deleteCode.length < 3){
+  alert("Silme şifresi en az 3 karakter olmalı");
+  return;
+}
+
+/* BUTTON STATE */
+btn.disabled = true;
+btn.innerText = "Gönderiliyor...";
 
     const payload = {
       title: title,
