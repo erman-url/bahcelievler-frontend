@@ -199,37 +199,32 @@ document.addEventListener("DOMContentLoaded",()=>{
 
     const title=document.getElementById("adTitle").value.trim();
     const desc=document.getElementById("adDesc").value;
+    const price = Number(document.getElementById("adPrice").value);
 
+    /* VALIDATION */
     if(title.length<3){alert("Başlık çok kısa");return;}
     if(title.length>50){alert("Başlık max 50 karakter");return;}
-    if(!price || isNaN(price)){alert("Geçerli fiyat gir");return;}
+    if(isNaN(price) || price < 50){
+      return alert("Geçerli fiyat gir (min 50)");
+    }
     if(desc.length>500){alert("Açıklama çok uzun");return;}
 
     btn.disabled=true;
     btn.innerText="Gönderiliyor...";
 
-    setTimeout(()=>{btn.disabled=false;btn.innerText="İLANI YAYINLA"},5000);
-
-const price = Number(document.getElementById("adPrice").value);
-
-if(isNaN(price) || price < 50){
-  return alert("Geçerli fiyat gir (min 50)");
-}
-
-
-const payload = {
-  title: title.trim(),
-  price: priceNumber,   // 🔥 EN KRİTİK FIX
-  category: document.getElementById("adCategory").value,
-  district: document.getElementById("adDistrict").value,
-  condition: document.getElementById("adCondition").value,
-  content: desc.trim(),
-  contact: document.getElementById("adContact").value.trim(),
-  delete_token: document.getElementById("deleteCode").value,
-  image_url:"",
-  image_url_2:"",
-  image_url_3:""
-};
+    const payload = {
+      title: title,
+      price: price, // 🔥 FIX
+      category: document.getElementById("adCategory").value,
+      district: document.getElementById("adDistrict").value,
+      condition: document.getElementById("adCondition").value,
+      content: desc.trim(),
+      contact: document.getElementById("adContact").value.trim(),
+      delete_token: document.getElementById("deleteCode").value,
+      image_url:"",
+      image_url_2:"",
+      image_url_3:""
+    };
 
     let res;
 
@@ -244,6 +239,8 @@ const payload = {
       );
     }catch(e){
       alert("Sunucuya ulaşılamıyor");
+      btn.disabled=false;
+      btn.innerText="İLANI YAYINLA";
       return;
     }
 
@@ -253,16 +250,19 @@ const payload = {
       result = await res.json();
     }catch(e){
       alert("Sunucu cevap vermedi");
+      btn.disabled=false;
+      btn.innerText="İLANI YAYINLA";
       return;
     }
 
     if(!res.ok || !result.ok){
       alert(result?.error || "İlan eklenemedi");
+      btn.disabled=false;
+      btn.innerText="İLANI YAYINLA";
       return;
     }
 
     alert("İlan başarıyla eklendi");
-
     location.reload();
   };
 
