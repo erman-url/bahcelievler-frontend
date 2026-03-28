@@ -188,11 +188,11 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("openAdModal").onclick=()=>modal.classList.add("active");
   document.getElementById("closeAdModal").onclick=()=>modal.classList.remove("active");
 
-  window.addEventListener("click",(e)=>{
-    if(e.target.closest(".ad-modal-content")===null){
-      modal.classList.remove("active");
-    }
-  });
+ window.addEventListener("click",(e)=>{
+  if(e.target === modal){
+    modal.classList.remove("active");
+  }
+});
 
   btn.onclick=async ()=>{
     if(btn.disabled) return;
