@@ -236,9 +236,16 @@ if(images.length === 0){
   }
 }
 
+
 async function confirmDelete(){
 
-  const id = getAdId();
+  const rawId = getAdId();
+  const id = Number(rawId);
+
+  if(!id || isNaN(id)){
+    return alert("Geçersiz ilan ID");
+  }
+
   const passEl = document.getElementById("deletePassword");
 
   if(!passEl) return alert("Şifre alanı yok");
@@ -257,41 +264,22 @@ async function confirmDelete(){
         method:"POST",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({
-          id,
+          id: id,
           delete_token: password
         })
       }
     );
 
-    let result = null;
-
-    try{
-      result = await res.json();
-    }catch(e){
-      alert("Sunucu geçersiz cevap verdi");
-      return;
-    }
+    const result = await res.json();
 
     if(!res.ok){
-      alert("Silme işlemi başarısız (API)");
-      return;
-    }
-
-    if(!result || typeof result.ok === "undefined"){
-      alert("Geçersiz sunucu cevabı");
+      alert(result?.error || "Silme başarısız");
       return;
     }
 
     if(result.ok){
-
-      if(passEl) passEl.value = "";
-
       alert("İlan silindi");
-
-      setTimeout(()=>{
-        window.location.href = "ilanlar.html";
-      }, 300);
-
+      window.location.href = "ilanlar.html";
     }else{
       alert(result.error || "Şifre yanlış");
     }
@@ -300,6 +288,7 @@ async function confirmDelete(){
     alert("Sunucu hatası");
   }
 }
+
 
 document.addEventListener("DOMContentLoaded",()=>{
 
