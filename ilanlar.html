@@ -10,6 +10,8 @@
 <!-- SEO -->
 <meta name="description" content="Bahçelievler Forum ilanlar sayfası. 2. el, emlak, vasıta ve elektronik ilanları keşfedin.">
 <meta name="robots" content="index, follow">
+<link rel="canonical" href="https://site.com/ilanlar">
+<meta name="theme-color" content="#ffffff">
 
 <!-- Open Graph -->
 <meta property="og:title" content="Bahçelievler Forum İlanlar">
@@ -33,33 +35,18 @@
 
 <main id="mainContent">
 
-<!-- FİLTRE -->
 <section class="quick-grid">
-  <div class="quick-card">
-    <i class="fas fa-layer-group"></i>
-    <span>Kategori</span>
-  </div>
-
-  <div class="quick-card">
-    <i class="fas fa-location-dot"></i>
-    <span>Mahalle</span>
-  </div>
-
-  <div class="quick-card">
-    <i class="fas fa-filter"></i>
-    <span>Filtre</span>
-  </div>
+  <div class="quick-card"><i class="fas fa-layer-group"></i><span>Kategori</span></div>
+  <div class="quick-card"><i class="fas fa-location-dot"></i><span>Mahalle</span></div>
+  <div class="quick-card"><i class="fas fa-filter"></i><span>Filtre</span></div>
 </section>
 
-<!-- İLAN VER -->
 <section style="margin:var(--space-md); text-align:center;">
   <button id="openAdModal" class="quick-card" style="width:100%; font-size:15px;">
-    <i class="fas fa-plus"></i>
-    <span>İlan Ver</span>
+    <i class="fas fa-plus"></i><span>İlan Ver</span>
   </button>
 </section>
 
-<!-- VİTRİN -->
 <section>
 <div class="ads-grid" id="adsGrid"></div>
 </section>
@@ -67,7 +54,6 @@
 </main>
 </div>
 
-<!-- MODAL -->
 <div id="adModal" class="ad-modal">
   <div class="ad-modal-content">
 
@@ -76,7 +62,7 @@
       <span>Yeni İlan</span>
     </div>
 
-    <input type="text" id="adTitle" placeholder="İlan Başlığı (max 20)">
+    <input type="text" id="adTitle" placeholder="İlan Başlığı (min 3 - max 50)">
     <input type="number" id="adPrice" placeholder="Fiyat (TL)">
 
     <select id="adCategory">
@@ -98,7 +84,7 @@
       <option>Yeni</option>
     </select>
 
-    <textarea id="adDesc" placeholder="Açıklama"></textarea>
+    <textarea id="adDesc" placeholder="Açıklama (max 500 karakter)"></textarea>
 
     <input type="file" id="adImages" multiple>
 
@@ -113,73 +99,63 @@
 
 <script>
 
-/* ===============================
-SECURITY
-=============================== */
+/* SECURITY */
 function escapeHTML(str){
   if(!str) return "";
-  return str.replace(/[&<>"']/g, m => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
+  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function safeImage(url){
+  if(!url) return "https://picsum.photos/300";
+  if(url.startsWith("data:")) return url;
+  if(url.startsWith("http://") || url.startsWith("https://")) return url;
+  return "https://picsum.photos/300";
 }
 
 function goDetail(id){
   window.location.href = "ilan_detay.html?id=" + encodeURIComponent(id);
 }
 
-/* ===============================
-TIME FORMAT
-=============================== */
+/* TIME */
 function timeAgo(dateString){
   if(!dateString) return "";
-  const date = new Date(dateString);
-  if(isNaN(date)) return "";
-  const diff = Math.floor((Date.now() - date) / 1000);
-
-  if(diff < 60) return "Az önce";
-  if(diff < 3600) return Math.floor(diff/60) + " dk";
-  if(diff < 86400) return Math.floor(diff/3600) + " sa";
-  return Math.floor(diff/86400) + " gün";
+  const d=new Date(dateString);
+  if(isNaN(d)) return "";
+  const diff=Math.floor((Date.now()-d)/1000);
+  if(diff<60) return "Az önce";
+  if(diff<3600) return Math.floor(diff/60)+" dk";
+  if(diff<86400) return Math.floor(diff/3600)+" sa";
+  return Math.floor(diff/86400)+" gün";
 }
 
-/* ===============================
-FETCH TIMEOUT
-=============================== */
-async function fetchWithTimeout(url, options={}, timeout=8000){
-  const controller = new AbortController();
-  const t = setTimeout(()=>controller.abort(), timeout);
+/* FETCH */
+async function fetchWithTimeout(url,opt={},t=8000){
+  const c=new AbortController();
+  const id=setTimeout(()=>c.abort(),t);
   try{
-    const res = await fetch(url,{...options,signal:controller.signal});
-    clearTimeout(t);
-    return res;
-  }catch(e){
-    clearTimeout(t);
-    throw e;
-  }
+    const r=await fetch(url,{...opt,signal:c.signal});
+    clearTimeout(id);
+    return r;
+  }catch(e){clearTimeout(id);throw e;}
 }
 
-/* ===============================
-İLANLARI ÇEK
-=============================== */
+/* LOAD ADS */
 async function loadAds(){
   try{
-    const res = await fetchWithTimeout("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
+    const res=await fetchWithTimeout("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",{cache:"no-store"});
     if(!res.ok) return;
 
-    const data = await res.json();
-    const grid = document.getElementById("adsGrid");
+    const data=await res.json();
+    const grid=document.getElementById("adsGrid");
 
     if(!data || data.length===0){
-      grid.innerHTML = "<p style='padding:20px'>Henüz ilan yok</p>";
+      grid.innerHTML="<p style='padding:20px'>Henüz ilan yok</p>";
       return;
     }
 
     let html="";
-
-    data.forEach(ad=>{
-      let img = ad.image_url || ad.image_url_2 || ad.image_url_3;
-      if(!img) img="https://picsum.photos/300";
-      else if(!img.startsWith("data:")) img += "?v="+ad.id;
+    data.slice(0,50).forEach(ad=>{ // DB koruma
+      let img=safeImage(ad.image_url||ad.image_url_2||ad.image_url_3);
 
       html+=`
       <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
@@ -199,9 +175,7 @@ async function loadAds(){
 
     grid.innerHTML=html;
 
-  }catch(e){
-    console.log(e);
-  }
+  }catch(e){console.log(e);}
 }
 
 /* INIT */
@@ -209,13 +183,51 @@ document.addEventListener("DOMContentLoaded",()=>{
   loadAds();
 
   const modal=document.getElementById("adModal");
+  const btn=document.getElementById("submitAdBtn");
 
   document.getElementById("openAdModal").onclick=()=>modal.classList.add("active");
   document.getElementById("closeAdModal").onclick=()=>modal.classList.remove("active");
 
   window.addEventListener("click",(e)=>{
-    if(e.target===modal) modal.classList.remove("active");
+    if(e.target.closest(".ad-modal-content")===null){
+      modal.classList.remove("active");
+    }
   });
+
+  btn.onclick=async ()=>{
+    if(btn.disabled) return;
+
+    const title=document.getElementById("adTitle").value.trim();
+    const price=Number(document.getElementById("adPrice").value);
+    const desc=document.getElementById("adDesc").value;
+
+    if(title.length<3){alert("Başlık çok kısa");return;}
+    if(title.length>50){alert("Başlık max 50 karakter");return;}
+    if(!price || isNaN(price)){alert("Geçerli fiyat gir");return;}
+    if(desc.length>500){alert("Açıklama çok uzun");return;}
+
+    const files=document.getElementById("adImages").files;
+
+    if(files.length>3){
+      alert("En fazla 3 görsel yükleyebilirsin");
+      return;
+    }
+
+    for(let f of files){
+      if(f.size>2*1024*1024){
+        alert("Her görsel max 2MB olmalı");
+        return;
+      }
+    }
+
+    btn.disabled=true;
+    btn.innerText="Gönderiliyor...";
+
+    setTimeout(()=>{btn.disabled=false;btn.innerText="İLANI YAYINLA"},5000); // rate limit
+
+    alert("İlan gönderildi (demo)");
+  };
+
 });
 
 </script>
