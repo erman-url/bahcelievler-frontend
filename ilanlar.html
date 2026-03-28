@@ -198,7 +198,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(btn.disabled) return;
 
     const title=document.getElementById("adTitle").value.trim();
-    const price=Number(document.getElementById("adPrice").value);
     const desc=document.getElementById("adDesc").value;
 
     if(title.length<3){alert("Başlık çok kısa");return;}
@@ -210,9 +209,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     btn.innerText="Gönderiliyor...";
 
     setTimeout(()=>{btn.disabled=false;btn.innerText="İLANI YAYINLA"},5000);
-const priceNumber = Number(price);
 
-if(isNaN(priceNumber) || priceNumber < 50){
+const price = Number(document.getElementById("adPrice").value);
+
+if(isNaN(price) || price < 50){
   return alert("Geçerli fiyat gir (min 50)");
 }
 
