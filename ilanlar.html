@@ -253,36 +253,17 @@ AD MODAL
   </div>
 </div>
 
+
 <script>
 function goDetail(id){
   window.location.href = "ilan_detay.html?id=" + id;
 }
 
 /* ===============================
-SECURITY
-=============================== */
-function escapeHTML(str){
-  if(!str) return "";
-  return str.replace(/[&<>"']/g, function(m){
-    return {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    }[m];
-  });
-}
-
-/* ===============================
 TIME FORMAT
 =============================== */
 function timeAgo(dateString){
-  if(!dateString) return "";
-
   const date = new Date(dateString);
-  if(isNaN(date)) return "";
-
   const diff = Math.floor((Date.now() - date) / 1000);
 
   if(diff < 60) return "Az önce";
@@ -290,27 +271,6 @@ function timeAgo(dateString){
   if(diff < 86400) return Math.floor(diff/3600) + " sa";
   return Math.floor(diff/86400) + " gün";
 }
-
-/* ===============================
-FETCH WITH TIMEOUT
-=============================== */
-async function fetchWithTimeout(url, options = {}, timeout = 8000){
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-
-  try{
-    const res = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-    clearTimeout(id);
-    return res;
-  }catch(e){
-    clearTimeout(id);
-    throw e;
-  }
-}
-
 /* ===============================
 İLANLARI ÇEK + BAS
 =============================== */
@@ -318,10 +278,9 @@ async function loadAds(){
 
   try{
 
-    const res = await fetchWithTimeout(
-      "https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar",
-      { cache:"no-store" }
-    );
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilanlar", {
+      cache: "no-store"
+    });
 
     if(!res.ok){
       console.log("API hata:", res.status);
@@ -346,24 +305,21 @@ async function loadAds(){
 
     data.forEach(ad => {
 
-      let img = ad.image_url || ad.image_url_2 || ad.image_url_3;
-
-      if(!img){
-        img = "https://picsum.photos/300";
-      }else if(!img.startsWith("data:")){
-        img = img + "?v=" + ad.id;
-      }
-
       html += `
         <div class="ad-card" onclick="goDetail('${ad.id}')">
           <div class="ad-image">
-            <img src="${img}">
-            <div class="price-badge">${escapeHTML(String(ad.price || ""))} TL</div>
+            <img src="${
+              ad.image_url ||
+              ad.image_url_2 ||
+              ad.image_url_3 ||
+              'https://picsum.photos/300'
+            }?v=${ad.id}">
+            <div class="price-badge">${ad.price} TL</div>
           </div>
           <div class="ad-body">
-            <div class="ad-title">${escapeHTML(ad.title)}</div>
+            <div class="ad-title">${ad.title}</div>
             <div class="ad-meta">
-              <span>${escapeHTML(ad.district || '')}</span>
+              <span>${ad.district || ''}</span>
               <span>${timeAgo(ad.created_at)}</span>
             </div>
           </div>
@@ -378,7 +334,6 @@ async function loadAds(){
   }
 
 }
-
 /* ===============================
 INIT
 =============================== */
@@ -400,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("click", (e)=>{
-    if(e.target.closest(".ad-modal-content") === null){
+    if(e.target === modal){
       modal.classList.remove("active");
     }
   });
@@ -421,35 +376,13 @@ document.addEventListener("DOMContentLoaded", () => {
         reader.onerror = rej;
       });
 
-      // SIZE CHECK
-      for(let i=0;i<files.length;i++){
-        if(files[i].size > 2 * 1024 * 1024){
-          alert("Görseller max 2MB olmalı");
-          return;
-        }
-      }
-
       if(files[0]) image_url = await toBase64(files[0]);
       if(files[1]) image_url_2 = await toBase64(files[1]);
       if(files[2]) image_url_3 = await toBase64(files[2]);
 
-      const title = document.getElementById("adTitle").value.trim();
-      const priceRaw = document.getElementById("adPrice").value;
-      const price = Number(priceRaw);
-
-      if(!title){
-        alert("Başlık zorunlu");
-        return;
-      }
-
-      if(!price || isNaN(price)){
-        alert("Geçerli fiyat gir");
-        return;
-      }
-
       const payload = {
-        title,
-        price,
+        title: document.getElementById("adTitle").value.trim(),
+        price: Number(document.getElementById("adPrice").value),
         category: document.getElementById("adCategory").value,
         district: document.getElementById("adDistrict").value,
         condition: document.getElementById("adCondition").value,
@@ -461,53 +394,44 @@ document.addEventListener("DOMContentLoaded", () => {
         image_url_3
       };
 
-      let res;
+   const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify(payload)
+});
 
-      try{
-        res = await fetchWithTimeout(
-          "https://bahcelievler-api.erman-urel.workers.dev/api/ilan-ekle",
-          {
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body: JSON.stringify(payload)
-          }
-        );
-      }catch(e){
-        alert("Sunucuya ulaşılamıyor");
-        return;
-      }
+let result = null;
 
-      let result = null;
+try{
+  result = await res.json();
+}catch(e){
+  alert("Sunucu cevap vermedi");
+  return;
+}
 
-      try{
-        result = await res.json();
-      }catch(e){
-        alert("Sunucu cevap vermedi");
-        return;
-      }
+if(!res.ok){
+  alert("İlan eklenemedi (API hata)");
+  return;
+}
 
-      if(!res.ok){
-        alert("İlan eklenemedi (API hata)");
-        return;
-      }
+if(!result || result.ok !== true){
+  alert(result?.error || "İlan kaydedilemedi");
+  return;
+}
 
-      if(!result || result.ok !== true){
-        alert(result?.error || "İlan kaydedilemedi");
-        return;
-      }
+alert("İlan başarıyla eklendi");
 
-      alert("İlan başarıyla eklendi");
-
-      location.reload();
+location.reload();
     };
   }
 
 });
-
 </script>
 
 
 <script src="assets/js/core.js" defer></script>
+<script src="assets/js/dashboard.js" defer></script>
+<script src="assets/js/news.js" defer></script>
 <script src="assets/js/countdown.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
