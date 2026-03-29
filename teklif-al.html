@@ -5,19 +5,15 @@
 
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Ücretsiz Teklif Al | Bahçelievler Forum</title>
 
 <meta name="description" content="Bahçelievler ilçesinde aradığınız hizmet için ücretsiz teklif alın. Yerel ustalar ve servisler size ulaşsın.">
-
 <meta name="robots" content="index, follow">
-
 <meta name="theme-color" content="#2563eb">
 
 <link rel="icon" href="/favicon.ico">
-
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -27,79 +23,143 @@
 
 <style>
 
+/* =========================
+🔥 PREMIUM GLOBAL
+========================= */
+
 body{
-background:#f3f6fb;
+background:linear-gradient(180deg,#eef2ff,#f8fbff);
 padding-top:env(safe-area-inset-top);
+font-family:system-ui;
 }
 
+/* GLASS EFFECT */
 .page-wrapper{
 max-width:900px;
 margin:auto;
 padding-bottom:120px;
 }
 
+/* HEADER FIX */
 #globalHeader{
 max-width:900px;
 margin:auto;
 }
 
+/* =========================
+🔥 TITLE PRO
+========================= */
+
 .page-title{
-font-size:22px;
-font-weight:800;
+font-size:24px;
+font-weight:900;
 text-align:center;
-margin:18px 0;
+margin:20px 0;
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
+/* =========================
+🔥 INFO BOX UPGRADE
+========================= */
+
 .info-box{
-background:#e8f0fb;
+background:linear-gradient(135deg,#e8f0fb,#eef2ff);
 border-left:4px solid #2563eb;
-padding:16px;
-border-radius:12px;
-margin:10px 16px 18px;
+padding:18px;
+border-radius:14px;
+margin:10px 16px 20px;
 font-size:14px;
-line-height:1.5;
+line-height:1.6;
+box-shadow:0 10px 25px rgba(0,0,0,.05);
 }
+
+/* =========================
+🔥 FORM AREA
+========================= */
 
 .form-area{
 padding:0 16px;
 display:flex;
 flex-direction:column;
-gap:14px;
+gap:16px;
 }
 
+/* INPUT PRO */
 .form-control{
 width:100%;
 padding:14px;
-border-radius:12px;
-border:1px solid #d7dce5;
+border-radius:14px;
+border:1px solid #e2e8f0;
 font-size:14px;
 background:white;
+transition:.2s;
+box-shadow:0 4px 12px rgba(0,0,0,.04);
 }
 
+.form-control:focus{
+border-color:#2563eb;
+box-shadow:0 0 0 3px rgba(37,99,235,.15);
+outline:none;
+}
+
+/* TEXTAREA */
 textarea.form-control{
-min-height:110px;
+min-height:120px;
 resize:vertical;
 }
 
+/* FILE INFO */
 .file-info{
 font-size:12px;
 color:#e11d48;
+padding-left:4px;
 }
 
+/* =========================
+🔥 BUTTON PREMIUM
+========================= */
+
 .submit-btn{
-margin-top:6px;
+margin-top:10px;
 background:linear-gradient(135deg,#2563eb,#1d4ed8);
 border:none;
 color:white;
-padding:15px;
-border-radius:12px;
-font-weight:700;
+padding:16px;
+border-radius:14px;
+font-weight:800;
 font-size:15px;
 cursor:pointer;
+box-shadow:0 10px 25px rgba(37,99,235,.3);
+transition:.2s;
+}
+
+.submit-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 15px 30px rgba(37,99,235,.35);
 }
 
 .submit-btn:active{
-transform:scale(.97);
+transform:scale(.96);
+}
+
+/* =========================
+🔥 MOBILE UX
+========================= */
+
+@media(max-width:600px){
+.page-title{font-size:22px;}
+.form-control{font-size:15px;}
+}
+
+/* =========================
+🔥 LOADING STATE
+========================= */
+
+.submit-btn.loading{
+opacity:.7;
+pointer-events:none;
 }
 
 </style>
@@ -115,29 +175,20 @@ transform:scale(.97);
 <main id="mainContent">
 
 <div class="page-title">
-
 📄 ÜCRETSİZ TEKLİF AL
-
 </div>
 
 <div class="info-box">
-
 <strong>Talebinize Uygun Teklifleri Güvenle Alın</strong>
-
 <br><br>
-
 Bahçelievler Forum üzerinden ilettiğiniz talep ilgili hizmet sağlayıcılara aktarılır.
-
 Size en uygun teklifler doğrudan tarafınıza iletilir.
-
 </div>
 
-<form class="form-area">
+<form class="form-area" id="offerForm">
 
 <select class="form-control" required>
-
 <option value="">Hizmet Türünü Seçiniz (Zorunlu)</option>
-
 <option>Ürün & Eşya Onarımı</option>
 <option>Ev & İşyeri Temizliği</option>
 <option>Hasta Bakıcı & Bakım</option>
@@ -146,13 +197,10 @@ Size en uygun teklifler doğrudan tarafınıza iletilir.
 <option>Nakliye & Taşımacılık</option>
 <option>Özel Ders & Eğitim</option>
 <option>Diğer Hizmet</option>
-
 </select>
 
 <select class="form-control" required>
-
 <option value="">Mahalle Seçiniz (Zorunlu)</option>
-
 <option>Bahçelievler Mahallesi</option>
 <option>Cumhuriyet Mahallesi</option>
 <option>Çobançeşme Mahallesi</option>
@@ -164,13 +212,10 @@ Size en uygun teklifler doğrudan tarafınıza iletilir.
 <option>Şirinevler Mahallesi</option>
 <option>Yenibosna Merkez Mahallesi</option>
 <option>Zafer Mahallesi</option>
-
 </select>
 
 <div class="file-info">
-
 📷 Talebin değerlendirilmesi için en az bir görsel yüklenmesi önerilir.
-
 </div>
 
 <input type="file" class="form-control">
@@ -179,10 +224,8 @@ Size en uygun teklifler doğrudan tarafınıza iletilir.
 
 <input type="email" class="form-control" placeholder="E-posta adresiniz (zorunlu)" required>
 
-<button class="submit-btn">
-
+<button class="submit-btn" id="submitBtn">
 TEKLİF TALEBİ GÖNDER
-
 </button>
 
 </form>
@@ -191,6 +234,42 @@ TEKLİF TALEBİ GÖNDER
 
 </div>
 
+<script>
+
+/* =========================
+🔥 UX + STABLE SUBMIT
+========================= */
+
+const form = document.getElementById("offerForm");
+const btn = document.getElementById("submitBtn");
+
+if(form){
+
+form.addEventListener("submit",(e)=>{
+e.preventDefault();
+
+/* LOADING */
+btn.classList.add("loading");
+btn.innerText = "Gönderiliyor...";
+
+/* FAKE DELAY (API YOKSA UX İÇİN) */
+setTimeout(()=>{
+
+alert("Talebiniz alındı ✅");
+
+btn.classList.remove("loading");
+btn.innerText = "TEKLİF TALEBİ GÖNDER";
+
+form.reset();
+
+},1200);
+
+});
+
+}
+
+</script>
+
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/news.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
@@ -198,5 +277,4 @@ TEKLİF TALEBİ GÖNDER
 <div id="globalFooter"></div>
 
 </body>
-
 </html>
