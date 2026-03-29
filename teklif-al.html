@@ -9,30 +9,48 @@
 
 <title>Ücretsiz Teklif Al | Bahçelievler Forum</title>
 
-<meta name="description" content="Bahçelievler ilçesinde aradığınız hizmet için ücretsiz teklif alın.">
+<meta name="description" content="Bahçelievler ilçesinde aradığınız hizmet için ücretsiz teklif alın. Yerel ustalar ve servisler size ulaşsın.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#2563eb">
+
+<link rel="icon" href="/favicon.ico">
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
 
-/* ===== GLOBAL ===== */
+/* =========================
+🔥 PREMIUM GLOBAL
+========================= */
+
 body{
 background:linear-gradient(180deg,#eef2ff,#f8fbff);
-font-family:system-ui,-apple-system;
+padding-top:env(safe-area-inset-top);
+font-family:system-ui,-apple-system,Segoe UI,Roboto;
+-webkit-font-smoothing:antialiased;
 }
 
 /* WRAPPER */
 .page-wrapper{
 max-width:900px;
 margin:auto;
-padding-bottom:260px; /* 🔥 footer + submit alan */
+padding-bottom:140px;
 }
 
-/* TITLE */
+/* HEADER FIX */
+#globalHeader{
+max-width:900px;
+margin:auto;
+}
+
+/* =========================
+🔥 TITLE PRO
+========================= */
+
 .page-title{
 font-size:26px;
 font-weight:900;
@@ -43,16 +61,25 @@ background:linear-gradient(135deg,#2563eb,#4f46e5);
 -webkit-text-fill-color:transparent;
 }
 
-/* INFO */
+/* =========================
+🔥 INFO BOX
+========================= */
+
 .info-box{
-background:white;
-border-radius:18px;
+background:linear-gradient(135deg,#eef4ff,#f4f7ff);
+border-left:4px solid #2563eb;
 padding:18px;
+border-radius:16px;
 margin:10px 16px 20px;
-box-shadow:0 10px 30px rgba(0,0,0,.06);
+font-size:14px;
+line-height:1.6;
+box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 
-/* FORM */
+/* =========================
+🔥 FORM CARD WRAP
+========================= */
+
 .form-area{
 padding:0 12px;
 display:flex;
@@ -60,12 +87,12 @@ flex-direction:column;
 gap:18px;
 }
 
-/* CARD */
+/* CARD EFFECT */
 .form-group{
 background:white;
 border-radius:18px;
 padding:16px;
-box-shadow:0 10px 25px rgba(0,0,0,.05);
+box-shadow:0 10px 30px rgba(0,0,0,.06);
 transition:.2s;
 }
 
@@ -80,57 +107,81 @@ width:100%;
 padding:14px;
 border-radius:12px;
 border:1px solid #e2e8f0;
+font-size:14px;
 background:#f9fafb;
+transition:.2s;
 margin-top:8px;
 }
 
 .form-control:focus{
 border-color:#2563eb;
 background:white;
+box-shadow:0 0 0 3px rgba(37,99,235,.12);
 outline:none;
 }
 
-/* SUBMIT BAR */
+/* TEXTAREA */
+textarea.form-control{
+min-height:120px;
+resize:vertical;
+}
+
+/* FILE INFO */
+.file-info{
+font-size:12px;
+color:#e11d48;
+padding-left:4px;
+}
+
+/* =========================
+🔥 STICKY BUTTON (APP FEEL)
+========================= */
+
 .submit-wrap{
 position:fixed;
+bottom:0;
 left:0;
 right:0;
-bottom:90px; /* 🔥 FOOTER ÜSTÜ */
-padding:12px 16px;
-z-index:90;
-}
-
-.submit-inner{
 background:white;
-border-radius:20px;
-padding:10px;
-box-shadow:0 10px 30px rgba(0,0,0,.12);
+padding:12px 16px;
+box-shadow:0 -8px 25px rgba(0,0,0,.08);
+z-index:50;
 }
 
-/* BUTTON */
 .submit-btn{
 width:100%;
-padding:16px;
-border:none;
-border-radius:16px;
 background:linear-gradient(135deg,#2563eb,#1d4ed8);
+border:none;
 color:white;
+padding:16px;
+border-radius:16px;
 font-weight:800;
 font-size:15px;
+cursor:pointer;
+box-shadow:0 10px 25px rgba(37,99,235,.3);
+transition:.2s;
 }
 
 .submit-btn:active{
 transform:scale(.96);
 }
 
+/* =========================
+🔥 MOBILE UX
+========================= */
+
+@media(max-width:600px){
+.page-title{font-size:22px;}
+.form-control{font-size:15px;}
+}
+
+/* =========================
+🔥 LOADING
+========================= */
+
 .submit-btn.loading{
 opacity:.7;
 pointer-events:none;
-}
-
-/* MOBILE */
-@media(max-width:600px){
-.page-title{font-size:22px;}
 }
 
 </style>
@@ -143,22 +194,26 @@ pointer-events:none;
 
 <div class="page-wrapper">
 
-<main>
+<main id="mainContent">
 
-<div class="page-title">📄 ÜCRETSİZ TEKLİF AL</div>
-
-<div class="info-box">
-<strong>Hızlı ve güvenli teklif alın</strong>
-<br><br>
-Talebiniz ilgili ustalara iletilir ve size geri dönüş yapılır.
+<div class="page-title">
+📄 ÜCRETSİZ TEKLİF AL
 </div>
 
-<form class="form-area" id="offerForm">
+<div class="info-box">
+<strong>Talebinize Uygun Teklifleri Güvenle Alın</strong>
+<br><br>
+Bahçelievler Forum üzerinden ilettiğiniz talep ilgili hizmet sağlayıcılara aktarılır.
+Size en uygun teklifler doğrudan tarafınıza iletilir.
+</div>
+
+<form class="form-area" id="offerForm" novalidate>
 
 <div class="form-group">
-<label>Hizmet</label>
-<select id="service" class="form-control">
+<label>Hizmet Türü</label>
+<select name="service" id="service" class="form-control" required>
 <option value="">Seçiniz</option>
+<option>Ürün & Eşya Onarımı</option>
 <option>Temizlik</option>
 <option>Bakım</option>
 <option>Tadilat</option>
@@ -167,7 +222,7 @@ Talebiniz ilgili ustalara iletilir ve size geri dönüş yapılır.
 
 <div class="form-group">
 <label>Mahalle</label>
-<select id="district" class="form-control">
+<select name="district" id="district" class="form-control" required>
 <option value="">Seçiniz</option>
 <option>Şirinevler</option>
 <option>Yenibosna</option>
@@ -177,43 +232,45 @@ Talebiniz ilgili ustalara iletilir ve size geri dönüş yapılır.
 
 <div class="form-group">
 <label>Detay</label>
-<textarea id="desc" class="form-control"></textarea>
+<textarea name="desc" id="desc" class="form-control" placeholder="Detay yazınız..." required></textarea>
 </div>
 
 <div class="form-group">
 <label>Görsel</label>
-<input type="file" id="image" class="form-control">
+<input type="file" name="image" id="image" class="form-control" accept="image/*">
+<div class="file-info">Max 2MB</div>
 </div>
 
 <div class="form-group">
 <label>Email</label>
-<input type="email" id="email" class="form-control">
+<input type="email" name="email" id="email" class="form-control" required>
 </div>
 
 </form>
 
+</main>
+
 </div>
 
-<!-- SUBMIT -->
 <div class="submit-wrap">
-<div class="submit-inner">
-<button id="submitBtn" class="submit-btn">
+<button class="submit-btn" id="submitBtn">
 TEKLİF GÖNDER
 </button>
-</div>
 </div>
 
 <script>
 
+const form = document.getElementById("offerForm");
 const btn = document.getElementById("submitBtn");
 
-btn.onclick = ()=>{
+btn.addEventListener("click",(e)=>{
+e.preventDefault();
 
-const service = document.getElementById("service").value;
-const district = document.getElementById("district").value;
-const desc = document.getElementById("desc").value.trim();
-const email = document.getElementById("email").value.trim();
-const file = document.getElementById("image").files[0];
+const service = service.value;
+const district = district.value;
+const desc = desc.value.trim();
+const email = email.value.trim();
+const file = image.files[0];
 
 if(!service) return alert("Hizmet seç");
 if(!district) return alert("Mahalle seç");
@@ -231,12 +288,16 @@ setTimeout(()=>{
 alert("Talep alındı 🚀");
 btn.classList.remove("loading");
 btn.innerText="TEKLİF GÖNDER";
-document.getElementById("offerForm").reset();
+form.reset();
 },1200);
 
-};
+});
 
 </script>
+
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/news.js" defer></script>
+<script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
 
