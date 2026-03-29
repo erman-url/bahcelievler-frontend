@@ -145,3 +145,53 @@ AD MODAL
   font-weight:700;
 }
 
+/* =========================
+🔥 PREMIUM FILTER UI
+========================= */
+
+.quick-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+padding:16px;
+}
+
+.quick-card{
+background:linear-gradient(180deg,#ffffff,#f1f5ff);
+border-radius:16px;
+padding:16px;
+display:flex;
+align-items:center;
+gap:8px;
+justify-content:center;
+font-weight:600;
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+transition:.2s;
+}
+
+.quick-card:hover{
+transform:translateY(-3px);
+}
+
+#filterPanel{
+display:grid;
+gap:10px;
+}
+
+#filterPanel select{
+padding:12px;
+border-radius:12px;
+border:1px solid #ddd;
+font-size:14px;
+}
+
+/* 🔥 CARD PREMIUM */
+.ad-card{
+background:linear-gradient(180deg,#ffffff,#f8fbff);
+border:1px solid #eef2ff;
+box-shadow:0 15px 35px rgba(0,0,0,.08);
+}
+
+.ad-card:hover{
+transform:translateY(-5px) scale(1.01);
+}

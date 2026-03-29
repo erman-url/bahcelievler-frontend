@@ -36,10 +36,42 @@
 <main id="mainContent">
 
 <section class="quick-grid">
-  <div class="quick-card"><i class="fas fa-layer-group"></i><span>Kategori</span></div>
-  <div class="quick-card"><i class="fas fa-location-dot"></i><span>Mahalle</span></div>
-  <div class="quick-card"><i class="fas fa-filter"></i><span>Filtre</span></div>
+
+  <div class="quick-card" onclick="toggleFilter('category')">
+    <i class="fas fa-layer-group"></i><span>Kategori</span>
+  </div>
+
+  <div class="quick-card" onclick="toggleFilter('district')">
+    <i class="fas fa-location-dot"></i><span>Mahalle</span>
+  </div>
+
+  <div class="quick-card" onclick="toggleFilter('price')">
+    <i class="fas fa-coins"></i><span>Fiyat</span>
+  </div>
+
+  <div class="quick-card" onclick="resetFilter()">
+    <i class="fas fa-rotate"></i><span>Sıfırla</span>
+  </div>
+
 </section>
+
+<!-- 🔥 FILTER PANEL -->
+<div id="filterPanel" style="display:none;padding:12px;">
+
+  <select id="filterCategory">
+    <option value="">Kategori</option>
+    <option>Elektronik</option>
+    <option>Vasıta</option>
+    <option>Emlak</option>
+  </select>
+
+  <select id="filterDistrict">
+    <option value="">Mahalle</option>
+    <option>Zafer Mah.</option>
+    <option>Şirinevler</option>
+  </select>
+
+</div>
 
 <section style="margin:var(--space-md); text-align:center;">
   <button id="openAdModal" class="quick-card" style="width:100%; font-size:15px;">
