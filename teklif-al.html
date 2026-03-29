@@ -38,7 +38,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto;
 .page-wrapper{
 max-width:900px;
 margin:auto;
-padding-bottom:120px;
+padding-bottom:140px;
 }
 
 /* HEADER FIX */
@@ -52,16 +52,13 @@ margin:auto;
 ========================= */
 
 .page-title{
-font-size:24px;
+font-size:26px;
 font-weight:900;
 text-align:center;
-margin:20px 0;
+margin:20px 0 10px;
 background:linear-gradient(135deg,#2563eb,#4f46e5);
-background:linear-gradient(135deg,#2563eb,#4f46e5);
-background-clip:text;
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
-color:transparent;
 }
 
 /* =========================
@@ -69,42 +66,57 @@ color:transparent;
 ========================= */
 
 .info-box{
-background:linear-gradient(135deg,#e8f0fb,#eef2ff);
+background:linear-gradient(135deg,#eef4ff,#f4f7ff);
 border-left:4px solid #2563eb;
 padding:18px;
-border-radius:14px;
+border-radius:16px;
 margin:10px 16px 20px;
 font-size:14px;
 line-height:1.6;
-box-shadow:0 10px 25px rgba(0,0,0,.05);
+box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 
 /* =========================
-🔥 FORM AREA
+🔥 FORM CARD WRAP
 ========================= */
 
 .form-area{
-padding:0 16px;
+padding:0 12px;
 display:flex;
 flex-direction:column;
-gap:16px;
+gap:18px;
+}
+
+/* CARD EFFECT */
+.form-group{
+background:white;
+border-radius:18px;
+padding:16px;
+box-shadow:0 10px 30px rgba(0,0,0,.06);
+transition:.2s;
+}
+
+.form-group:focus-within{
+transform:translateY(-2px);
+box-shadow:0 15px 35px rgba(37,99,235,.15);
 }
 
 /* INPUT */
 .form-control{
 width:100%;
 padding:14px;
-border-radius:14px;
+border-radius:12px;
 border:1px solid #e2e8f0;
 font-size:14px;
-background:white;
+background:#f9fafb;
 transition:.2s;
-box-shadow:0 4px 12px rgba(0,0,0,.04);
+margin-top:8px;
 }
 
 .form-control:focus{
 border-color:#2563eb;
-box-shadow:0 0 0 3px rgba(37,99,235,.15);
+background:white;
+box-shadow:0 0 0 3px rgba(37,99,235,.12);
 outline:none;
 }
 
@@ -122,26 +134,32 @@ padding-left:4px;
 }
 
 /* =========================
-🔥 BUTTON
+🔥 STICKY BUTTON (APP FEEL)
 ========================= */
 
+.submit-wrap{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+padding:12px 16px;
+box-shadow:0 -8px 25px rgba(0,0,0,.08);
+z-index:50;
+}
+
 .submit-btn{
-margin-top:10px;
+width:100%;
 background:linear-gradient(135deg,#2563eb,#1d4ed8);
 border:none;
 color:white;
 padding:16px;
-border-radius:14px;
+border-radius:16px;
 font-weight:800;
 font-size:15px;
 cursor:pointer;
 box-shadow:0 10px 25px rgba(37,99,235,.3);
 transition:.2s;
-}
-
-.submit-btn:hover{
-transform:translateY(-2px);
-box-shadow:0 15px 30px rgba(37,99,235,.35);
 }
 
 .submit-btn:active{
@@ -191,46 +209,42 @@ Size en uygun teklifler doğrudan tarafınıza iletilir.
 
 <form class="form-area" id="offerForm" novalidate>
 
+<div class="form-group">
+<label>Hizmet Türü</label>
 <select name="service" id="service" class="form-control" required>
-<option value="">Hizmet Türünü Seçiniz (Zorunlu)</option>
+<option value="">Seçiniz</option>
 <option>Ürün & Eşya Onarımı</option>
-<option>Ev & İşyeri Temizliği</option>
-<option>Hasta Bakıcı & Bakım</option>
-<option>Boya & Tadilat İşlemi</option>
-<option>Bilgisayar Bakım & Onarım</option>
-<option>Nakliye & Taşımacılık</option>
-<option>Özel Ders & Eğitim</option>
-<option>Diğer Hizmet</option>
+<option>Temizlik</option>
+<option>Bakım</option>
+<option>Tadilat</option>
 </select>
-
-<select name="district" id="district" class="form-control" required>
-<option value="">Mahalle Seçiniz (Zorunlu)</option>
-<option>Bahçelievler Mahallesi</option>
-<option>Cumhuriyet Mahallesi</option>
-<option>Çobançeşme Mahallesi</option>
-<option>Fevzi Çakmak Mahallesi</option>
-<option>Hürriyet Mahallesi</option>
-<option>Kocasinan Merkez Mahallesi</option>
-<option>Siyavuşpaşa Mahallesi</option>
-<option>Soğanlı Mahallesi</option>
-<option>Şirinevler Mahallesi</option>
-<option>Yenibosna Merkez Mahallesi</option>
-<option>Zafer Mahallesi</option>
-</select>
-
-<div class="file-info">
-📷 Talebin değerlendirilmesi için en az bir görsel yüklenmesi önerilir.
 </div>
 
+<div class="form-group">
+<label>Mahalle</label>
+<select name="district" id="district" class="form-control" required>
+<option value="">Seçiniz</option>
+<option>Şirinevler</option>
+<option>Yenibosna</option>
+<option>Soğanlı</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Detay</label>
+<textarea name="desc" id="desc" class="form-control" placeholder="Detay yazınız..." required></textarea>
+</div>
+
+<div class="form-group">
+<label>Görsel</label>
 <input type="file" name="image" id="image" class="form-control" accept="image/*">
+<div class="file-info">Max 2MB</div>
+</div>
 
-<textarea name="desc" id="desc" class="form-control" placeholder="İşin detaylarını yazınız..." required></textarea>
-
-<input type="email" name="email" id="email" class="form-control" placeholder="E-posta adresiniz (zorunlu)" required>
-
-<button class="submit-btn" id="submitBtn" type="submit">
-TEKLİF TALEBİ GÖNDER
-</button>
+<div class="form-group">
+<label>Email</label>
+<input type="email" name="email" id="email" class="form-control" required>
+</div>
 
 </form>
 
@@ -238,49 +252,43 @@ TEKLİF TALEBİ GÖNDER
 
 </div>
 
-<script>
+<div class="submit-wrap">
+<button class="submit-btn" id="submitBtn">
+TEKLİF GÖNDER
+</button>
+</div>
 
-/* =========================
-🔥 UX + VALIDATION + STABLE
-========================= */
+<script>
 
 const form = document.getElementById("offerForm");
 const btn = document.getElementById("submitBtn");
 
-form.addEventListener("submit",(e)=>{
+btn.addEventListener("click",(e)=>{
 e.preventDefault();
 
-const service = document.getElementById("service").value;
-const district = document.getElementById("district").value;
-const desc = document.getElementById("desc").value.trim();
-const email = document.getElementById("email").value.trim();
-const file = document.getElementById("image").files[0];
+const service = service.value;
+const district = district.value;
+const desc = desc.value.trim();
+const email = email.value.trim();
+const file = image.files[0];
 
-/* VALIDATION */
-if(!service) return alert("Hizmet seçiniz");
-if(!district) return alert("Mahalle seçiniz");
-if(desc.length < 10) return alert("Açıklama çok kısa");
-if(!email.includes("@")) return alert("Geçerli email gir");
+if(!service) return alert("Hizmet seç");
+if(!district) return alert("Mahalle seç");
+if(desc.length < 10) return alert("Detay gir");
+if(!email.includes("@")) return alert("Email gir");
 
-/* FILE SIZE CONTROL */
-if(file && file.size > 2 * 1024 * 1024){
-return alert("Görsel max 2MB olmalı");
+if(file && file.size > 2*1024*1024){
+return alert("Max 2MB");
 }
 
-/* LOADING */
 btn.classList.add("loading");
-btn.innerText = "Gönderiliyor...";
+btn.innerText="Gönderiliyor...";
 
-/* FAKE API */
 setTimeout(()=>{
-
-alert("Talebiniz alındı ✅");
-
+alert("Talep alındı 🚀");
 btn.classList.remove("loading");
-btn.innerText = "TEKLİF TALEBİ GÖNDER";
-
+btn.innerText="TEKLİF GÖNDER";
 form.reset();
-
 },1200);
 
 });
