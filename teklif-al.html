@@ -388,7 +388,7 @@ const form = document.getElementById("offerForm");
 const btn = document.getElementById("submitBtn");
 
 /* =========================
-🔥 TOAST FUNCTION (EKLENDİ)
+🔥 TOAST FUNCTION
 ========================= */
 
 function showToast(message,type="info"){
@@ -408,6 +408,14 @@ toast.remove();
 }
 
 /* =========================
+🔥 EMAIL REGEX (PRO)
+========================= */
+
+function isValidEmail(email){
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+/* =========================
 🔥 SUBMIT
 ========================= */
 
@@ -424,11 +432,11 @@ const desc = document.getElementById("desc").value.trim();
 const email = document.getElementById("email").value.trim();
 const file = document.getElementById("image").files[0];
 
-/* VALIDATION (TOAST'A ÇEVRİLDİ) */
+/* VALIDATION */
 if(!service) return showToast("Lütfen hizmet seçiniz","error");
 if(!district) return showToast("Lütfen mahalle seçiniz","error");
 if(desc.length < 10) return showToast("Açıklama çok kısa","error");
-if(!email.includes("@")) return showToast("Geçerli e-posta giriniz","error");
+if(!isValidEmail(email)) return showToast("Geçerli e-posta giriniz","error");
 
 if(file && file.size > 2 * 1024 * 1024){
 return showToast("Görsel max 2MB olmalı","error");
@@ -448,7 +456,12 @@ body: formData
 })
 .then(async res => {
 
-/* 🔥 SAFE JSON */
+/* 🔥 STATUS CHECK */
+if(!res.ok){
+return { ok:false, error:"Sunucu hatası ("+res.status+")" };
+}
+
+/* SAFE JSON */
 try{
 return await res.json();
 }catch{
@@ -460,7 +473,6 @@ return { ok:false, error:"Sunucu yanıtı hatalı" };
 
 if(data.ok){
 
-/* ✅ KURUMSAL MESAJ */
 showToast(
 "Talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçilecektir.",
 "success"
@@ -469,9 +481,7 @@ showToast(
 form.reset();
 
 }else{
-
 showToast(data.error || "Bir hata oluştu","error");
-
 }
 
 })
