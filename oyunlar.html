@@ -2,93 +2,250 @@
 <html lang="tr" class="no-js">
 <head>
 
-    
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Oyunlar | Bahçelievler Forum</title>
+<!-- SEO TITLE -->
+<title>Bahçelievler Oyun Merkezi | Online ve Ödüllü Oyunlar</title>
+
+<!-- SEO META -->
+<meta name="description" content="Bahçelievler Forum oyun merkezi: online oyunlar, ödüllü görevler ve eğlenceli mini oyunlar. Hemen oyna, ödül kazan.">
+<meta name="keywords" content="bahçelievler oyun, online oyunlar, ödüllü oyun, mini oyun, ücretsiz oyun, browser game">
+<meta name="author" content="Bahçelievler Forum">
+
+<!-- ROBOTS -->
+<meta name="robots" content="index, follow">
+<meta name="googlebot" content="index, follow">
+
+<!-- CANONICAL -->
+<link rel="canonical" href="https://bahcelievlerforum.com/oyunlar.html">
+
+<!-- LOCAL SEO -->
+<meta name="geo.region" content="TR-34">
+<meta name="geo.placename" content="Bahçelievler, İstanbul">
+
+<!-- THEME -->
+<meta name="theme-color" content="#2563eb">
+
+<!-- OPEN GRAPH -->
+<meta property="og:title" content="Bahçelievler Oyun Merkezi">
+<meta property="og:description" content="Online oyunlar ve ödüllü görevlerle eğlenceyi keşfet.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bahcelievlerforum.com/oyunlar.html">
+<meta property="og:image" content="https://bahcelievlerforum.com/assets/images/oyunlar-cover.jpg">
+
+<!-- TWITTER -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bahçelievler Oyun Merkezi">
+<meta name="twitter:description" content="Online ve ödüllü oyunları keşfet">
+<meta name="twitter:image" content="https://bahcelievlerforum.com/assets/images/oyunlar-cover.jpg">
+
+<!-- PWA / MOBILE -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- FAVICON -->
+<link rel="icon" href="/favicon.ico">
+
+<!-- PERFORMANCE -->
+<link rel="preload" href="assets/css/base.css" as="style">
+<link rel="preload" href="assets/css/layout.css" as="style">
+<link rel="preload" href="assets/css/components.css" as="style">
+
+<!-- ICON -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- CSS -->
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- STRUCTURED DATA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Bahçelievler Oyun Merkezi",
+  "description": "Online ve ödüllü oyunların bulunduğu eğlence sayfası",
+  "url": "https://bahcelievlerforum.com/oyunlar.html",
+  "inLanguage": "tr",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Bahçelievler Forum",
+    "url": "https://bahcelievlerforum.com"
+  }
+}
+
+
+</script>
+
+</head>
 
 <style>
 
-/* SAFE AREA */
+/* ======================
+BASE
+====================== */
 body{
-padding-top:env(safe-area-inset-top);
+  padding-top:env(safe-area-inset-top);
+  background:#f3f6fb;
 }
 
-/* PAGE */
 .page-wrapper{
-max-width:900px;
-margin:0 auto;
-padding-bottom:calc(120px + env(safe-area-inset-bottom));
+  max-width:1000px;
+  margin:0 auto;
+  padding-bottom:calc(120px + env(safe-area-inset-bottom));
 }
 
-/* TITLE */
-.page-title{
-font-size:22px;
-font-weight:700;
-padding:20px 16px 10px;
+/* ======================
+HERO (PREMIUM)
+====================== */
+.games-hero{
+  padding:20px 16px 10px;
 }
 
-/* GRID */
+.games-title{
+  font-size:24px;
+  font-weight:800;
+}
+
+.games-sub{
+  font-size:13px;
+  color:#6b7280;
+  margin-top:4px;
+}
+
+/* ======================
+GRID
+====================== */
 .game-grid{
-display:grid;
-grid-template-columns:1fr;
-gap:14px;
-padding:16px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  padding:16px;
 }
 
-/* CARD */
+/* MOBILE */
+@media(max-width:600px){
+  .game-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ======================
+CARD (PRO)
+====================== */
 .game-card{
-background:#fff;
-border-radius:16px;
-padding:20px;
-box-shadow:0 8px 18px rgba(0,0,0,0.05);
-display:flex;
-align-items:center;
-justify-content:space-between;
-cursor:pointer;
-transition:.2s;
+  position:relative;
+  background:linear-gradient(145deg,#ffffff,#eef2ff);
+  border-radius:20px;
+  padding:18px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  cursor:pointer;
+
+  border:1px solid rgba(0,0,0,0.04);
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+
+  transition:.25s ease;
 }
 
 .game-card:hover{
-transform:translateY(-3px);
+  transform:translateY(-4px);
+  box-shadow:0 16px 34px rgba(0,0,0,0.12);
 }
 
-/* ICON */
+.game-card:active{
+  transform:scale(.97);
+}
+
+/* ======================
+BADGE
+====================== */
+.game-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+
+  font-size:11px;
+  font-weight:700;
+
+  padding:4px 8px;
+  border-radius:8px;
+
+  background:#2563eb;
+  color:#fff;
+}
+
+/* ======================
+ICON
+====================== */
 .game-icon{
-font-size:26px;
-color:#2563eb;
+  width:46px;
+  height:46px;
+
+  border-radius:14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;
+
+  font-size:20px;
+
+  box-shadow:0 6px 16px rgba(37,99,235,0.35);
 }
 
-.game-info{
-flex:1;
-margin-left:14px;
-}
-
+/* ======================
+TEXT
+====================== */
 .game-title{
-font-weight:700;
-font-size:16px;
+  font-size:15px;
+  font-weight:700;
 }
 
 .game-desc{
-font-size:13px;
-color:#666;
-margin-top:4px;
+  font-size:12px;
+  color:#6b7280;
 }
 
-.arrow{
-font-size:18px;
-color:#999;
+/* ======================
+FOOTER ARROW
+====================== */
+.game-footer{
+  margin-top:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  font-size:12px;
+  color:#64748b;
+}
+
+.game-footer i{
+  font-size:14px;
+}
+
+/* ======================
+HEADER FIX
+====================== */
+#globalHeader{
+  max-width:1000px;
+  margin:0 auto;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -97,44 +254,66 @@ color:#999;
 
 <div class="page-wrapper">
 
-<div class="page-title">🎮 Oyunlar</div>
+<!-- HERO -->
+<div class="games-hero">
+  <div class="games-title">🎮 Oyun Merkezi</div>
+  <div class="games-sub">
+    Hızlı oyna, ödül kazan ve eğlenceyi keşfet
+  </div>
+</div>
 
+<!-- GRID -->
 <div class="game-grid">
 
-<div class="game-card" onclick="location.href='online-oyunlar.html'">
-<div class="game-icon">
-<i class="fa-solid fa-gamepad"></i>
+  <!-- ONLINE -->
+  <div class="game-card" onclick="location.href='online-oyunlar.html'">
+
+    <div class="game-badge">POPÜLER</div>
+
+    <div class="game-icon">
+      <i class="fa-solid fa-gamepad"></i>
+    </div>
+
+    <div class="game-title">Online Oyunlar</div>
+    <div class="game-desc">
+      Tarayıcıdan hızlı oynanan mini oyunlar
+    </div>
+
+    <div class="game-footer">
+      <span>Hemen oyna</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+
+  </div>
+
+  <!-- ODULLU -->
+  <div class="game-card" onclick="location.href='odullu-oyun.html'">
+
+    <div class="game-badge" style="background:#f59e0b;">
+      ÖDÜLLÜ
+    </div>
+
+    <div class="game-icon">
+      <i class="fa-solid fa-trophy"></i>
+    </div>
+
+    <div class="game-title">Ödüllü Oyun</div>
+    <div class="game-desc">
+      Görevi çöz, ödül kazan
+    </div>
+
+    <div class="game-footer">
+      <span>Katıl</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+
+  </div>
+
 </div>
 
-<div class="game-info">
-<div class="game-title">Online Oyunlar</div>
-<div class="game-desc">Tarayıcıdan oynanan hızlı oyunlar</div>
 </div>
 
-<div class="arrow">
-<i class="fa-solid fa-chevron-right"></i>
-</div>
-</div>
-
-<div class="game-card" onclick="location.href='odullu-oyun.html'">
-<div class="game-icon">
-<i class="fa-solid fa-trophy"></i>
-</div>
-
-<div class="game-info">
-<div class="game-title">Ödüllü Oyun</div>
-<div class="game-desc">Görevi çöz ödülü kazan</div>
-</div>
-
-<div class="arrow">
-<i class="fa-solid fa-chevron-right"></i>
-</div>
-</div>
-
-</div>
-
-</div>
-
+<!-- SCRIPTS (MERKEZİ) -->
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
 <script src="assets/js/news.js" defer></script>
@@ -142,7 +321,6 @@ color:#999;
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
-
 
 </body>
 </html>
