@@ -364,12 +364,46 @@ return alert("Max 2MB");
 btn.classList.add("loading");
 btn.innerText="Gönderiliyor...";
 
-setTimeout(()=>{
+const form = document.getElementById("offerForm");
+const btn = document.getElementById("submitBtn");
+
+btn.classList.add("loading");
+btn.innerText = "Gönderiliyor...";
+
+/* FORM DATA */
+const formData = new FormData(form);
+
+/* API CALL */
+fetch("/api/teklif-ekle", {
+method: "POST",
+body: formData
+})
+.then(res => res.json())
+.then(data => {
+
+if(data.ok){
+
 alert("Talebiniz alındı 🚀");
+
+form.reset();
+
+}else{
+
+alert(data.error || "Bir hata oluştu");
+
+}
+
+})
+.catch(() => {
+alert("Bağlantı hatası");
+})
+.finally(() => {
+
+/* RESET BUTTON */
 btn.classList.remove("loading");
-btn.innerText="TEKLİF GÖNDER";
-document.getElementById("offerForm").reset();
-},1200);
+btn.innerText = "TEKLİF GÖNDER";
+
+});
 
 });
 
