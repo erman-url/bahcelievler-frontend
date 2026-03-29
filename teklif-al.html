@@ -57,8 +57,16 @@ font-weight:900;
 text-align:center;
 margin:20px 0 10px;
 background:linear-gradient(135deg,#2563eb,#4f46e5);
+
+/* ✅ STANDART */
+background-clip:text;
+
+/* ✅ SAFARI / IOS */
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
+
+/* fallback */
+color:transparent;
 }
 
 /* =========================
