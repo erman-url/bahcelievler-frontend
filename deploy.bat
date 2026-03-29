@@ -5,7 +5,14 @@ echo ----------------------------
 echo Bahcelievler Forum Deploy
 echo ----------------------------
 
+:: 🔥 REBASE KALINTI TEMİZLE
+git rebase --abort >nul 2>&1
+
 :: VERSION OKU
+if not exist version.txt (
+    echo 1.0.0 > version.txt
+)
+
 set /p version=<version.txt
 
 for /f "tokens=1-3 delims=." %%a in ("%version%") do (
@@ -40,14 +47,16 @@ echo.
 echo Remote ile senkronizasyon yapiliyor...
 echo.
 
-:: 🔥 KRITIK FIX (NON-FAST-FORWARD COZUM)
+:: 🔥 PULL + REBASE (KRİTİK)
 git pull origin main --rebase
 
 if %errorlevel% neq 0 (
     echo.
-    echo ❌ HATA: Pull islemi basarisiz.
-    echo Muhtemelen conflict var.
-    echo Manuel olarak cozmeli ve tekrar calistirmalisin.
+    echo ❌ HATA: Rebase basarisiz (conflict olabilir)
+    echo Manuel olarak duzelt:
+    echo   git status
+    echo   git add .
+    echo   git rebase --continue
     pause
     exit
 )
@@ -60,7 +69,7 @@ git push origin main
 
 if %errorlevel% neq 0 (
     echo.
-    echo ❌ HATA: Push basarisiz.
+    echo ❌ HATA: Push basarisiz
     pause
     exit
 )
@@ -70,6 +79,7 @@ echo Deploy tamamlandi.
 echo Versiyon: v%newVersion%
 echo ----------------------------
 
+:: SITEYI AC
 start https://bahcelievlerforum.com.tr
 
 pause
