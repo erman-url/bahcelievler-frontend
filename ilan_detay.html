@@ -62,18 +62,37 @@
   <button class="btn-secondary" id="shareBtn"><i class="fa fa-share"></i> Paylaş</button>
 </div>
 
-<div class="action-buttons">
-  <button class="btn-danger" id="deleteAdBtn">İlanı Sil</button>
-  <button class="btn-secondary" id="editAdBtn">Düzenle</button>
+<div class="action-buttons" style="justify-content:flex-end;gap:10px;">
+
+  <!-- 🔥 KÜÇÜK SİL BUTONU -->
+  <button id="deleteAdBtn"
+    style="
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background:#ef4444;
+      color:white;
+      border:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+    ">
+    <i class="fa fa-trash"></i>
+  </button>
+
 </div>
 
+
+
 <div class="action-buttons">
 
-<input type="password" id="deletePassword" class="input-field">
-
-<button id="confirmDeleteBtn" class="btn-danger confirm-btn">
-Silmeyi Onayla
-</button>
+<div id="deleteBox" style="display:none;margin-top:10px;">
+  <input type="password" id="deletePassword" class="input-field" placeholder="Silme şifresi">
+  <button id="confirmDeleteBtn" class="btn-danger confirm-btn">
+    Silmeyi Onayla
+  </button>
+</div>
 
 </div>
 
@@ -381,14 +400,13 @@ document.addEventListener("DOMContentLoaded",()=>{
   const confirmBtn = document.getElementById("confirmDeleteBtn");
 
   if(deleteBtn){
-    deleteBtn.onclick = ()=>{
-      const pass = document.getElementById("deletePassword");
-      if(pass){
-        pass.scrollIntoView({behavior:"smooth"});
-        pass.focus();
-      }
-    };
-  }
+  deleteBtn.onclick = ()=>{
+    const box = document.getElementById("deleteBox");
+    if(box){
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+  };
+}
 
   if(confirmBtn){
     confirmBtn.onclick = confirmDelete;
