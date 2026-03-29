@@ -289,6 +289,11 @@ body{
   color:#444;
 }
 
+#globalHeader{
+  max-width:1000px;
+  margin:0 auto;
+}
+
 /* LIST */
 
 .side-menu ul{
