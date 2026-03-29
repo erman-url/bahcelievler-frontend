@@ -445,58 +445,89 @@ return showToast("Görsel max 2MB olmalı","error");
 /* LOADING */
 btn.classList.add("loading");
 btn.innerText="Gönderiliyor...";
-
 /* FORM DATA */
 const formData = new FormData(form);
 
 /* API */
-fetch("/api/teklif-ekle", {
+fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/teklif-ekle", {
 method: "POST",
-body: formData
+body: formData,
+headers: {
+"Accept": "application/json"
+}
 })
-.then(async res => {
+.then(async (res) => {
 
 /* 🔥 STATUS CHECK */
-if(!res.ok){
-return { ok:false, error:"Sunucu hatası ("+res.status+")" };
+if (!res.ok) {
+
+/* 429 özel yakala (rate limit) */
+if (res.status === 429) {
+return { ok:false, error:"Çok hızlı işlem yaptınız, lütfen bekleyin." };
 }
 
-/* SAFE JSON */
-try{
-return await res.json();
-}catch{
-return { ok:false, error:"Sunucu yanıtı hatalı" };
+/* 500 vs */
+return { ok:false, error:"Sunucu hatası (" + res.status + ")" };
+
 }
+
+/* 🔥 SAFE JSON PARSE */
+let data;
+
+try {
+data = await res.json();
+} catch {
+return { ok:false, error:"Sunucu yanıtı okunamadı" };
+}
+
+/* 🔥 RESPONSE VALIDATION */
+if (typeof data !== "object" || data === null) {
+return { ok:false, error:"Geçersiz sunucu yanıtı" };
+}
+
+return data;
 
 })
-.then(data => {
+.then((data) => {
 
-if(data.ok){
+/* SUCCESS */
+if (data.ok) {
 
 showToast(
 "Talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçilecektir.",
 "success"
 );
 
+/* form reset */
 form.reset();
 
-}else{
-showToast(data.error || "Bir hata oluştu","error");
+/* UX BONUS (scroll top) */
+window.scrollTo({ top: 0, behavior: "smooth" });
+
+} else {
+
+/* API ERROR */
+showToast(data.error || "Bir hata oluştu", "error");
+
 }
 
 })
-.catch(()=>{
-showToast("Bağlantı hatası, tekrar deneyin","error");
-})
-.finally(()=>{
+.catch((err) => {
 
+/* NETWORK ERROR */
+console.error("API ERROR:", err);
+
+showToast("Bağlantı hatası, internetinizi kontrol edin", "error");
+
+})
+.finally(() => {
+
+/* BUTTON RESET */
 btn.classList.remove("loading");
 btn.innerText = "TEKLİF GÖNDER";
 
 });
-
 });
-
 </script>
 
 <script src="assets/js/core.js" defer></script>
