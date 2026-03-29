@@ -47,79 +47,167 @@
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
-
 <style>
 
 /* =========================
-EKSTRA PREMIUM UI (EKLENDİ)
+EKSTRA PREMIUM UI (GÜNCELLENDİ)
 ========================= */
 
 #globalHeader{
 max-width:1000px;
 margin:auto;
+position:sticky;
+top:0;
+z-index:1000;
+backdrop-filter:blur(10px);
 }
 
-/* 🔥 PRO CARD EFFECT */
-.game-card{
-transition:.25s;
-backdrop-filter: blur(6px);
-}
-.game-card:hover{
-transform:translateY(-6px) scale(1.01);
-box-shadow:0 25px 50px rgba(0,0,0,.15);
-}
-
-/* 🔥 ICON GLOW */
-.game-icon{
-box-shadow:0 8px 22px rgba(37,99,235,0.35);
-}
-
-/* 🔥 BUTTON PRO */
-.btn{
-transition:.2s;
-}
-.btn:hover{
-transform:scale(1.06);
-box-shadow:0 8px 18px rgba(37,99,235,.4);
-}
-
-/* 🔥 PAGE PREMIUM BACKGROUND */
+/* 🔥 PREMIUM BACKGROUND (OVERRIDE) */
 body{
 background:
-linear-gradient(180deg,#f4f7ff 0%, #eef2ff 100%);
-}
-
-/* 🔥 MENU FIX (KRİTİK) */
-.menu-overlay{
-z-index:9999 !important;
-}
-
-/* MOBİL İYİLEŞTİRME */
-@media(max-width:600px){
-.page-title{font-size:20px;}
-.game-card{padding:14px;}
-}
-
-/* =========================
-ORİJİNAL CSS (DOKUNULMADI)
-========================= */
-
-body{
-background:#f4f7ff;
+radial-gradient(circle at top,#eef2ff 0%,#f8fbff 60%,#ffffff 100%) !important;
 padding-top:env(safe-area-inset-top);
 font-family:system-ui;
 }
+
+/* 🔥 HERO TITLE UPGRADE */
+.page-title{
+font-size:26px;
+font-weight:800;
+padding:20px;
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+position:relative;
+}
+
+/* ALT METİN */
+.page-title::after{
+content:"Hemen oyna • Skor yap • Eğlen";
+display:block;
+font-size:13px;
+color:#6b7280;
+margin-top:6px;
+-webkit-text-fill-color:initial;
+}
+
+/* =========================
+CARD SYSTEM (ULTRA PREMIUM)
+========================= */
+
+.game-card{
+position:relative;
+
+background:rgba(255,255,255,0.75) !important;
+backdrop-filter:blur(14px) saturate(140%) !important;
+
+border-radius:24px !important;
+
+display:flex;
+align-items:center;
+
+padding:18px;
+
+border:1px solid rgba(255,255,255,0.6);
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.08),
+inset 0 1px 0 rgba(255,255,255,0.6) !important;
+
+cursor:pointer;
+
+transition:
+transform .25s ease,
+box-shadow .25s ease;
+}
+
+/* 🔥 HOVER EFFECT */
+.game-card:hover{
+transform:translateY(-6px) scale(1.02) !important;
+
+box-shadow:
+0 25px 60px rgba(0,0,0,0.18),
+0 10px 20px rgba(37,99,235,0.15) !important;
+}
+
+/* 🔥 ACTIVE TOUCH */
+.game-card:active{
+transform:scale(.97);
+}
+
+/* =========================
+ICON (GLOW + DEPTH)
+========================= */
+
+.game-icon{
+width:50px;
+height:50px;
+
+border-radius:16px;
+
+background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+color:white;
+font-size:22px;
+
+box-shadow:
+0 12px 30px rgba(37,99,235,.45),
+inset 0 1px 4px rgba(255,255,255,.3);
+}
+
+/* =========================
+TEXT
+========================= */
+
+.game-info{margin-left:14px;}
+
+.game-title{
+font-weight:700;
+font-size:15px;
+}
+
+.game-desc{
+font-size:12px;
+color:#6b7280;
+margin-top:2px;
+}
+
+/* =========================
+BUTTON
+========================= */
+
+.btn{
+margin-top:10px;
+padding:12px 18px;
+border:none;
+border-radius:14px;
+
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+color:white;
+
+font-weight:600;
+cursor:pointer;
+
+transition:.25s;
+}
+
+.btn:hover{
+transform:scale(1.06);
+box-shadow:0 10px 25px rgba(37,99,235,.4);
+}
+
+/* =========================
+LAYOUT
+========================= */
 
 .page-wrapper{
 max-width:900px;
 margin:auto;
 padding-bottom:160px;
-}
-
-.page-title{
-font-size:24px;
-font-weight:700;
-padding:20px;
 }
 
 .game-grid{
@@ -128,34 +216,9 @@ gap:16px;
 padding:16px;
 }
 
-.game-card{
-background:linear-gradient(180deg,#ffffff,#eef3ff);
-border-radius:18px;
-padding:18px;
-display:flex;
-align-items:center;
-box-shadow:0 12px 30px rgba(0,0,0,.08);
-border:1px solid #e6ecff;
-cursor:pointer;
-}
-
-.game-icon{
-width:48px;
-height:48px;
-border-radius:12px;
-background:#2563eb;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-font-size:22px;
-}
-
-.game-info{margin-left:14px;}
-
-.game-title{font-weight:700;}
-
-.game-desc{font-size:13px;color:#666;}
+/* =========================
+GAME AREA
+========================= */
 
 .game-area{
 display:none;
@@ -165,12 +228,22 @@ padding:20px;
 canvas{
 width:100%;
 max-width:420px;
+
 background:white;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,.12);
+
+border-radius:20px;
+
+box-shadow:
+0 20px 50px rgba(0,0,0,.15),
+inset 0 1px 0 rgba(255,255,255,.5);
+
 margin:auto;
 display:block;
 }
+
+/* =========================
+NAV / UI
+========================= */
 
 .back{
 margin-bottom:14px;
@@ -185,16 +258,9 @@ font-weight:700;
 margin-bottom:10px;
 }
 
-.btn{
-margin-top:10px;
-padding:10px 16px;
-border:none;
-border-radius:12px;
-background:#2563eb;
-color:white;
-font-weight:600;
-cursor:pointer;
-}
+/* =========================
+GAME OVER MODAL
+========================= */
 
 .game-over{
 position:fixed;
@@ -202,19 +268,51 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,.65);
+
+background:rgba(0,0,0,.55);
+backdrop-filter:blur(6px);
+
 display:none;
 align-items:center;
 justify-content:center;
+
 z-index:999;
 }
 
 .over-box{
 background:white;
+
 padding:28px;
-border-radius:18px;
+border-radius:20px;
+
 text-align:center;
 max-width:280px;
+
+box-shadow:0 20px 50px rgba(0,0,0,.2);
+}
+
+/* =========================
+MENU FIX
+========================= */
+
+.menu-overlay{
+z-index:9999 !important;
+}
+
+/* =========================
+MOBILE OPTIMIZATION
+========================= */
+
+@media(max-width:600px){
+
+.page-title{
+font-size:22px;
+}
+
+.game-card{
+padding:14px;
+}
+
 }
 
 </style>
