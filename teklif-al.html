@@ -250,11 +250,54 @@ animation:none !important;
 transition:none !important;
 }
 }
+
+
+/* =========================
+🔥 TOAST SYSTEM
+========================= */
+
+#toastBox{
+position:fixed;
+top:20px;
+right:16px;
+display:flex;
+flex-direction:column;
+gap:10px;
+z-index:9999;
+}
+
+.toast{
+min-width:260px;
+max-width:320px;
+padding:14px 16px;
+border-radius:14px;
+color:#fff;
+font-size:14px;
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+animation:toastIn .3s ease, toastOut .3s ease 3.5s forwards;
+}
+
+/* türler */
+.toast.success{background:#16a34a;}
+.toast.error{background:#dc2626;}
+.toast.info{background:#2563eb;}
+
+@keyframes toastIn{
+from{opacity:0; transform:translateX(40px);}
+to{opacity:1; transform:translateX(0);}
+}
+
+@keyframes toastOut{
+to{opacity:0; transform:translateX(40px);}
+}
+
 </style>
 
 </head>
 
 <body>
+
+    <div id="toastBox"></div>
 
 <div id="globalHeader"></div>
 
@@ -344,28 +387,51 @@ TEKLİF GÖNDER
 const form = document.getElementById("offerForm");
 const btn = document.getElementById("submitBtn");
 
+/* =========================
+🔥 TOAST FUNCTION (EKLENDİ)
+========================= */
+
+function showToast(message,type="info"){
+
+const box = document.getElementById("toastBox");
+
+const toast = document.createElement("div");
+toast.className = "toast " + type;
+toast.innerText = message;
+
+box.appendChild(toast);
+
+setTimeout(()=>{
+toast.remove();
+},4000);
+
+}
+
+/* =========================
+🔥 SUBMIT
+========================= */
+
 btn.addEventListener("click",(e)=>{
 e.preventDefault();
 
-/* 🔒 DOUBLE CLICK ENGEL */
+/* DOUBLE CLICK ENGEL */
 if(btn.classList.contains("loading")) return;
 
-/* INPUTLAR */
+/* INPUT */
 const service = document.getElementById("service").value;
 const district = document.getElementById("district").value;
 const desc = document.getElementById("desc").value.trim();
 const email = document.getElementById("email").value.trim();
 const file = document.getElementById("image").files[0];
 
-/* VALIDATION */
-if(!service) return alert("Hizmet seçiniz");
-if(!district) return alert("Mahalle seçiniz");
-if(desc.length < 10) return alert("Detay giriniz");
-if(!email.includes("@")) return alert("Geçerli email giriniz");
+/* VALIDATION (TOAST'A ÇEVRİLDİ) */
+if(!service) return showToast("Lütfen hizmet seçiniz","error");
+if(!district) return showToast("Lütfen mahalle seçiniz","error");
+if(desc.length < 10) return showToast("Açıklama çok kısa","error");
+if(!email.includes("@")) return showToast("Geçerli e-posta giriniz","error");
 
-/* FILE LIMIT */
 if(file && file.size > 2 * 1024 * 1024){
-return alert("Max 2MB");
+return showToast("Görsel max 2MB olmalı","error");
 }
 
 /* LOADING */
@@ -375,28 +441,45 @@ btn.innerText="Gönderiliyor...";
 /* FORM DATA */
 const formData = new FormData(form);
 
-/* API CALL */
+/* API */
 fetch("/api/teklif-ekle", {
 method: "POST",
 body: formData
 })
-.then(res => res.json())
-.then(data => {
+.then(async res => {
 
-if(data.ok){
-alert("Talebiniz alındı 🚀");
-form.reset();
-}else{
-alert(data.error || "Bir hata oluştu");
+/* 🔥 SAFE JSON */
+try{
+return await res.json();
+}catch{
+return { ok:false, error:"Sunucu yanıtı hatalı" };
 }
 
 })
-.catch(() => {
-alert("Bağlantı hatası");
-})
-.finally(() => {
+.then(data => {
 
-/* RESET BUTTON */
+if(data.ok){
+
+/* ✅ KURUMSAL MESAJ */
+showToast(
+"Talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçilecektir.",
+"success"
+);
+
+form.reset();
+
+}else{
+
+showToast(data.error || "Bir hata oluştu","error");
+
+}
+
+})
+.catch(()=>{
+showToast("Bağlantı hatası, tekrar deneyin","error");
+})
+.finally(()=>{
+
 btn.classList.remove("loading");
 btn.innerText = "TEKLİF GÖNDER";
 
