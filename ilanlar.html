@@ -419,6 +419,107 @@ btn.onclick = async ()=>{
 };
 
 });
+
+
+
+/* ===============================
+🔥 FILTER SYSTEM (FULL FIX)
+=============================== */
+
+function toggleFilter(){
+
+  const panel = document.getElementById("filterPanel");
+  if(!panel) return;
+
+  panel.style.display =
+    panel.style.display === "none" ? "grid" : "none";
+}
+
+/* SELECT CHANGE AUTO FILTER */
+document.addEventListener("change",(e)=>{
+
+  if(
+    e.target.id === "filterCategory" ||
+    e.target.id === "filterDistrict"
+  ){
+    applyFilter();
+  }
+
+});
+
+/* APPLY FILTER */
+function applyFilter(){
+
+  if(!Array.isArray(ALL_ADS)) return;
+
+  let filtered = [...ALL_ADS];
+
+  const cat = document.getElementById("filterCategory")?.value;
+  const dist = document.getElementById("filterDistrict")?.value;
+
+  if(cat){
+    filtered = filtered.filter(a => a.category === cat);
+  }
+
+  if(dist){
+    filtered = filtered.filter(a => a.district === dist);
+  }
+
+  renderAds(filtered);
+}
+
+/* RESET */
+function resetFilter(){
+
+  const cat = document.getElementById("filterCategory");
+  const dist = document.getElementById("filterDistrict");
+
+  if(cat) cat.value = "";
+  if(dist) dist.value = "";
+
+  renderAds(ALL_ADS);
+}
+
+/* RENDER */
+function renderAds(data){
+
+  const grid = document.getElementById("adsGrid");
+  if(!grid) return;
+
+  if(!Array.isArray(data) || data.length === 0){
+    grid.innerHTML = "<p style='padding:20px'>Sonuç bulunamadı</p>";
+    return;
+  }
+
+  let html = "";
+
+  data.slice(0,50).forEach(ad=>{
+
+    const img = safeImage(
+      ad.image_url || ad.image_url_2 || ad.image_url_3
+    );
+
+    html += `
+    <div class="ad-card" onclick="goDetail(${ad.id})">
+      <div class="ad-image">
+        <img src="${img}">
+        <div class="price-badge">${ad.price} TL</div>
+      </div>
+      <div class="ad-body">
+        <div class="ad-title">${escapeHTML(ad.title)}</div>
+        <div class="ad-meta">
+          <span>${escapeHTML(ad.district)}</span>
+          <span>${timeAgo(ad.created_at)}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  grid.innerHTML = html;
+}
+
+
+
 </script>
 
 <script src="assets/js/core.js" defer></script>
