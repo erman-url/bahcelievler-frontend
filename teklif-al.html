@@ -341,34 +341,36 @@ TEKLİF GÖNDER
 
 <script>
 
+const form = document.getElementById("offerForm");
 const btn = document.getElementById("submitBtn");
 
 btn.addEventListener("click",(e)=>{
 e.preventDefault();
 
+/* 🔒 DOUBLE CLICK ENGEL */
+if(btn.classList.contains("loading")) return;
+
+/* INPUTLAR */
 const service = document.getElementById("service").value;
 const district = document.getElementById("district").value;
 const desc = document.getElementById("desc").value.trim();
 const email = document.getElementById("email").value.trim();
 const file = document.getElementById("image").files[0];
 
+/* VALIDATION */
 if(!service) return alert("Hizmet seçiniz");
 if(!district) return alert("Mahalle seçiniz");
 if(desc.length < 10) return alert("Detay giriniz");
 if(!email.includes("@")) return alert("Geçerli email giriniz");
 
+/* FILE LIMIT */
 if(file && file.size > 2 * 1024 * 1024){
 return alert("Max 2MB");
 }
 
+/* LOADING */
 btn.classList.add("loading");
 btn.innerText="Gönderiliyor...";
-
-const form = document.getElementById("offerForm");
-const btn = document.getElementById("submitBtn");
-
-btn.classList.add("loading");
-btn.innerText = "Gönderiliyor...";
 
 /* FORM DATA */
 const formData = new FormData(form);
@@ -382,15 +384,10 @@ body: formData
 .then(data => {
 
 if(data.ok){
-
 alert("Talebiniz alındı 🚀");
-
 form.reset();
-
 }else{
-
 alert(data.error || "Bir hata oluştu");
-
 }
 
 })
