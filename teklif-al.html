@@ -30,10 +30,11 @@
 body{
 background:linear-gradient(180deg,#eef2ff,#f8fbff);
 padding-top:env(safe-area-inset-top);
-font-family:system-ui;
+font-family:system-ui,-apple-system,Segoe UI,Roboto;
+-webkit-font-smoothing:antialiased;
 }
 
-/* GLASS EFFECT */
+/* WRAPPER */
 .page-wrapper{
 max-width:900px;
 margin:auto;
@@ -59,13 +60,12 @@ background:linear-gradient(135deg,#2563eb,#4f46e5);
 background:linear-gradient(135deg,#2563eb,#4f46e5);
 background-clip:text;
 -webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 color:transparent;
--webkit-text-fill-color:transparent;
--webkit-text-fill-color:transparent;
 }
 
 /* =========================
-🔥 INFO BOX UPGRADE
+🔥 INFO BOX
 ========================= */
 
 .info-box{
@@ -90,7 +90,7 @@ flex-direction:column;
 gap:16px;
 }
 
-/* INPUT PRO */
+/* INPUT */
 .form-control{
 width:100%;
 padding:14px;
@@ -122,7 +122,7 @@ padding-left:4px;
 }
 
 /* =========================
-🔥 BUTTON PREMIUM
+🔥 BUTTON
 ========================= */
 
 .submit-btn{
@@ -158,7 +158,7 @@ transform:scale(.96);
 }
 
 /* =========================
-🔥 LOADING STATE
+🔥 LOADING
 ========================= */
 
 .submit-btn.loading{
@@ -189,9 +189,9 @@ Bahçelievler Forum üzerinden ilettiğiniz talep ilgili hizmet sağlayıcılara
 Size en uygun teklifler doğrudan tarafınıza iletilir.
 </div>
 
-<form class="form-area" id="offerForm">
+<form class="form-area" id="offerForm" novalidate>
 
-<select class="form-control" required>
+<select name="service" id="service" class="form-control" required>
 <option value="">Hizmet Türünü Seçiniz (Zorunlu)</option>
 <option>Ürün & Eşya Onarımı</option>
 <option>Ev & İşyeri Temizliği</option>
@@ -203,7 +203,7 @@ Size en uygun teklifler doğrudan tarafınıza iletilir.
 <option>Diğer Hizmet</option>
 </select>
 
-<select class="form-control" required>
+<select name="district" id="district" class="form-control" required>
 <option value="">Mahalle Seçiniz (Zorunlu)</option>
 <option>Bahçelievler Mahallesi</option>
 <option>Cumhuriyet Mahallesi</option>
@@ -222,13 +222,13 @@ Size en uygun teklifler doğrudan tarafınıza iletilir.
 📷 Talebin değerlendirilmesi için en az bir görsel yüklenmesi önerilir.
 </div>
 
-<input type="file" class="form-control">
+<input type="file" name="image" id="image" class="form-control" accept="image/*">
 
-<textarea class="form-control" placeholder="İşin detaylarını yazınız..." required></textarea>
+<textarea name="desc" id="desc" class="form-control" placeholder="İşin detaylarını yazınız..." required></textarea>
 
-<input type="email" class="form-control" placeholder="E-posta adresiniz (zorunlu)" required>
+<input type="email" name="email" id="email" class="form-control" placeholder="E-posta adresiniz (zorunlu)" required>
 
-<button class="submit-btn" id="submitBtn">
+<button class="submit-btn" id="submitBtn" type="submit">
 TEKLİF TALEBİ GÖNDER
 </button>
 
@@ -241,22 +241,37 @@ TEKLİF TALEBİ GÖNDER
 <script>
 
 /* =========================
-🔥 UX + STABLE SUBMIT
+🔥 UX + VALIDATION + STABLE
 ========================= */
 
 const form = document.getElementById("offerForm");
 const btn = document.getElementById("submitBtn");
 
-if(form){
-
 form.addEventListener("submit",(e)=>{
 e.preventDefault();
+
+const service = document.getElementById("service").value;
+const district = document.getElementById("district").value;
+const desc = document.getElementById("desc").value.trim();
+const email = document.getElementById("email").value.trim();
+const file = document.getElementById("image").files[0];
+
+/* VALIDATION */
+if(!service) return alert("Hizmet seçiniz");
+if(!district) return alert("Mahalle seçiniz");
+if(desc.length < 10) return alert("Açıklama çok kısa");
+if(!email.includes("@")) return alert("Geçerli email gir");
+
+/* FILE SIZE CONTROL */
+if(file && file.size > 2 * 1024 * 1024){
+return alert("Görsel max 2MB olmalı");
+}
 
 /* LOADING */
 btn.classList.add("loading");
 btn.innerText = "Gönderiliyor...";
 
-/* FAKE DELAY (API YOKSA UX İÇİN) */
+/* FAKE API */
 setTimeout(()=>{
 
 alert("Talebiniz alındı ✅");
@@ -269,8 +284,6 @@ form.reset();
 },1200);
 
 });
-
-}
 
 </script>
 
