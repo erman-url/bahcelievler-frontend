@@ -1,111 +1,170 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="no-js">
+
 <head>
 
 <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Ücretsiz Teklif Al | Bahçelievler Forum</title>
 
-<meta name="description" content="Bahçelievler'de hizmet için ücretsiz teklif alın.">
+<meta name="description" content="Bahçelievler ilçesinde aradığınız hizmet için ücretsiz teklif alın. Yerel ustalar ve servisler size ulaşsın.">
+<meta name="robots" content="index, follow">
 <meta name="theme-color" content="#2563eb">
+
+<link rel="icon" href="/favicon.ico">
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
 
-/* ===== GLOBAL ===== */
+/* =========================
+🔥 PREMIUM GLOBAL
+========================= */
+
 body{
-margin:0;
-font-family:system-ui,-apple-system;
-background:#f4f7fb;
+background:linear-gradient(180deg,#eef2ff,#f8fbff);
+padding-top:env(safe-area-inset-top);
+font-family:system-ui,-apple-system,Segoe UI,Roboto;
+-webkit-font-smoothing:antialiased;
 }
 
 /* WRAPPER */
-.container{
-max-width:700px;
+.page-wrapper{
+max-width:900px;
 margin:auto;
-padding:10px 16px 120px;
+padding-bottom:120px;
 }
 
-/* TITLE */
-.title{
-font-size:22px;
-font-weight:800;
+/* HEADER FIX */
+#globalHeader{
+max-width:900px;
+margin:auto;
+}
+
+/* =========================
+🔥 TITLE PRO
+========================= */
+
+.page-title{
+font-size:24px;
+font-weight:900;
 text-align:center;
-margin:15px 0;
+margin:20px 0;
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+background-clip:text;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+color:transparent;
 }
 
-/* PROGRESS */
-.progress{
-height:6px;
-background:#e5e7eb;
-border-radius:10px;
-overflow:hidden;
-margin-bottom:20px;
-}
-.progress-bar{
-height:100%;
-width:25%;
-background:linear-gradient(90deg,#2563eb,#4f46e5);
-transition:.3s;
-}
+/* =========================
+🔥 INFO BOX
+========================= */
 
-/* CARD */
-.card{
-background:white;
-border-radius:18px;
+.info-box{
+background:linear-gradient(135deg,#e8f0fb,#eef2ff);
+border-left:4px solid #2563eb;
 padding:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-margin-bottom:16px;
-animation:fade .3s ease;
+border-radius:14px;
+margin:10px 16px 20px;
+font-size:14px;
+line-height:1.6;
+box-shadow:0 10px 25px rgba(0,0,0,.05);
 }
 
-@keyframes fade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1}
+/* =========================
+🔥 FORM AREA
+========================= */
+
+.form-area{
+padding:0 16px;
+display:flex;
+flex-direction:column;
+gap:16px;
 }
 
 /* INPUT */
-.input{
+.form-control{
 width:100%;
 padding:14px;
-border-radius:12px;
-border:1px solid #ddd;
-margin-top:10px;
-}
-
-/* BUTTON */
-.cta{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-padding:14px;
-background:white;
-box-shadow:0 -5px 20px rgba(0,0,0,.08);
-}
-
-.cta button{
-width:100%;
-padding:16px;
-border:none;
 border-radius:14px;
-background:#2563eb;
+border:1px solid #e2e8f0;
+font-size:14px;
+background:white;
+transition:.2s;
+box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+
+.form-control:focus{
+border-color:#2563eb;
+box-shadow:0 0 0 3px rgba(37,99,235,.15);
+outline:none;
+}
+
+/* TEXTAREA */
+textarea.form-control{
+min-height:120px;
+resize:vertical;
+}
+
+/* FILE INFO */
+.file-info{
+font-size:12px;
+color:#e11d48;
+padding-left:4px;
+}
+
+/* =========================
+🔥 BUTTON
+========================= */
+
+.submit-btn{
+margin-top:10px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+border:none;
 color:white;
-font-weight:700;
+padding:16px;
+border-radius:14px;
+font-weight:800;
 font-size:15px;
+cursor:pointer;
+box-shadow:0 10px 25px rgba(37,99,235,.3);
+transition:.2s;
 }
 
-.cta button:disabled{
-opacity:.5;
+.submit-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 15px 30px rgba(37,99,235,.35);
 }
 
-/* STEP HIDE */
-.step{display:none;}
-.step.active{display:block;}
+.submit-btn:active{
+transform:scale(.96);
+}
+
+/* =========================
+🔥 MOBILE UX
+========================= */
+
+@media(max-width:600px){
+.page-title{font-size:22px;}
+.form-control{font-size:15px;}
+}
+
+/* =========================
+🔥 LOADING
+========================= */
+
+.submit-btn.loading{
+opacity:.7;
+pointer-events:none;
+}
 
 </style>
 
@@ -115,104 +174,122 @@ opacity:.5;
 
 <div id="globalHeader"></div>
 
-<div class="container">
+<div class="page-wrapper">
 
-<div class="title">📄 Ücretsiz Teklif Al</div>
+<main id="mainContent">
 
-<div class="progress">
-<div class="progress-bar" id="bar"></div>
+<div class="page-title">
+📄 ÜCRETSİZ TEKLİF AL
 </div>
 
-<form id="form">
+<div class="info-box">
+<strong>Talebinize Uygun Teklifleri Güvenle Alın</strong>
+<br><br>
+Bahçelievler Forum üzerinden ilettiğiniz talep ilgili hizmet sağlayıcılara aktarılır.
+Size en uygun teklifler doğrudan tarafınıza iletilir.
+</div>
 
-<!-- STEP 1 -->
-<div class="step active">
-<div class="card">
-<strong>Hizmet Türü</strong>
-<select id="service" class="input">
-<option value="">Seçiniz</option>
-<option>Temizlik</option>
-<option>Bakım</option>
-<option>Tadilat</option>
-<option>Nakliye</option>
+<form class="form-area" id="offerForm" novalidate>
+
+<select name="service" id="service" class="form-control" required>
+<option value="">Hizmet Türünü Seçiniz (Zorunlu)</option>
+<option>Ürün & Eşya Onarımı</option>
+<option>Ev & İşyeri Temizliği</option>
+<option>Hasta Bakıcı & Bakım</option>
+<option>Boya & Tadilat İşlemi</option>
+<option>Bilgisayar Bakım & Onarım</option>
+<option>Nakliye & Taşımacılık</option>
+<option>Özel Ders & Eğitim</option>
+<option>Diğer Hizmet</option>
 </select>
-</div>
-</div>
 
-<!-- STEP 2 -->
-<div class="step">
-<div class="card">
-<strong>Mahalle</strong>
-<select id="district" class="input">
-<option value="">Seçiniz</option>
-<option>Şirinevler</option>
-<option>Yenibosna</option>
-<option>Soğanlı</option>
+<select name="district" id="district" class="form-control" required>
+<option value="">Mahalle Seçiniz (Zorunlu)</option>
+<option>Bahçelievler Mahallesi</option>
+<option>Cumhuriyet Mahallesi</option>
+<option>Çobançeşme Mahallesi</option>
+<option>Fevzi Çakmak Mahallesi</option>
+<option>Hürriyet Mahallesi</option>
+<option>Kocasinan Merkez Mahallesi</option>
+<option>Siyavuşpaşa Mahallesi</option>
+<option>Soğanlı Mahallesi</option>
+<option>Şirinevler Mahallesi</option>
+<option>Yenibosna Merkez Mahallesi</option>
+<option>Zafer Mahallesi</option>
 </select>
-</div>
+
+<div class="file-info">
+📷 Talebin değerlendirilmesi için en az bir görsel yüklenmesi önerilir.
 </div>
 
-<!-- STEP 3 -->
-<div class="step">
-<div class="card">
-<strong>Detay</strong>
-<textarea id="desc" class="input" placeholder="Detay yaz"></textarea>
-<input type="file" id="file" class="input">
-</div>
-</div>
+<input type="file" name="image" id="image" class="form-control" accept="image/*">
 
-<!-- STEP 4 -->
-<div class="step">
-<div class="card">
-<strong>Email</strong>
-<input type="email" id="email" class="input">
-</div>
-</div>
+<textarea name="desc" id="desc" class="form-control" placeholder="İşin detaylarını yazınız..." required></textarea>
+
+<input type="email" name="email" id="email" class="form-control" placeholder="E-posta adresiniz (zorunlu)" required>
+
+<button class="submit-btn" id="submitBtn" type="submit">
+TEKLİF TALEBİ GÖNDER
+</button>
 
 </form>
 
-</div>
+</main>
 
-<div class="cta">
-<button id="nextBtn">Devam Et</button>
 </div>
 
 <script>
 
-let step = 0;
-const steps = document.querySelectorAll(".step");
-const btn = document.getElementById("nextBtn");
-const bar = document.getElementById("bar");
+/* =========================
+🔥 UX + VALIDATION + STABLE
+========================= */
 
-function updateUI(){
-steps.forEach(s=>s.classList.remove("active"));
-steps[step].classList.add("active");
-bar.style.width = ((step+1)*25)+"%";
+const form = document.getElementById("offerForm");
+const btn = document.getElementById("submitBtn");
 
-if(step === steps.length-1){
-btn.innerText="Gönder";
-}else{
-btn.innerText="Devam Et";
+form.addEventListener("submit",(e)=>{
+e.preventDefault();
+
+const service = document.getElementById("service").value;
+const district = document.getElementById("district").value;
+const desc = document.getElementById("desc").value.trim();
+const email = document.getElementById("email").value.trim();
+const file = document.getElementById("image").files[0];
+
+/* VALIDATION */
+if(!service) return alert("Hizmet seçiniz");
+if(!district) return alert("Mahalle seçiniz");
+if(desc.length < 10) return alert("Açıklama çok kısa");
+if(!email.includes("@")) return alert("Geçerli email gir");
+
+/* FILE SIZE CONTROL */
+if(file && file.size > 2 * 1024 * 1024){
+return alert("Görsel max 2MB olmalı");
 }
-}
 
-btn.onclick = ()=>{
+/* LOADING */
+btn.classList.add("loading");
+btn.innerText = "Gönderiliyor...";
 
-if(step===0 && !service.value) return alert("Hizmet seç");
-if(step===1 && !district.value) return alert("Mahalle seç");
-if(step===2 && desc.value.length<5) return alert("Detay yaz");
-if(step===3){
-if(!email.value.includes("@")) return alert("Email gir");
-alert("Talep gönderildi 🚀");
-return;
-}
+/* FAKE API */
+setTimeout(()=>{
 
-step++;
-updateUI();
+alert("Talebiniz alındı ✅");
 
-};
+btn.classList.remove("loading");
+btn.innerText = "TEKLİF TALEBİ GÖNDER";
+
+form.reset();
+
+},1200);
+
+});
 
 </script>
+
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/news.js" defer></script>
+<script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
 
