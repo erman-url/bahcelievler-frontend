@@ -59,19 +59,39 @@ max-width:1000px;
 margin:auto;
 }
 
+/* 🔥 PRO CARD EFFECT */
 .game-card{
 transition:.25s;
+backdrop-filter: blur(6px);
 }
 .game-card:hover{
-transform:translateY(-5px);
-box-shadow:0 20px 40px rgba(0,0,0,.12);
+transform:translateY(-6px) scale(1.01);
+box-shadow:0 25px 50px rgba(0,0,0,.15);
 }
 
+/* 🔥 ICON GLOW */
+.game-icon{
+box-shadow:0 8px 22px rgba(37,99,235,0.35);
+}
+
+/* 🔥 BUTTON PRO */
 .btn{
 transition:.2s;
 }
 .btn:hover{
-transform:scale(1.05);
+transform:scale(1.06);
+box-shadow:0 8px 18px rgba(37,99,235,.4);
+}
+
+/* 🔥 PAGE PREMIUM BACKGROUND */
+body{
+background:
+linear-gradient(180deg,#f4f7ff 0%, #eef2ff 100%);
+}
+
+/* 🔥 MENU FIX (KRİTİK) */
+.menu-overlay{
+z-index:9999 !important;
 }
 
 /* MOBİL İYİLEŞTİRME */
@@ -293,11 +313,11 @@ if(currentGame==="flappy") startFlappy()
 
 </script>
 
-
-<!-- SCRIPTS (MERKEZİ) -->
+<!-- 🔥 MERKEZİ SİSTEM UYUMLU (OYUNLAR SAYFASI İLE AYNI) -->
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
 <script src="assets/js/news.js" defer></script>
+<script src="assets/js/countdown.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
