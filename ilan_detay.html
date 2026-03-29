@@ -217,70 +217,109 @@ async function loadDetail(){
         " • " +
         formatDate(ad.created_at);
     }
+/* ===============================
+IMAGES (FULL FIX)
+=============================== */
+const slider = document.getElementById("sliderTrack");
 
-    /* ===============================
-    IMAGES (FULL FIX)
-    =============================== */
-    const slider = document.getElementById("sliderTrack");
+let images = [
+  ad.image_url,
+  ad.image_url_2,
+  ad.image_url_3
+].filter(Boolean);
 
-    let images = [
-      ad.image_url,
-      ad.image_url_2,
-      ad.image_url_3
-    ].filter(Boolean);
+if(!slider) return;
 
-    if(!slider) return;
+slider.innerHTML = "";
 
-    slider.innerHTML = "";
+if(images.length === 0){
+  slider.innerHTML = `<div style="width:100%;aspect-ratio:1;background:#eee;"></div>`;
+}else{
 
-    if(images.length === 0){
-      slider.innerHTML = `<div style="width:100%;aspect-ratio:1;background:#eee;"></div>`;
-    }else{
+  images.forEach(src => {
 
-      images.forEach(src => {
+    let safe = String(src).trim().replace(/"/g,"");
 
-        let safe = String(src).trim().replace(/"/g,"");
-
-        /* 🔥 DATA + HTTP SUPPORT */
-        if(!safe.startsWith("http") && !safe.startsWith("data:")){
-          return;
-        }
-
-        const img = document.createElement("img");
-
-        img.src = safe.startsWith("data:")
-          ? safe
-          : safe + "?v=" + ad.id;
-
-        img.loading = "lazy";
-
-        img.onerror = ()=>{
-          img.src = "https://picsum.photos/600";
-        };
-
-        slider.appendChild(img);
-      });
-
+    if(!safe.startsWith("http") && !safe.startsWith("data:")){
+      return;
     }
 
-    /* ===============================
-    CONTACT / SHARE
-    =============================== */
-    const contactBtn = document.getElementById("contactBtn");
-    const shareBtn = document.getElementById("shareBtn");
+    const img = document.createElement("img");
 
-    if(contactBtn){
-      contactBtn.onclick = ()=> handleContact(ad.contact);
-    }
+    img.src = safe.startsWith("data:")
+      ? safe
+      : safe + "?v=" + ad.id;
 
-    if(shareBtn){
-      shareBtn.onclick = ()=> shareAd(ad);
-    }
+    img.loading = "lazy";
 
-  }catch(e){
-    console.error("DETAIL ERROR:", e);
-    alert("İlan yüklenemedi");
-  }
+    img.onerror = ()=>{
+      img.src = "https://picsum.photos/600";
+    };
+
+    slider.appendChild(img);
+  });
+
+}
+
+/* ===============================
+🔥 FULL DATA BIND FIX (KRİTİK)
+=============================== */
+
+/* CATEGORY */
+const categoryEl = document.getElementById("adCategory");
+if(categoryEl){
+  categoryEl.innerText = ad.category || "-";
+}
+
+/* CONDITION */
+const conditionEl = document.getElementById("adCondition");
+if(conditionEl){
+  conditionEl.innerText = ad.condition || "-";
+}
+
+/* DISTRICT */
+const districtEl = document.getElementById("adDistrict");
+if(districtEl){
+  districtEl.innerText = ad.district || "-";
+}
+
+/* SELLER (CONTACT) */
+const sellerEl = document.getElementById("adSeller");
+if(sellerEl){
+  sellerEl.innerText = ad.contact || "-";
+}
+
+/* DESCRIPTION */
+const descEl = document.getElementById("adDescription");
+if(descEl){
+  descEl.innerText = ad.content || "Açıklama yok";
+}
+
+/* LOCATION */
+const locEl = document.getElementById("adLocation");
+if(locEl){
+  locEl.innerHTML =
+    `<i class="fa fa-location-dot"></i> ${ad.district || "-"} / İstanbul`;
+}
+
+/* ===============================
+CONTACT / SHARE
+=============================== */
+const contactBtn = document.getElementById("contactBtn");
+const shareBtn = document.getElementById("shareBtn");
+
+if(contactBtn){
+  contactBtn.onclick = ()=> handleContact(ad.contact);
+}
+
+if(shareBtn){
+  shareBtn.onclick = ()=> shareAd(ad);
+}
+
+}catch(e){
+  console.error("DETAIL ERROR:", e);
+  alert("İlan yüklenemedi");
+}
 }
 
 /* ===============================
@@ -288,49 +327,50 @@ DELETE
 =============================== */
 async function confirmDelete(){
 
-  const id = Number(getAdId());
+const id = Number(getAdId());
 
-  if(!id || isNaN(id)){
-    return alert("Geçersiz ilan ID");
-  }
-
-  const password = document.getElementById("deletePassword")?.value;
-
-  if(!password || password.length < 3){
-    return alert("Geçerli şifre gir");
-  }
-
-  try{
-
-    const res = await fetch(
-      "https://bahcelievler-api.erman-urel.workers.dev/api/ilan-sil",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-       body: JSON.stringify({
-  id,
-  delete_token: password
-})
-      }
-    );
-
-    const result = await res.json();
-
-    if(!res.ok){
-      return alert(result?.error || "Silme başarısız");
-    }
-
-    if(result.ok){
-      alert("İlan silindi");
-      window.location.href = "ilanlar.html";
-    }else{
-      alert(result.error || "Şifre yanlış");
-    }
-
-  }catch(e){
-    alert("Sunucu hatası");
-  }
+if(!id || isNaN(id)){
+  return alert("Geçersiz ilan ID");
 }
+
+const password = document.getElementById("deletePassword")?.value;
+
+if(!password || password.length < 3){
+  return alert("Geçerli şifre gir");
+}
+
+try{
+
+  const res = await fetch(
+    "https://bahcelievler-api.erman-urel.workers.dev/api/ilan-sil",
+    {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        id,
+        delete_token: password
+      })
+    }
+  );
+
+  const result = await res.json();
+
+  if(!res.ok){
+    return alert(result?.error || "Silme başarısız");
+  }
+
+  if(result.ok){
+    alert("İlan silindi");
+    window.location.href = "ilanlar.html";
+  }else{
+    alert(result.error || "Şifre yanlış");
+  }
+
+}catch(e){
+  alert("Sunucu hatası");
+}
+}
+
 
 /* ===============================
 INIT
