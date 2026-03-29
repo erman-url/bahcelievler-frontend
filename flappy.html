@@ -1,66 +1,32 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Flappy Bird | Bahçelievler Forum</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Flappy Pro</title>
 
 <style>
-
-/* =========================
-🔥 PREMIUM UI
-========================= */
-
 body{
 margin:0;
+background:linear-gradient(#dbeafe,#fff);
 font-family:system-ui;
-background:radial-gradient(circle at top,#dbeafe,#ffffff);
-overflow:hidden;
 }
 
-/* HEADER */
-.header{
-background:#1e3a8a;
-color:white;
-padding:14px;
-text-align:center;
-font-weight:700;
-}
-
-/* HUD */
-.hud{
-display:flex;
-justify-content:space-between;
-padding:10px 16px;
-font-weight:700;
-}
-
-/* CANVAS */
 canvas{
 display:block;
 margin:auto;
+background:linear-gradient(#dbeafe,#eff6ff);
 border-radius:20px;
-background:linear-gradient(180deg,#dbeafe,#eff6ff);
-box-shadow:0 20px 60px rgba(0,0,0,.2);
 }
 
-/* BUTTON */
-.btn{
-margin:10px auto;
-display:block;
-padding:12px 20px;
-border:none;
-border-radius:12px;
-background:#2563eb;
-color:white;
+.hud{
+display:flex;
+justify-content:space-between;
+padding:10px;
 font-weight:700;
 }
 
-/* OVERLAY */
 .overlay{
 position:fixed;
 top:0;left:0;
@@ -73,84 +39,69 @@ justify-content:center;
 
 .box{
 background:white;
-padding:24px;
-border-radius:18px;
+padding:20px;
+border-radius:16px;
 text-align:center;
-width:260px;
 }
-
-.box h3{
-color:#2563eb;
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="header">Flappy Bird</div>
-
 <div class="hud">
 <div id="score">Skor: 0</div>
-<div id="time">Süre: 0s</div>
+<div id="time">Süre: 0</div>
 <div id="lives">❤️ 3</div>
 </div>
 
 <canvas id="game" width="360" height="520"></canvas>
 
-<button class="btn" onclick="restart()">Yeniden Başlat</button>
-
-<div class="overlay" id="overlay">
+<div class="overlay" id="over">
 <div class="box">
 <h3 id="result"></h3>
-<p id="finalScore"></p>
-<button class="btn" onclick="restart()">Tekrar Oyna</button>
+<p id="final"></p>
+<button onclick="init()">Tekrar</button>
 </div>
 </div>
 
 <script>
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const c = document.getElementById("game");
+const ctx = c.getContext("2d");
+
+/* AUDIO */
+const flapSound = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
+const hitSound = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
 
 /* STATE */
-let bird, pipes, score, lives, speed, gap, gameOverFlag, startTime;
+let bird, pipes, score, lives, speed, gap, startTime, safeTime, gameOver;
 
 /* INIT */
 function init(){
 
 bird = { y:250, vy:0 };
-
 pipes = [];
 
 score = 0;
 lives = 3;
 
-speed = 2.2;
-gap = 150;
-
-gameOverFlag = false;
+speed = 2;
+gap = 160;
 
 startTime = Date.now();
+safeTime = 10000; // 🔥 10 saniye koruma
 
-spawnPipe();
+gameOver = false;
 
-updateHUD();
+spawn();
 
 loop();
 }
 
 /* PIPE */
-function spawnPipe(){
+function spawn(){
 
-let min = 80;
-let max = 300;
-
-let top = Math.random()*(max-min)+min;
-
-/* ADİLİK (asla kapalı olmaz) */
-if(top < 100) top = 100;
-if(top > 260) top = 260;
+let top = Math.random()*200 + 100;
 
 pipes.push({
 x:360,
@@ -164,11 +115,15 @@ function draw(){
 
 ctx.clearRect(0,0,360,520);
 
-/* bird */
+/* bird (kuş) */
 ctx.fillStyle="#2563eb";
 ctx.beginPath();
-ctx.arc(80,bird.y,14,0,Math.PI*2);
+ctx.arc(80,bird.y,12,0,Math.PI*2);
 ctx.fill();
+
+/* kanat */
+ctx.fillStyle="#1d4ed8";
+ctx.fillRect(70,bird.y,8,4);
 
 /* pipes */
 ctx.fillStyle="#16a34a";
@@ -183,15 +138,15 @@ ctx.fillRect(p.x,p.top+gap,40,520);
 /* UPDATE */
 function update(){
 
-bird.vy += 0.5;
+bird.vy += 0.4;
 bird.y += bird.vy;
 
-/* zemin */
-if(bird.y > 500){
-loseLife();
-}
+/* süre */
+let elapsed = Date.now() - startTime;
 
-/* pipes */
+/* collision sadece 10 sn sonra */
+let collisionActive = elapsed > safeTime;
+
 for(let i=pipes.length-1;i>=0;i--){
 
 let p = pipes[i];
@@ -199,48 +154,37 @@ p.x -= speed;
 
 /* çarpışma */
 if(
+collisionActive &&
 p.x < 95 && p.x > 60 &&
 (bird.y < p.top || bird.y > p.top + gap)
 ){
-loseLife();
+hit();
 }
 
 /* skor */
 if(!p.passed && p.x < 60){
 p.passed = true;
 score++;
-increaseDifficulty();
 }
 
-/* yeni boru */
+/* yeni pipe */
 if(p.x < -40){
 pipes.splice(i,1);
-spawnPipe();
+spawn();
 }
 }
 
 }
 
-/* ZORLUK ARTIR */
-function increaseDifficulty(){
+/* HIT */
+function hit(){
 
-if(score % 5 === 0){
-speed += 0.3;
-gap -= 5;
-if(gap < 110) gap = 110;
-}
-
-}
-
-/* CAN KAYBI */
-function loseLife(){
-
-if(gameOverFlag) return;
+hitSound.play();
 
 lives--;
 
 if(lives <= 0){
-endGame(false);
+end(false);
 return;
 }
 
@@ -248,73 +192,48 @@ return;
 bird.y = 250;
 bird.vy = 0;
 pipes = [];
-spawnPipe();
-
-}
-
-/* KAZANMA */
-function checkWin(){
-
-if(score >= 20){
-endGame(true);
-}
-
+spawn();
 }
 
 /* END */
-function endGame(win){
+function end(win){
 
-gameOverFlag = true;
+gameOver = true;
 
-document.getElementById("overlay").style.display="flex";
-
-document.getElementById("result").innerText =
-win ? "🎉 Kazandın!" : "💀 Oyun Bitti";
-
-document.getElementById("finalScore").innerText =
-"Skor: "+score;
+document.getElementById("over").style.display="flex";
+document.getElementById("result").innerText = win ? "Kazandın" : "Oyun Bitti";
+document.getElementById("final").innerText = "Skor: "+score;
 
 }
 
 /* LOOP */
 function loop(){
 
-if(gameOverFlag) return;
+if(gameOver) return;
 
 update();
 draw();
-updateHUD();
-checkWin();
+
+document.getElementById("score").innerText="Skor: "+score;
+document.getElementById("lives").innerText="❤️ "+lives;
+
+let t = Math.floor((Date.now()-startTime)/1000);
+document.getElementById("time").innerText="Süre: "+t;
 
 requestAnimationFrame(loop);
 }
 
 /* INPUT */
 function flap(){
-bird.vy = -8;
+bird.vy = -7;
+flapSound.play();
 }
 
-canvas.addEventListener("touchstart", flap);
-canvas.addEventListener("click", flap);
-
+c.addEventListener("touchstart", flap);
+c.addEventListener("click", flap);
 document.addEventListener("keydown",e=>{
 if(e.code==="Space") flap();
 });
-
-/* HUD */
-function updateHUD(){
-document.getElementById("score").innerText="Skor: "+score;
-document.getElementById("lives").innerText="❤️ "+lives;
-
-let t = Math.floor((Date.now()-startTime)/1000);
-document.getElementById("time").innerText="Süre: "+t+"s";
-}
-
-/* RESTART */
-function restart(){
-document.getElementById("overlay").style.display="none";
-init();
-}
 
 /* START */
 init();
