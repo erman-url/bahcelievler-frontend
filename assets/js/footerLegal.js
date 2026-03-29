@@ -14,7 +14,7 @@ const legalHTML = `
   <div class="legal-divider"></div>
 
   <div class="legal-copy">
-    © 2026 Bahçelievler Forum
+    © 2026 Bahçelievler Forum / V 1.1
   </div>
 
 </footer>
