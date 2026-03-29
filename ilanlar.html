@@ -189,10 +189,12 @@ async function fetchWithTimeout(url,opt={},t=8000){
     throw e;
   }
 }
-
 /* ===============================
-LOAD ADS
+LOAD ADS (FULL FIX + PREMIUM + FILTER READY)
 =============================== */
+
+let ALL_ADS = [];
+
 async function loadAds(){
   try{
     const res = await fetchWithTimeout(
@@ -206,6 +208,9 @@ async function loadAds(){
     const grid = document.getElementById("adsGrid");
 
     if(!grid) return;
+
+    /* 🔥 GLOBAL CACHE (FILTER İÇİN) */
+    ALL_ADS = Array.isArray(data) ? data : [];
 
     if(!Array.isArray(data) || data.length === 0){
       grid.innerHTML = "<p style='padding:20px'>Henüz ilan yok</p>";
@@ -222,19 +227,45 @@ async function loadAds(){
         ad.image_url || ad.image_url_2 || ad.image_url_3
       );
 
+      /* 🔥 PREMIUM BADGE */
+      const premium = Number(ad.price) > 500000 ? 
+      `<div style="
+        position:absolute;
+        top:8px;
+        right:8px;
+        background:#2563eb;
+        color:#fff;
+        font-size:10px;
+        padding:4px 6px;
+        border-radius:6px;
+      ">ÖNE ÇIKAN</div>` : "";
+
       html += `
       <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
+
         <div class="ad-image">
           <img src="${img}" loading="lazy">
-          <div class="price-badge">${escapeHTML(String(ad.price||""))} TL</div>
+
+          ${premium}
+
+          <div class="price-badge">
+            ${escapeHTML(String(ad.price||""))} TL
+          </div>
         </div>
+
         <div class="ad-body">
-          <div class="ad-title">${escapeHTML(ad.title||"")}</div>
+
+          <div class="ad-title">
+            ${escapeHTML(ad.title||"")}
+          </div>
+
           <div class="ad-meta">
             <span>${escapeHTML(ad.district||"")}</span>
             <span>${timeAgo(ad.created_at)}</span>
           </div>
+
         </div>
+
       </div>`;
     });
 
