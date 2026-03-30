@@ -400,8 +400,9 @@ return;
 });
 
 /* ===============================
-FORM SUBMIT (FULL SECURE)
+FORM SUBMIT (FULL STABLE)
 =============================== */
+
 const form = document.getElementById("hizmetForm");
 const btn = document.querySelector(".submit-btn");
 
@@ -412,20 +413,11 @@ e.preventDefault();
 /* DOUBLE SUBMIT BLOCK */
 if(btn.classList.contains("loading")) return;
 
-/* TURNSTILE TOKEN */
-const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
-
-if(!token){
-alert("Güvenlik doğrulaması gerekli.");
-return;
-}
-
 /* UI LOCK */
 btn.classList.add("loading");
 btn.innerText = "Gönderiliyor...";
 
 const formData = new FormData(this);
-formData.append("cf_token", token);
 
 try{
 
@@ -441,7 +433,7 @@ throw new Error("Bağlantı hatası");
 
 const data = await res.json();
 
-/* BACKEND ERROR FIX */
+/* BACKEND ERROR */
 if(!res.ok){
 throw new Error(data.error || "Sunucu hatası");
 }
@@ -450,15 +442,16 @@ throw new Error(data.error || "Sunucu hatası");
 alert("Hizmet başarıyla gönderildi ✔");
 
 this.reset();
-charCount.textContent = "0 / 750";
 
-/* TURNSTILE RESET */
-if(window.turnstile){
-turnstile.reset();
+/* CHAR RESET */
+if(typeof charCount !== "undefined"){
+charCount.textContent = "0 / 750";
 }
 
 /* LIST REFRESH */
+if(typeof loadHizmetler === "function"){
 loadHizmetler();
+}
 
 }catch(err){
 
