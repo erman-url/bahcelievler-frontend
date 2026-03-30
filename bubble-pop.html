@@ -32,15 +32,13 @@ background:#1abc9c;
 padding-top:env(safe-area-inset-top);
 }
 
-/* CANVAS */
 canvas{
 position:absolute;
 top:0;
 left:0;
-z-index:1; /* 🔥 FIX */
+z-index:1;
 }
 
-/* TOP UI */
 #ui{
 position:fixed;
 top:0;
@@ -57,9 +55,8 @@ z-index:10;
 font-weight:600;
 }
 
-/* OVERLAY */
 .overlay{
-position:fixed; /* 🔥 FIX */
+position:fixed;
 top:0;
 left:0;
 width:100%;
@@ -73,7 +70,6 @@ z-index:9999;
 text-align:center;
 }
 
-/* TITLE */
 .title{
 font-size:48px;
 font-weight:900;
@@ -85,7 +81,6 @@ text-shadow:
 margin-bottom:10px;
 }
 
-/* BUTTON */
 .btn{
 padding:14px 30px;
 font-size:18px;
@@ -96,9 +91,7 @@ color:#16a085;
 font-weight:bold;
 box-shadow:0 5px 15px rgba(0,0,0,0.2);
 cursor:pointer;
-transition:0.2s;
 }
-.btn:active{transform:scale(0.95);}
 
 #gameOver{display:none;}
 
@@ -115,7 +108,7 @@ margin:10px 0;
 <div id="globalHeader"></div>
 
 <div id="ui">
-<div onclick="goBack()" style="cursor:pointer">←</div>
+<div onclick="goBack()">←</div>
 <div id="score">0</div>
 <div id="lives">❤️❤️❤️❤️❤️</div>
 <div id="time">30s</div>
@@ -123,9 +116,7 @@ margin:10px 0;
 
 <div id="startScreen" class="overlay">
 <div class="title">Bubble Pop</div>
-<div style="color:white;opacity:.8;font-size:13px;margin-bottom:20px">
-Bahçelievler Forum
-</div>
+<div style="opacity:.8;margin-bottom:20px">Bahçelievler Forum</div>
 <button class="btn" onclick="startGame()">OYNA</button>
 </div>
 
@@ -138,13 +129,6 @@ Bahçelievler Forum
 <canvas id="game"></canvas>
 
 <script>
-
-/* 🔥 DOM FIX (KRİTİK) */
-document.addEventListener("DOMContentLoaded",()=>{
-let start=document.getElementById("startScreen");
-if(start) start.style.display="flex";
-});
-
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -156,9 +140,6 @@ H = canvas.height = window.innerHeight;
 resize();
 window.addEventListener("resize",resize);
 
-const SKY="#1abc9c";
-const GROUND="#6d3f1f";
-
 let balloons=[];
 let score=0;
 let lives=5;
@@ -166,27 +147,19 @@ let time=30;
 let running=false;
 let spawnTick=0;
 
-const popSound=new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
-popSound.volume=0.4;
-
-document.body.addEventListener("touchstart", ()=>{
-popSound.play().then(()=>popSound.pause());
-},{once:true});
-
 class Balloon{
-constructor(x,y,r,s){
+constructor(x,y,r,s,level){
 this.x=x;
 this.y=y;
 this.r=r;
 this.s=s;
+this.level=level;
 }
 draw(){
 ctx.beginPath();
 ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-ctx.fillStyle="rgba(255,255,255,0.6)";
+ctx.fillStyle=this.level===1 ? "white" : "pink";
 ctx.fill();
-ctx.strokeStyle="rgba(255,255,255,0.8)";
-ctx.stroke();
 }
 update(){
 this.y+=this.s;
@@ -194,25 +167,29 @@ this.y+=this.s;
 }
 
 function spawn(){
-let r=Math.random()*20+18;
+if(balloons.length>=3) return;
+
+let r=30;
 let x=Math.random()*(W-2*r)+r;
-let s=Math.random()*1.2+1.2;
-balloons.push(new Balloon(x,-r,r,s));
+balloons.push(new Balloon(x,-r,r,1.5,1));
 }
 
 function split(b){
-let pieces=Math.random()<0.6?2:3;
-for(let i=0;i<pieces;i++){
+if(b.level===1){
+for(let i=0;i<2;i++){
 balloons.push(new Balloon(
-b.x+(Math.random()-0.5)*40,
+b.x+(Math.random()-0.5)*30,
 b.y,
 b.r*0.6,
-b.s+Math.random()
+b.s+0.5,
+2
 ));
 }
-score+=pieces*2;
+score+=2;
+}else{
+score+=1;
+}
 updateUI();
-navigator.vibrate?.(30);
 }
 
 function hit(x,y){
@@ -220,9 +197,8 @@ for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
 let dx=x-b.x;
 let dy=y-b.y;
+
 if(Math.sqrt(dx*dx+dy*dy)<b.r){
-popSound.currentTime=0;
-popSound.play();
 split(b);
 balloons.splice(i,1);
 return;
@@ -230,16 +206,16 @@ return;
 }
 }
 
-canvas.addEventListener("touchstart",(e)=>{
-if(!running)return;
-let rect=canvas.getBoundingClientRect();
-hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
-});
-
 canvas.addEventListener("mousedown",(e)=>{
 if(!running)return;
 let rect=canvas.getBoundingClientRect();
 hit(e.clientX-rect.left,e.clientY-rect.top);
+});
+
+canvas.addEventListener("touchstart",(e)=>{
+if(!running)return;
+let rect=canvas.getBoundingClientRect();
+hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
 });
 
 function updateUI(){
@@ -253,12 +229,6 @@ if(!running)return;
 
 ctx.clearRect(0,0,W,H);
 
-ctx.fillStyle=SKY;
-ctx.fillRect(0,0,W,H);
-
-ctx.fillStyle=GROUND;
-ctx.fillRect(0,H-70,W,70);
-
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
 b.update();
@@ -266,14 +236,18 @@ b.draw();
 
 if(b.y>H-70){
 balloons.splice(i,1);
+
+if(b.level===2){
 lives--;
 updateUI();
+}
+
 if(lives<=0) endGame();
 }
 }
 
 spawnTick++;
-if(spawnTick>70){
+if(spawnTick>80){
 spawn();
 spawnTick=0;
 }
@@ -295,21 +269,15 @@ if(time<=0) endGame();
 let gameEnded=false;
 
 function startGame(){
-
-let start=document.getElementById("startScreen");
-let over=document.getElementById("gameOver");
-
-if(start) start.style.display="none";
-if(over) over.style.display="none";
-
-gameEnded=false;
-clearInterval(timerInterval);
+document.getElementById("startScreen").style.display="none";
+document.getElementById("gameOver").style.display="none";
 
 score=0;
 lives=5;
 time=30;
 balloons=[];
 running=true;
+gameEnded=false;
 
 updateUI();
 startTimer();
@@ -317,12 +285,7 @@ loop();
 }
 
 function restartGame(){
-gameEnded=false;
 clearInterval(timerInterval);
-
-let over=document.getElementById("gameOver");
-if(over) over.style.display="none";
-
 startGame();
 }
 
@@ -337,30 +300,12 @@ gameEnded=true;
 running=false;
 clearInterval(timerInterval);
 
-let over=document.getElementById("gameOver");
-let scoreText=document.getElementById("finalScore");
-
-if(over) over.style.display="flex";
-if(scoreText) scoreText.innerText="Skor: "+score;
-
-fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor",{
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body: JSON.stringify({
-oyun:"bubble_pop",
-skor:score,
-tarih:Date.now()
-})
-})
-.then(res=>res.text())
-.then(data=>console.log("Skor:",data))
-.catch(err=>console.warn("API:",err));
+document.getElementById("gameOver").style.display="flex";
+document.getElementById("finalScore").innerText="Skor: "+score;
 }
 </script>
 
 <div id="globalFooter"></div>
-
-
 <script src="assets/js/footerLegal.js" defer></script>
 
 </body>
