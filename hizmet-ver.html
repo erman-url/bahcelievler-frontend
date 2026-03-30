@@ -152,6 +152,31 @@ color:#6b7280;
 line-height:1.4;
 }
 
+.hizmet-card{
+background:white;
+border-radius:14px;
+padding:14px;
+margin-bottom:12px;
+box-shadow:0 4px 10px rgba(0,0,0,.05);
+}
+
+.hizmet-title{
+font-weight:700;
+font-size:15px;
+}
+
+.hizmet-meta{
+font-size:12px;
+color:#6b7280;
+margin-top:4px;
+}
+
+.hizmet-phone{
+margin-top:8px;
+font-weight:600;
+color:#16a34a;
+}
+
 </style>
 
 </head>
@@ -274,6 +299,8 @@ HİZMETİ YAYINLA
 
 </form>
 
+<div id="hizmetList" style="padding:16px"></div>
+
 <div class="note">
 Henüz bir hizmet tanıtımı yok.
 </div>
@@ -346,7 +373,7 @@ formData.append("cf_token", token);
 
 try{
 
-const res = await fetch("https://example-api.com/hizmet-ekle", {
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/hizmet-ekle", {
 method:"POST",
 body:formData
 });
@@ -362,6 +389,8 @@ alert("Hizmet başarıyla gönderildi ✔");
 this.reset();
 charCount.textContent = "0 / 750";
 
+loadHizmetler();
+
 }catch(err){
 
 alert("Hata: " + err.message);
@@ -374,6 +403,56 @@ btn.innerText = "HİZMETİ YAYINLA";
 }
 
 });
+
+
+/* ===============================
+HİZMET LİSTE YÜKLE
+=============================== */
+
+async function loadHizmetler(){
+
+try{
+
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/hizmetler");
+const data = await res.json();
+
+const list = document.getElementById("hizmetList");
+
+if(!data || data.length === 0){
+list.innerHTML = `
+<div class="note">Henüz hizmet yok</div>
+`;
+return;
+}
+
+list.innerHTML = data.map(item=>`
+<div class="hizmet-card">
+
+<div class="hizmet-title">
+${item.firma}
+</div>
+
+<div class="hizmet-meta">
+${item.kategori} • ${item.mahalle}
+</div>
+
+<div class="hizmet-phone">
+📞 ${item.telefon}
+</div>
+
+</div>
+`).join("");
+
+}catch(e){
+
+console.error("Liste yüklenemedi", e);
+
+}
+
+}
+
+/* SAYFA AÇILINCA */
+loadHizmetler();
 
 </script>
 
