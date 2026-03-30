@@ -25,6 +25,9 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+<!-- TURNSTILE -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <style>
 
 body{
@@ -119,6 +122,11 @@ font-size:16px;
 cursor:pointer;
 box-shadow:0 10px 25px rgba(0,0,0,.08);
 
+}
+
+.submit-btn.loading{
+opacity:.7;
+pointer-events:none;
 }
 
 .submit-btn:active{
@@ -254,6 +262,12 @@ required>
 Bu formu göndererek verilerinizin platformda yayınlanmasını kabul etmiş olursunuz.
 </div>
 
+<!-- TURNSTILE -->
+<div class="cf-turnstile"
+data-sitekey="SITE_KEY_BURAYA"
+data-theme="light">
+</div>
+
 <button type="submit" class="submit-btn">
 HİZMETİ YAYINLA
 </button>
@@ -307,27 +321,57 @@ return;
 
 });
 
-/* FORM SUBMIT */
-document.getElementById("hizmetForm").addEventListener("submit", function(e){
+/* FORM SUBMIT FULL SECURE */
+const form = document.getElementById("hizmetForm");
+const btn = document.querySelector(".submit-btn");
+
+form.addEventListener("submit", async function(e){
 
 e.preventDefault();
 
-const formData = new FormData(this);
+/* TURNSTILE TOKEN */
+const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
-/* API BAĞLANTI NOKTASI */
-fetch("https://example-api.com/hizmet-ekle", {
+if(!token){
+alert("Güvenlik doğrulaması gerekli.");
+return;
+}
+
+/* UI LOCK */
+btn.classList.add("loading");
+btn.innerText = "Gönderiliyor...";
+
+const formData = new FormData(this);
+formData.append("cf_token", token);
+
+try{
+
+const res = await fetch("https://example-api.com/hizmet-ekle", {
 method:"POST",
 body:formData
-})
-.then(res=>res.json())
-.then(data=>{
-alert("Hizmetiniz başarıyla gönderildi!");
-this.reset();
-charCount.textContent="0 / 750";
-})
-.catch(()=>{
-alert("Bir hata oluştu. Tekrar deneyin.");
 });
+
+const data = await res.json();
+
+if(!res.ok){
+throw new Error(data.message || "Sunucu hatası");
+}
+
+alert("Hizmet başarıyla gönderildi ✔");
+
+this.reset();
+charCount.textContent = "0 / 750";
+
+}catch(err){
+
+alert("Hata: " + err.message);
+
+}finally{
+
+btn.classList.remove("loading");
+btn.innerText = "HİZMETİ YAYINLA";
+
+}
 
 });
 
