@@ -2,8 +2,9 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+<!-- 🔥 MOBILE + SAFE AREA FIX -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
 <title>Bubble Pop Oyunu | Bahçelievler Forum</title>
 
@@ -11,8 +12,8 @@
 
 <meta name="keywords" content="bubble pop oyunu, balon patlatma oyunu, mobil oyun, online oyun, bahçelievler oyun">
 
-
-<link rel="canonical" href="https://bahcelievlerforum.com/buble-pop.html">
+<!-- 🔥 SEO FIX -->
+<link rel="canonical" href="https://bahcelievlerforum.com/bubble-pop.html">
 
 <meta property="og:title" content="Bubble Pop Oyunu">
 <meta property="og:description" content="Baloncukları patlat, süreye karşı yarış!">
@@ -32,6 +33,7 @@ height:100%;
 overflow:hidden;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 background:#1abc9c;
+padding-top:env(safe-area-inset-top);
 }
 
 /* CANVAS */
@@ -74,7 +76,7 @@ z-index:20;
 text-align:center;
 }
 
-/* BUBBLE TITLE */
+/* TITLE */
 .title{
 font-size:48px;
 font-weight:900;
@@ -83,7 +85,7 @@ letter-spacing:2px;
 text-shadow:
 0 5px 15px rgba(0,0,0,0.3),
 0 0 10px rgba(255,255,255,0.6);
-margin-bottom:20px;
+margin-bottom:10px;
 }
 
 /* BUTTON */
@@ -101,10 +103,7 @@ transition:0.2s;
 }
 .btn:active{transform:scale(0.95);}
 
-/* GAME OVER */
-#gameOver{
-display:none;
-}
+#gameOver{display:none;}
 
 .stat{
 color:#fff;
@@ -114,19 +113,31 @@ margin:10px 0;
 </style>
 </head>
 
-<div id="globalHeader"></div>
-
 <body>
 
+<!-- 🔥 HEADER FIX -->
+<div id="globalHeader"></div>
+
 <div id="ui">
+
+<!-- 🔥 GERİ BUTONU -->
+<div onclick="goBack()" style="cursor:pointer">←</div>
+
 <div id="score">0</div>
 <div id="lives">❤️❤️❤️❤️❤️</div>
 <div id="time">30s</div>
+
 </div>
 
 <!-- START SCREEN -->
 <div id="startScreen" class="overlay">
 <div class="title">Bubble Pop</div>
+
+<!-- 🔥 BRANDING -->
+<div style="color:white;opacity:.8;font-size:13px;margin-bottom:20px">
+Bahçelievler Forum
+</div>
+
 <button class="btn" onclick="startGame()">OYNA</button>
 </div>
 
@@ -165,6 +176,12 @@ let spawnTick=0;
 
 /* SOUND */
 const popSound=new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+popSound.volume=0.4;
+
+/* 🔥 iOS SOUND FIX */
+document.body.addEventListener("touchstart", ()=>{
+popSound.play().then(()=>popSound.pause());
+},{once:true});
 
 /* BALLOON */
 class Balloon{
@@ -187,7 +204,7 @@ this.y+=this.s;
 }
 }
 
-/* SPAWN (AZALTILDI - MOBİL OPTİMİZE) */
+/* SPAWN */
 function spawn(){
 let r=Math.random()*20+18;
 let x=Math.random()*(W-2*r)+r;
@@ -210,7 +227,6 @@ b.s+Math.random()
 
 score+=pieces*2;
 updateUI();
-
 navigator.vibrate?.(30);
 }
 
@@ -258,21 +274,17 @@ if(!running)return;
 
 ctx.clearRect(0,0,W,H);
 
-/* SKY */
 ctx.fillStyle=SKY;
 ctx.fillRect(0,0,W,H);
 
-/* GROUND */
 ctx.fillStyle=GROUND;
 ctx.fillRect(0,H-70,W,70);
 
-/* BALLOONS */
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
 b.update();
 b.draw();
 
-/* MISS */
 if(b.y>H-70){
 balloons.splice(i,1);
 lives--;
@@ -281,7 +293,6 @@ if(lives<=0) endGame();
 }
 }
 
-/* SPAWN RATE (DÜŞÜRÜLDÜ) */
 spawnTick++;
 if(spawnTick>70){
 spawn();
@@ -315,14 +326,7 @@ startTimer();
 loop();
 }
 
-/* END */
-function endGame(){
-running=false;
-clearInterval(timerInterval);
-document.getElementById("gameOver").style.display="flex";
-document.getElementById("finalScore").innerText="Skor: "+score;
-}
-
+/* BACK */
 function goBack(){
 window.location.href="online-oyunlar.html";
 }
@@ -333,6 +337,7 @@ document.getElementById("gameOver").style.display="none";
 startGame();
 }
 
+/* 🔥 TEK ENDGAME (FIX) */
 function endGame(){
 running=false;
 clearInterval(timerInterval);
@@ -350,11 +355,9 @@ tarih:Date.now()
 document.getElementById("gameOver").style.display="flex";
 document.getElementById("finalScore").innerText="Skor: "+score;
 }
-
-
 </script>
 
-
+<!-- 🔥 FOOTER -->
 <div id="globalFooter"></div>
 
 <script src="assets/js/core.js" defer></script>
