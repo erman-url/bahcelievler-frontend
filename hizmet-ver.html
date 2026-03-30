@@ -136,22 +136,29 @@ color:#ef4444;
 
 .submit-btn{
 
-position:fixed;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
+position:sticky;
+bottom:calc(env(safe-area-inset-bottom) + 10px);
+
 width:calc(100% - 32px);
 max-width:868px;
+margin:16px auto;
+
+display:block;
 
 background:#16a34a;
 color:white;
 border:none;
+
 padding:16px;
 border-radius:14px;
+
 font-weight:800;
 font-size:16px;
+
 cursor:pointer;
+
 box-shadow:0 10px 25px rgba(0,0,0,.08);
+z-index:10;
 
 }
 
