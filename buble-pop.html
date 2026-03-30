@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bubble Pop</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#1abc9c;
+}
+
+/* CANVAS */
+canvas{
+position:absolute;
+top:0;
+left:0;
+}
+
+/* TOP UI */
+#ui{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:60px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 15px;
+color:#fff;
+background:linear-gradient(to bottom,rgba(0,0,0,0.35),transparent);
+z-index:10;
+font-weight:600;
+}
+
+/* OVERLAY */
+.overlay{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:linear-gradient(#1abc9c,#16a085);
+z-index:20;
+text-align:center;
+}
+
+/* BUBBLE TITLE */
+.title{
+font-size:48px;
+font-weight:900;
+color:#fff;
+letter-spacing:2px;
+text-shadow:
+0 5px 15px rgba(0,0,0,0.3),
+0 0 10px rgba(255,255,255,0.6);
+margin-bottom:20px;
+}
+
+/* BUTTON */
+.btn{
+padding:14px 30px;
+font-size:18px;
+border:none;
+border-radius:30px;
+background:#fff;
+color:#16a085;
+font-weight:bold;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+cursor:pointer;
+transition:0.2s;
+}
+.btn:active{transform:scale(0.95);}
+
+/* GAME OVER */
+#gameOver{
+display:none;
+}
+
+.stat{
+color:#fff;
+font-size:20px;
+margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+<div id="score">0</div>
+<div id="lives">❤️❤️❤️❤️❤️</div>
+<div id="time">30s</div>
+</div>
+
+<!-- START SCREEN -->
+<div id="startScreen" class="overlay">
+<div class="title">Bubble Pop</div>
+<button class="btn" onclick="startGame()">OYNA</button>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameOver" class="overlay">
+<div class="title">Bitti!</div>
+<div class="stat" id="finalScore"></div>
+<button class="btn" onclick="restartGame()">Tekrar Oyna</button>
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let W,H;
+function resize(){
+W = canvas.width = window.innerWidth;
+H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+/* COLORS */
+const SKY="#1abc9c";
+const GROUND="#6d3f1f";
+
+/* GAME STATE */
+let balloons=[];
+let score=0;
+let lives=5;
+let time=30;
+let running=false;
+let spawnTick=0;
+
+/* SOUND */
+const popSound=new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+
+/* BALLOON */
+class Balloon{
+constructor(x,y,r,s){
+this.x=x;
+this.y=y;
+this.r=r;
+this.s=s;
+}
+draw(){
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+ctx.fillStyle="rgba(255,255,255,0.6)";
+ctx.fill();
+ctx.strokeStyle="rgba(255,255,255,0.8)";
+ctx.stroke();
+}
+update(){
+this.y+=this.s;
+}
+}
+
+/* SPAWN (AZALTILDI - MOBİL OPTİMİZE) */
+function spawn(){
+let r=Math.random()*20+18;
+let x=Math.random()*(W-2*r)+r;
+let s=Math.random()*1.2+1.2;
+balloons.push(new Balloon(x,-r,r,s));
+}
+
+/* SPLIT */
+function split(b){
+let pieces=Math.random()<0.6?2:3;
+
+for(let i=0;i<pieces;i++){
+balloons.push(new Balloon(
+b.x+(Math.random()-0.5)*40,
+b.y,
+b.r*0.6,
+b.s+Math.random()
+));
+}
+
+score+=pieces*2;
+updateUI();
+
+navigator.vibrate?.(30);
+}
+
+/* CLICK */
+function hit(x,y){
+for(let i=balloons.length-1;i>=0;i--){
+let b=balloons[i];
+let dx=x-b.x;
+let dy=y-b.y;
+if(Math.sqrt(dx*dx+dy*dy)<b.r){
+popSound.currentTime=0;
+popSound.play();
+split(b);
+balloons.splice(i,1);
+return;
+}
+}
+}
+
+/* INPUT */
+canvas.addEventListener("touchstart",(e)=>{
+if(!running)return;
+let rect=canvas.getBoundingClientRect();
+hit(
+e.touches[0].clientX-rect.left,
+e.touches[0].clientY-rect.top
+);
+});
+
+canvas.addEventListener("mousedown",(e)=>{
+if(!running)return;
+hit(e.clientX,e.clientY);
+});
+
+/* UI */
+function updateUI(){
+document.getElementById("score").innerText=score;
+document.getElementById("lives").innerText="❤️".repeat(lives);
+document.getElementById("time").innerText=time+"s";
+}
+
+/* LOOP */
+function loop(){
+if(!running)return;
+
+ctx.clearRect(0,0,W,H);
+
+/* SKY */
+ctx.fillStyle=SKY;
+ctx.fillRect(0,0,W,H);
+
+/* GROUND */
+ctx.fillStyle=GROUND;
+ctx.fillRect(0,H-70,W,70);
+
+/* BALLOONS */
+for(let i=balloons.length-1;i>=0;i--){
+let b=balloons[i];
+b.update();
+b.draw();
+
+/* MISS */
+if(b.y>H-70){
+balloons.splice(i,1);
+lives--;
+updateUI();
+if(lives<=0) endGame();
+}
+}
+
+/* SPAWN RATE (DÜŞÜRÜLDÜ) */
+spawnTick++;
+if(spawnTick>70){
+spawn();
+spawnTick=0;
+}
+
+requestAnimationFrame(loop);
+}
+
+/* TIMER */
+let timerInterval;
+
+function startTimer(){
+timerInterval=setInterval(()=>{
+time--;
+updateUI();
+if(time<=0) endGame();
+},1000);
+}
+
+/* START */
+function startGame(){
+document.getElementById("startScreen").style.display="none";
+score=0;
+lives=5;
+time=30;
+balloons=[];
+running=true;
+updateUI();
+startTimer();
+loop();
+}
+
+/* END */
+function endGame(){
+running=false;
+clearInterval(timerInterval);
+document.getElementById("gameOver").style.display="flex";
+document.getElementById("finalScore").innerText="Skor: "+score;
+}
+
+/* RESTART */
+function restartGame(){
+document.getElementById("gameOver").style.display="none";
+startGame();
+}
+</script>
+
+</body>
+</html>
