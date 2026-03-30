@@ -3,7 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Bubble Pop</title>
+
+
+
+<title>Bubble Pop Oyunu | Bahçelievler Forum</title>
+
+<meta name="description" content="Bubble Pop oyununu hemen oyna. Baloncukları patlat, süreye karşı yarış ve skor yap. Bahçelievler Forum ücretsiz mobil oyun.">
+
+<meta name="keywords" content="bubble pop oyunu, balon patlatma oyunu, mobil oyun, online oyun, bahçelievler oyun">
+
+
+<link rel="canonical" href="https://bahcelievlerforum.com/bubble-pop.html">
+
+<meta property="og:title" content="Bubble Pop Oyunu">
+<meta property="og:description" content="Baloncukları patlat, süreye karşı yarış!">
+<meta property="og:image" content="https://bahcelievlerforum.com/assets/images/oyunlar-cover.jpg">
+<meta property="og:type" content="game">
+
+<meta name="robots" content="index,follow">
+
+<meta name="theme-color" content="#1abc9c">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -95,6 +114,8 @@ margin:10px 0;
 }
 </style>
 </head>
+
+<div id="globalHeader"></div>
 
 <body>
 
@@ -303,12 +324,42 @@ document.getElementById("gameOver").style.display="flex";
 document.getElementById("finalScore").innerText="Skor: "+score;
 }
 
+function goBack(){
+window.location.href="online-oyunlar.html";
+}
+
 /* RESTART */
 function restartGame(){
 document.getElementById("gameOver").style.display="none";
 startGame();
 }
+
+function endGame(){
+running=false;
+clearInterval(timerInterval);
+
+fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor", {
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body: JSON.stringify({
+oyun:"bubble_pop",
+skor:score,
+tarih:Date.now()
+})
+}).catch(()=>{});
+
+document.getElementById("gameOver").style.display="flex";
+document.getElementById("finalScore").innerText="Skor: "+score;
+}
+
+
 </script>
+
+
+<div id="globalFooter"></div>
+
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/footerLegal.js" defer></script>
 
 </body>
 </html>
