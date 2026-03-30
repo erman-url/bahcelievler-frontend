@@ -328,9 +328,6 @@ document.getElementById("gameOver").style.display="none";
 startGame();
 }
 
-function endGame(){
-running=false;
-clearInterval(timerInterval);
 
 fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor", {
 method:"POST",
