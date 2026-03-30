@@ -32,6 +32,7 @@ background:#1abc9c;
 padding-top:env(safe-area-inset-top);
 }
 
+/* CANVAS */
 canvas{
 position:absolute;
 top:0;
@@ -39,6 +40,7 @@ left:0;
 z-index:1;
 }
 
+/* TOP UI */
 #ui{
 position:fixed;
 top:0;
@@ -55,6 +57,7 @@ z-index:10;
 font-weight:600;
 }
 
+/* OVERLAY */
 .overlay{
 position:fixed;
 top:0;
@@ -70,6 +73,7 @@ z-index:9999;
 text-align:center;
 }
 
+/* TITLE */
 .title{
 font-size:48px;
 font-weight:900;
@@ -81,6 +85,7 @@ text-shadow:
 margin-bottom:10px;
 }
 
+/* BUTTON */
 .btn{
 padding:14px 30px;
 font-size:18px;
@@ -91,7 +96,9 @@ color:#16a085;
 font-weight:bold;
 box-shadow:0 5px 15px rgba(0,0,0,0.2);
 cursor:pointer;
+transition:0.2s;
 }
+.btn:active{transform:scale(0.95);}
 
 #gameOver{display:none;}
 
@@ -105,23 +112,23 @@ margin:10px 0;
 
 <body>
 
-<div id="globalHeader"></div>
-
 <div id="ui">
 <div onclick="goBack()">←</div>
 <div id="score">0</div>
 <div id="lives">❤️❤️❤️❤️❤️</div>
-<div id="time">30s</div>
+<div id="time">300s</div>
 </div>
 
 <div id="startScreen" class="overlay">
 <div class="title">Bubble Pop</div>
-<div style="opacity:.8;margin-bottom:20px">Bahçelievler Forum</div>
+<div style="color:white;opacity:.8;margin-bottom:20px">
+Bahçelievler Forum
+</div>
 <button class="btn" onclick="startGame()">OYNA</button>
 </div>
 
 <div id="gameOver" class="overlay">
-<div class="title">Bitti!</div>
+<div class="title" id="endTitle">Bitti!</div>
 <div class="stat" id="finalScore"></div>
 <button class="btn" onclick="restartGame()">Tekrar Oyna</button>
 </div>
@@ -129,6 +136,13 @@ margin:10px 0;
 <canvas id="game"></canvas>
 
 <script>
+
+/* DOM FIX */
+document.addEventListener("DOMContentLoaded",()=>{
+let start=document.getElementById("startScreen");
+if(start) start.style.display="flex";
+});
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -140,15 +154,19 @@ H = canvas.height = window.innerHeight;
 resize();
 window.addEventListener("resize",resize);
 
+const SKY="#1abc9c";
+
 let balloons=[];
 let score=0;
 let lives=5;
-let time=30;
+let time=300;
 let running=false;
 let spawnTick=0;
+let speedMultiplier=1;
 
+/* BALLOON */
 class Balloon{
-constructor(x,y,r,s,level){
+constructor(x,y,r,s,level=1){
 this.x=x;
 this.y=y;
 this.r=r;
@@ -158,24 +176,30 @@ this.level=level;
 draw(){
 ctx.beginPath();
 ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-ctx.fillStyle=this.level===1 ? "white" : "pink";
+ctx.fillStyle=this.level===1?"rgba(255,255,255,0.7)":"rgba(255,150,150,0.9)";
 ctx.fill();
 }
 update(){
-this.y+=this.s;
+this.y+=this.s*speedMultiplier;
 }
 }
 
+/* SPAWN */
 function spawn(){
 if(balloons.length>=3) return;
 
 let r=30;
 let x=Math.random()*(W-2*r)+r;
-balloons.push(new Balloon(x,-r,r,1.5,1));
+let s=1.5;
+
+balloons.push(new Balloon(x,-r,r,s,1));
 }
 
+/* SPLIT */
 function split(b){
+
 if(b.level===1){
+
 for(let i=0;i<2;i++){
 balloons.push(new Balloon(
 b.x+(Math.random()-0.5)*30,
@@ -185,13 +209,17 @@ b.s+0.5,
 2
 ));
 }
+
 score+=2;
+
 }else{
 score+=1;
 }
+
 updateUI();
 }
 
+/* HIT */
 function hit(x,y){
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
@@ -206,6 +234,7 @@ return;
 }
 }
 
+/* INPUT */
 canvas.addEventListener("mousedown",(e)=>{
 if(!running)return;
 let rect=canvas.getBoundingClientRect();
@@ -218,16 +247,21 @@ let rect=canvas.getBoundingClientRect();
 hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
 });
 
+/* UI */
 function updateUI(){
 document.getElementById("score").innerText=score;
 document.getElementById("lives").innerText="❤️".repeat(lives);
 document.getElementById("time").innerText=time+"s";
 }
 
+/* LOOP */
 function loop(){
 if(!running)return;
 
 ctx.clearRect(0,0,W,H);
+
+ctx.fillStyle=SKY;
+ctx.fillRect(0,0,W,H);
 
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
@@ -237,12 +271,15 @@ b.draw();
 if(b.y>H-70){
 balloons.splice(i,1);
 
+// SADECE KÜÇÜK BALON HASAR
 if(b.level===2){
 lives--;
 updateUI();
 }
 
-if(lives<=0) endGame();
+if(lives<=0){
+endGame("Can bitti");
+}
 }
 }
 
@@ -255,58 +292,85 @@ spawnTick=0;
 requestAnimationFrame(loop);
 }
 
+/* TIMER */
 let timerInterval;
 
 function startTimer(){
 clearInterval(timerInterval);
+
 timerInterval=setInterval(()=>{
 time--;
 updateUI();
-if(time<=0) endGame();
+
+// 2. dakika sonrası hızlanma
+if(time===180){
+speedMultiplier=1.2;
+}
+
+// süre bitince
+if(time<=0){
+endGame("Süre doldu");
+}
+
 },1000);
 }
 
 let gameEnded=false;
 
+/* START */
 function startGame(){
-document.getElementById("startScreen").style.display="none";
-document.getElementById("gameOver").style.display="none";
+
+let start=document.getElementById("startScreen");
+let over=document.getElementById("gameOver");
+
+if(start) start.style.display="none";
+if(over) over.style.display="none";
+
+gameEnded=false;
+clearInterval(timerInterval);
 
 score=0;
 lives=5;
-time=30;
+time=300;
 balloons=[];
 running=true;
-gameEnded=false;
+speedMultiplier=1;
 
 updateUI();
 startTimer();
 loop();
 }
 
+/* RESTART */
 function restartGame(){
+gameEnded=false;
 clearInterval(timerInterval);
 startGame();
 }
 
+/* BACK */
 function goBack(){
 window.location.href="online-oyunlar.html";
 }
 
-function endGame(){
+/* END */
+function endGame(reason){
 if(gameEnded) return;
 gameEnded=true;
 
 running=false;
 clearInterval(timerInterval);
 
-document.getElementById("gameOver").style.display="flex";
-document.getElementById("finalScore").innerText="Skor: "+score;
+let over=document.getElementById("gameOver");
+let scoreText=document.getElementById("finalScore");
+let title=document.getElementById("endTitle");
+
+if(over) over.style.display="flex";
+if(scoreText) scoreText.innerText="Skor: "+score;
+if(title) title.innerText=reason;
 }
+
 </script>
-
-
-<script src="assets/js/footerLegal.js" defer></script>
 
 </body>
 </html>
