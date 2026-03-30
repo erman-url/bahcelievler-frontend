@@ -37,6 +37,7 @@ canvas{
 position:absolute;
 top:0;
 left:0;
+z-index:1; /* 🔥 FIX */
 }
 
 /* TOP UI */
@@ -58,7 +59,7 @@ font-weight:600;
 
 /* OVERLAY */
 .overlay{
-position:absolute;
+position:fixed; /* 🔥 FIX */
 top:0;
 left:0;
 width:100%;
@@ -137,6 +138,13 @@ Bahçelievler Forum
 <canvas id="game"></canvas>
 
 <script>
+
+/* 🔥 DOM FIX (KRİTİK) */
+document.addEventListener("DOMContentLoaded",()=>{
+let start=document.getElementById("startScreen");
+if(start) start.style.display="flex";
+});
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -287,11 +295,15 @@ if(time<=0) endGame();
 let gameEnded=false;
 
 function startGame(){
+
+let start=document.getElementById("startScreen");
+let over=document.getElementById("gameOver");
+
+if(start) start.style.display="none";
+if(over) over.style.display="none";
+
 gameEnded=false;
 clearInterval(timerInterval);
-
-document.getElementById("startScreen").style.display="none";
-document.getElementById("gameOver").style.display="none";
 
 score=0;
 lives=5;
@@ -307,7 +319,10 @@ loop();
 function restartGame(){
 gameEnded=false;
 clearInterval(timerInterval);
-document.getElementById("gameOver").style.display="none";
+
+let over=document.getElementById("gameOver");
+if(over) over.style.display="none";
+
 startGame();
 }
 
@@ -322,8 +337,11 @@ gameEnded=true;
 running=false;
 clearInterval(timerInterval);
 
-document.getElementById("gameOver").style.display="flex";
-document.getElementById("finalScore").innerText="Skor: "+score;
+let over=document.getElementById("gameOver");
+let scoreText=document.getElementById("finalScore");
+
+if(over) over.style.display="flex";
+if(scoreText) scoreText.innerText="Skor: "+score;
 
 fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor",{
 method:"POST",
