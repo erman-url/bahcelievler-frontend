@@ -3,16 +3,13 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- 🔥 MOBILE + SAFE AREA FIX -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
 <title>Bubble Pop Oyunu | Bahçelievler Forum</title>
 
 <meta name="description" content="Bubble Pop oyununu hemen oyna. Baloncukları patlat, süreye karşı yarış ve skor yap. Bahçelievler Forum ücretsiz mobil oyun.">
-
 <meta name="keywords" content="bubble pop oyunu, balon patlatma oyunu, mobil oyun, online oyun, bahçelievler oyun">
 
-<!-- 🔥 SEO FIX -->
 <link rel="canonical" href="https://bahcelievlerforum.com/bubble-pop.html">
 
 <meta property="og:title" content="Bubble Pop Oyunu">
@@ -21,7 +18,6 @@
 <meta property="og:type" content="game">
 
 <meta name="robots" content="index,follow">
-
 <meta name="theme-color" content="#1abc9c">
 
 <style>
@@ -56,7 +52,7 @@ align-items:center;
 padding:0 15px;
 color:#fff;
 background:linear-gradient(to bottom,rgba(0,0,0,0.35),transparent);
-z-index:10;
+z-index:9999;
 font-weight:600;
 }
 
@@ -115,33 +111,23 @@ margin:10px 0;
 
 <body>
 
-<!-- 🔥 HEADER FIX -->
 <div id="globalHeader"></div>
 
 <div id="ui">
-
-<!-- 🔥 GERİ BUTONU -->
 <div onclick="goBack()" style="cursor:pointer">←</div>
-
 <div id="score">0</div>
 <div id="lives">❤️❤️❤️❤️❤️</div>
 <div id="time">30s</div>
-
 </div>
 
-<!-- START SCREEN -->
 <div id="startScreen" class="overlay">
 <div class="title">Bubble Pop</div>
-
-<!-- 🔥 BRANDING -->
 <div style="color:white;opacity:.8;font-size:13px;margin-bottom:20px">
 Bahçelievler Forum
 </div>
-
 <button class="btn" onclick="startGame()">OYNA</button>
 </div>
 
-<!-- GAME OVER -->
 <div id="gameOver" class="overlay">
 <div class="title">Bitti!</div>
 <div class="stat" id="finalScore"></div>
@@ -162,11 +148,9 @@ H = canvas.height = window.innerHeight;
 resize();
 window.addEventListener("resize",resize);
 
-/* COLORS */
 const SKY="#1abc9c";
 const GROUND="#6d3f1f";
 
-/* GAME STATE */
 let balloons=[];
 let score=0;
 let lives=5;
@@ -174,16 +158,13 @@ let time=30;
 let running=false;
 let spawnTick=0;
 
-/* SOUND */
 const popSound=new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
 popSound.volume=0.4;
 
-/* 🔥 iOS SOUND FIX */
 document.body.addEventListener("touchstart", ()=>{
 popSound.play().then(()=>popSound.pause());
 },{once:true});
 
-/* BALLOON */
 class Balloon{
 constructor(x,y,r,s){
 this.x=x;
@@ -204,7 +185,6 @@ this.y+=this.s;
 }
 }
 
-/* SPAWN */
 function spawn(){
 let r=Math.random()*20+18;
 let x=Math.random()*(W-2*r)+r;
@@ -212,10 +192,8 @@ let s=Math.random()*1.2+1.2;
 balloons.push(new Balloon(x,-r,r,s));
 }
 
-/* SPLIT */
 function split(b){
 let pieces=Math.random()<0.6?2:3;
-
 for(let i=0;i<pieces;i++){
 balloons.push(new Balloon(
 b.x+(Math.random()-0.5)*40,
@@ -224,13 +202,11 @@ b.r*0.6,
 b.s+Math.random()
 ));
 }
-
 score+=pieces*2;
 updateUI();
 navigator.vibrate?.(30);
 }
 
-/* CLICK */
 function hit(x,y){
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
@@ -246,29 +222,24 @@ return;
 }
 }
 
-/* INPUT */
 canvas.addEventListener("touchstart",(e)=>{
 if(!running)return;
 let rect=canvas.getBoundingClientRect();
-hit(
-e.touches[0].clientX-rect.left,
-e.touches[0].clientY-rect.top
-);
+hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
 });
 
 canvas.addEventListener("mousedown",(e)=>{
 if(!running)return;
-hit(e.clientX,e.clientY);
+let rect=canvas.getBoundingClientRect();
+hit(e.clientX-rect.left,e.clientY-rect.top);
 });
 
-/* UI */
 function updateUI(){
 document.getElementById("score").innerText=score;
 document.getElementById("lives").innerText="❤️".repeat(lives);
 document.getElementById("time").innerText=time+"s";
 }
 
-/* LOOP */
 function loop(){
 if(!running)return;
 
@@ -302,10 +273,10 @@ spawnTick=0;
 requestAnimationFrame(loop);
 }
 
-/* TIMER */
 let timerInterval;
 
 function startTimer(){
+clearInterval(timerInterval);
 timerInterval=setInterval(()=>{
 time--;
 updateUI();
@@ -313,78 +284,62 @@ if(time<=0) endGame();
 },1000);
 }
 
-/* START */
+let gameEnded=false;
+
 function startGame(){
+gameEnded=false;
+clearInterval(timerInterval);
+
 document.getElementById("startScreen").style.display="none";
+document.getElementById("gameOver").style.display="none";
+
 score=0;
 lives=5;
 time=30;
 balloons=[];
 running=true;
+
 updateUI();
 startTimer();
 loop();
 }
 
-/* BACK */
-function goBack(){
-window.location.href="online-oyunlar.html";
-}
-
-
-
 function restartGame(){
-gameEnded = false; // 🔥 BUNU EKLE
+gameEnded=false;
+clearInterval(timerInterval);
 document.getElementById("gameOver").style.display="none";
 startGame();
 }
 
-
-/* 🔥 TEK ENDGAME (PRO FIX) */
-let gameEnded = false;
-
-function endGame(){
-
-// 🔒 DOUBLE CALL ENGELLE
-if(gameEnded) return;
-gameEnded = true;
-
-running = false;
-clearInterval(timerInterval);
-
-// 🔥 UI HEMEN GÖSTER (UX önemli)
-document.getElementById("gameOver").style.display = "flex";
-document.getElementById("finalScore").innerText = "Skor: " + score;
-
-// 🔥 API CALL (ASYNC + LOG + FAIL SAFE)
-fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor", {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({
-oyun: "bubble_pop",
-skor: score,
-tarih: Date.now()
-})
-})
-.then(res => {
-if(!res.ok) throw new Error("API response not OK");
-return res.json();
-})
-.then(data => {
-console.log("✅ Skor kaydedildi:", data);
-})
-.catch(err => {
-console.warn("⚠️ Skor gönderilemedi:", err);
-});
-
+function goBack(){
+window.location.href="online-oyunlar.html";
 }
 
+function endGame(){
+if(gameEnded) return;
+gameEnded=true;
 
+running=false;
+clearInterval(timerInterval);
 
+document.getElementById("gameOver").style.display="flex";
+document.getElementById("finalScore").innerText="Skor: "+score;
 
+fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body: JSON.stringify({
+oyun:"bubble_pop",
+skor:score,
+tarih:Date.now()
+})
+})
+.then(res=>res.text())
+.then(data=>console.log("Skor:",data))
+.catch(err=>console.warn("API:",err));
+}
 </script>
 
-<!-- 🔥 FOOTER -->
 <div id="globalFooter"></div>
 
 <script src="assets/js/core.js" defer></script>
