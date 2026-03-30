@@ -336,25 +336,45 @@ function restartGame(){
 document.getElementById("gameOver").style.display="none";
 startGame();
 }
+/* 🔥 TEK ENDGAME (PRO FIX) */
+let gameEnded = false;
 
-/* 🔥 TEK ENDGAME (FIX) */
 function endGame(){
-running=false;
+
+// 🔒 DOUBLE CALL ENGELLE
+if(gameEnded) return;
+gameEnded = true;
+
+running = false;
 clearInterval(timerInterval);
 
-fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor", {
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body: JSON.stringify({
-oyun:"bubble_pop",
-skor:score,
-tarih:Date.now()
-})
-}).catch(()=>{});
+// 🔥 UI HEMEN GÖSTER (UX önemli)
+document.getElementById("gameOver").style.display = "flex";
+document.getElementById("finalScore").innerText = "Skor: " + score;
 
-document.getElementById("gameOver").style.display="flex";
-document.getElementById("finalScore").innerText="Skor: "+score;
+// 🔥 API CALL (ASYNC + LOG + FAIL SAFE)
+fetch("https://broad-mountain-f064.erman-urel.workers.dev/api/oyun-skor", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+oyun: "bubble_pop",
+skor: score,
+tarih: Date.now()
+})
+})
+.then(res => {
+if(!res.ok) throw new Error("API response not OK");
+return res.json();
+})
+.then(data => {
+console.log("✅ Skor kaydedildi:", data);
+})
+.catch(err => {
+console.warn("⚠️ Skor gönderilemedi:", err);
+});
+
 }
+
 </script>
 
 <!-- 🔥 FOOTER -->
