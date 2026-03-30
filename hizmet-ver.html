@@ -13,10 +13,11 @@
 <meta name="description" content="Bahçelievler'de hizmet veriyorsanız işletmenizi tanıtın ve yerel müşterilere ulaşın.">
 
 <meta name="robots" content="index, follow">
-
 <meta name="theme-color" content="#2563eb">
 
 <link rel="icon" href="/favicon.ico">
+
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -29,12 +30,13 @@
 body{
 background:#f3f6fb;
 padding-top:env(safe-area-inset-top);
+-webkit-font-smoothing:antialiased;
 }
 
 .page-wrapper{
 max-width:900px;
 margin:auto;
-padding-bottom:120px;
+padding-bottom:140px;
 }
 
 #globalHeader{
@@ -60,6 +62,7 @@ padding:16px;
 border-radius:12px;
 margin:10px 16px 18px;
 font-size:14px;
+line-height:1.5;
 }
 
 /* FORM */
@@ -78,6 +81,13 @@ border-radius:12px;
 border:1px solid #d7dce5;
 font-size:14px;
 background:white;
+outline:none;
+transition:all .2s ease;
+}
+
+.form-control:focus{
+border-color:#2563eb;
+box-shadow:0 0 0 2px rgba(37,99,235,.1);
 }
 
 textarea.form-control{
@@ -92,26 +102,27 @@ color:#ef4444;
 
 .submit-btn{
 
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+width:calc(100% - 32px);
+max-width:868px;
+
 background:#16a34a;
-
 color:white;
-
 border:none;
-
-padding:15px;
-
-border-radius:12px;
-
-font-weight:700;
-
-font-size:15px;
-
+padding:16px;
+border-radius:14px;
+font-weight:800;
+font-size:16px;
 cursor:pointer;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
 
 }
 
 .submit-btn:active{
-transform:scale(.97);
+transform:translateX(-50%) scale(.97);
 }
 
 .note{
@@ -119,6 +130,18 @@ text-align:center;
 font-size:13px;
 margin-top:10px;
 color:#6b7280;
+}
+
+.char-count{
+font-size:11px;
+text-align:right;
+color:#9ca3af;
+}
+
+.kvkk{
+font-size:12px;
+color:#6b7280;
+line-height:1.4;
 }
 
 </style>
@@ -133,13 +156,11 @@ color:#6b7280;
 
 <main id="mainContent">
 
-<div class="page-title">
-
+<h1 class="page-title">
 📁 HİZMET TANITIM FORMU
+</h1>
 
-</div>
-
-<div class="info-box">
+<section class="info-box">
 
 <strong>Hizmetlerinizi Yerel Toplulukla Buluşturun</strong>
 
@@ -150,14 +171,12 @@ potansiyel müşterilere ulaşabilirsiniz.
 
 Tanıtım kaydınız platform denetimi sonrası yayınlanır.
 
-</div>
+</section>
 
-<form class="form-area">
+<form class="form-area" id="hizmetForm">
 
-<select class="form-control" required>
-
+<select class="form-control" name="kategori" required>
 <option value="">Kategori Seçin (Zorunlu)</option>
-
 <option>Ürün & Eşya Onarımı</option>
 <option>Ev & İşyeri Temizliği</option>
 <option>Hasta Bakıcı & Bakım</option>
@@ -166,21 +185,17 @@ Tanıtım kaydınız platform denetimi sonrası yayınlanır.
 <option>Nakliye</option>
 <option>Özel Ders</option>
 <option>Diğer</option>
-
 </select>
 
-
 <input class="form-control"
+name="firma"
 type="text"
 placeholder="Firma / Kurum / Usta Adı (Max 35 Karakter)"
 maxlength="35"
 required>
 
-
-<select class="form-control" required>
-
+<select class="form-control" name="mahalle" required>
 <option value="">Mahalle Seçiniz</option>
-
 <option>Bahçelievler</option>
 <option>Cumhuriyet</option>
 <option>Çobançeşme</option>
@@ -192,57 +207,61 @@ required>
 <option>Şirinevler</option>
 <option>Yenibosna Merkez</option>
 <option>Zafer</option>
-
 </select>
 
-
 <input class="form-control"
+name="telefon"
 type="tel"
-placeholder="Telefon No (Zorunlu)"
+inputmode="numeric"
+pattern="[0-9]{10,11}"
+placeholder="Telefon No (05XXXXXXXXX)"
 required>
 
-
 <input class="form-control"
+name="website"
 type="url"
 placeholder="Web Sitesi (Opsiyonel - https://...)">
 
-
 <textarea
 class="form-control"
+name="detay"
 maxlength="750"
 placeholder="Hizmet detayları (Max 750 karakter)"
 ></textarea>
 
+<div class="char-count" id="charCount">0 / 750</div>
 
 <div class="file-warning">
-
-📷 Hizmet Görseli (Zorunlu - Max 2 Görsel)
-
+📷 Hizmet Görseli (Zorunlu - Max 2 Görsel / 2MB)
 </div>
 
-<input type="file" class="form-control" multiple>
-
+<input type="file"
+class="form-control"
+name="gorsel"
+accept="image/*"
+multiple
+required>
 
 <input
 class="form-control"
+name="sifre"
 type="text"
 placeholder="Silme Şifresi (1 Harf + 4 Rakam)"
 pattern="[A-Za-z]{1}[0-9]{4}"
 required>
 
+<div class="kvkk">
+Bu formu göndererek verilerinizin platformda yayınlanmasını kabul etmiş olursunuz.
+</div>
 
-<button class="submit-btn">
-
+<button type="submit" class="submit-btn">
 HİZMETİ YAYINLA
-
 </button>
 
 </form>
 
 <div class="note">
-
 Henüz bir hizmet tanıtımı yok.
-
 </div>
 
 </main>
@@ -256,6 +275,63 @@ Henüz bir hizmet tanıtımı yok.
 <script src="assets/js/footerLegal.js"></script>
 
 <div id="globalFooter"></div>
+
+<script>
+
+/* CHARACTER COUNT */
+const textarea = document.querySelector('[name="detay"]');
+const charCount = document.getElementById('charCount');
+
+textarea.addEventListener('input', ()=>{
+charCount.textContent = textarea.value.length + " / 750";
+});
+
+/* FILE VALIDATION */
+const fileInput = document.querySelector('[name="gorsel"]');
+
+fileInput.addEventListener('change', ()=>{
+
+if(fileInput.files.length > 2){
+alert("En fazla 2 görsel yükleyebilirsiniz.");
+fileInput.value="";
+return;
+}
+
+for(let file of fileInput.files){
+if(file.size > 2 * 1024 * 1024){
+alert("Görsel boyutu 2MB'ı geçemez.");
+fileInput.value="";
+return;
+}
+}
+
+});
+
+/* FORM SUBMIT */
+document.getElementById("hizmetForm").addEventListener("submit", function(e){
+
+e.preventDefault();
+
+const formData = new FormData(this);
+
+/* API BAĞLANTI NOKTASI */
+fetch("https://example-api.com/hizmet-ekle", {
+method:"POST",
+body:formData
+})
+.then(res=>res.json())
+.then(data=>{
+alert("Hizmetiniz başarıyla gönderildi!");
+this.reset();
+charCount.textContent="0 / 750";
+})
+.catch(()=>{
+alert("Bir hata oluştu. Tekrar deneyin.");
+});
+
+});
+
+</script>
 
 </body>
 </html>
