@@ -313,10 +313,26 @@ HİZMETİ YAYINLA
 <script src="assets/js/footerLegal.js"></script>
 
 <div id="globalFooter"></div>
-
 <script>
 
-/* CHARACTER COUNT */
+/* ===============================
+UTILS (XSS PROTECTION)
+=============================== */
+function escapeHTML(str){
+return String(str || "").replace(/[&<>"']/g, function(m){
+return ({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+})[m];
+});
+}
+
+/* ===============================
+CHARACTER COUNT
+=============================== */
 const textarea = document.querySelector('[name="detay"]');
 const charCount = document.getElementById('charCount');
 
@@ -324,7 +340,9 @@ textarea.addEventListener('input', ()=>{
 charCount.textContent = textarea.value.length + " / 750";
 });
 
-/* FILE VALIDATION */
+/* ===============================
+FILE VALIDATION
+=============================== */
 const fileInput = document.querySelector('[name="gorsel"]');
 
 fileInput.addEventListener('change', ()=>{
@@ -345,13 +363,18 @@ return;
 
 });
 
-/* FORM SUBMIT FULL SECURE */
+/* ===============================
+FORM SUBMIT (FULL SECURE)
+=============================== */
 const form = document.getElementById("hizmetForm");
 const btn = document.querySelector(".submit-btn");
 
 form.addEventListener("submit", async function(e){
 
 e.preventDefault();
+
+/* DOUBLE SUBMIT BLOCK */
+if(btn.classList.contains("loading")) return;
 
 /* TURNSTILE TOKEN */
 const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
@@ -375,22 +398,35 @@ method:"POST",
 body:formData
 });
 
-const data = await res.json();
-
-if(!res.ok){
-throw new Error(data.message || "Sunucu hatası");
+/* NETWORK ERROR */
+if(!res){
+throw new Error("Bağlantı hatası");
 }
 
+const data = await res.json();
+
+/* BACKEND ERROR FIX */
+if(!res.ok){
+throw new Error(data.error || "Sunucu hatası");
+}
+
+/* SUCCESS */
 alert("Hizmet başarıyla gönderildi ✔");
 
 this.reset();
 charCount.textContent = "0 / 750";
 
+/* TURNSTILE RESET */
+if(window.turnstile){
+turnstile.reset();
+}
+
+/* LIST REFRESH */
 loadHizmetler();
 
 }catch(err){
 
-alert("Hata: " + err.message);
+alert("Hata: " + (err.message || "Bilinmeyen hata"));
 
 }finally{
 
@@ -403,38 +439,47 @@ btn.innerText = "HİZMETİ YAYINLA";
 
 
 /* ===============================
-HİZMET LİSTE YÜKLE
+HİZMET LİSTE YÜKLE (FULL STABLE)
 =============================== */
 
 async function loadHizmetler(){
 
+const list = document.getElementById("hizmetList");
+
+/* LOADING STATE */
+list.innerHTML = `<div class="note">Yükleniyor...</div>`;
+
 try{
 
 const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/hizmetler");
+
+/* API ERROR */
+if(!res.ok){
+throw new Error("Liste alınamadı");
+}
+
 const data = await res.json();
 
-const list = document.getElementById("hizmetList");
-
-if(!data || data.length === 0){
-list.innerHTML = `
-<div class="note">Henüz hizmet yok</div>
-`;
+/* SAFE DATA CHECK */
+if(!Array.isArray(data) || data.length === 0){
+list.innerHTML = `<div class="note">Henüz hizmet yok</div>`;
 return;
 }
 
+/* RENDER */
 list.innerHTML = data.map(item=>`
 <div class="hizmet-card">
 
 <div class="hizmet-title">
-${item.firma}
+${escapeHTML(item.firma)}
 </div>
 
 <div class="hizmet-meta">
-${item.kategori} • ${item.mahalle}
+${escapeHTML(item.kategori)} • ${escapeHTML(item.mahalle)}
 </div>
 
 <div class="hizmet-phone">
-📞 ${item.telefon}
+📞 ${escapeHTML(item.telefon)}
 </div>
 
 </div>
@@ -442,13 +487,17 @@ ${item.kategori} • ${item.mahalle}
 
 }catch(e){
 
-console.error("Liste yüklenemedi", e);
+console.error("Liste yüklenemedi:", e);
+
+list.innerHTML = `<div class="note">Liste yüklenemedi</div>`;
 
 }
 
 }
 
-/* SAYFA AÇILINCA */
+/* ===============================
+INIT
+=============================== */
 loadHizmetler();
 
 </script>
