@@ -331,11 +331,15 @@ function goBack(){
 window.location.href="online-oyunlar.html";
 }
 
-/* RESTART */
+
+
 function restartGame(){
+gameEnded = false; // 🔥 BUNU EKLE
 document.getElementById("gameOver").style.display="none";
 startGame();
 }
+
+
 /* 🔥 TEK ENDGAME (PRO FIX) */
 let gameEnded = false;
 
@@ -374,6 +378,9 @@ console.warn("⚠️ Skor gönderilemedi:", err);
 });
 
 }
+
+
+
 
 </script>
 
