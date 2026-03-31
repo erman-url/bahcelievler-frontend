@@ -433,14 +433,13 @@ z-index:1002; /* footerdan üstte */
 <div class="sub">Bahçelievler yerel hizmet ağı</div>
 </div>
 
-
 <div class="add-service-bar">
 <button id="openModalBtn" class="add-service-btn">
 + Hizmet Ekle
 </button>
 </div>
 
-<!-- ✅ LİSTE ÜSTE ALINDI -->
+<!-- LİSTE -->
 <div id="hizmetList" style="padding:16px"></div>
 
 </main>
@@ -448,7 +447,9 @@ z-index:1002; /* footerdan üstte */
 </div>
 
 
-<!-- ✅ MODAL FORM (ESKİ FORM TAŞINDI - HİÇBİR ŞEY SİLİNMEDİ) -->
+<!-- ===============================
+FORM MODAL (HİZMET EKLE)
+=============================== -->
 <div id="hizmetModal" class="modal">
 
 <div class="modal-content">
@@ -553,6 +554,54 @@ HİZMETİ YAYINLA
 
 </div>
 </div>
+
+
+<!-- ===============================
+DETAY MODAL (YENİ - KRİTİK)
+=============================== -->
+<div id="detayModal" class="modal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<span id="detayTitle">Hizmet Detayı</span>
+<button id="closeDetayModal">✕</button>
+</div>
+
+<img id="detayImg" class="hizmet-img" 
+onerror="this.src='assets/img/no-image.jpg'">
+
+<div class="hizmet-body">
+
+<div class="hizmet-meta" id="detayMeta"></div>
+
+<div id="detayText" style="
+margin-top:10px;
+font-size:14px;
+line-height:1.5;
+color:#374151;
+"></div>
+
+<div class="hizmet-phone" id="detayPhone"></div>
+
+<div class="hizmet-actions" style="margin-top:12px">
+
+<a id="detayCall" class="call-btn">Ara</a>
+
+<a id="detayWp" class="whatsapp-btn" target="_blank">WhatsApp</a>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<!-- GLOBAL -->
+<div id="globalFooter"></div>
+
+</body>
 
 <script src="./assets/js/layout.js"></script>
 <script src="./assets/js/menu.js"></script>
