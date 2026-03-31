@@ -1,0 +1,524 @@
+
+body{
+background:#f3f6fb;
+padding-top:env(safe-area-inset-top);
+-webkit-font-smoothing:antialiased;
+}
+
+.page-wrapper{
+max-width:900px;
+margin:auto;
+padding-bottom:140px;
+}
+
+#globalHeader{
+max-width:900px;
+margin:auto;
+}
+
+/* TITLE */
+
+.page-title{
+font-size:22px;
+font-weight:800;
+text-align:center;
+margin:20px 0;
+}
+
+/* INFO BOX */
+
+.info-box{
+background:#eaf7ee;
+border-left:4px solid #16a34a;
+padding:16px;
+border-radius:12px;
+margin:10px 16px 18px;
+font-size:14px;
+line-height:1.5;
+}
+
+/* FORM */
+
+.form-area{
+padding:0 16px;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.form-control{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:1px solid #d7dce5;
+font-size:14px;
+background:white;
+outline:none;
+transition:all .2s ease;
+}
+
+.form-control:focus{
+border-color:#2563eb;
+box-shadow:0 0 0 2px rgba(37,99,235,.1);
+}
+
+textarea.form-control{
+min-height:120px;
+resize:vertical;
+}
+
+.file-warning{
+font-size:12px;
+color:#ef4444;
+}
+
+.submit-btn{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+
+width:90%;
+max-width:500px;
+
+background:#16a34a;
+color:white;
+border:none;
+
+padding:16px;
+border-radius:14px;
+
+font-weight:800;
+font-size:16px;
+
+z-index:1001;
+}
+
+.submit-btn.loading{
+opacity:.7;
+pointer-events:none;
+}
+
+.submit-btn:active{
+transform:translateX(-50%) scale(.97);
+}
+
+.note{
+text-align:center;
+font-size:13px;
+margin-top:10px;
+color:#6b7280;
+}
+
+.char-count{
+font-size:11px;
+text-align:right;
+color:#9ca3af;
+}
+
+.kvkk{
+font-size:12px;
+color:#6b7280;
+line-height:1.4;
+}
+
+.hizmet-card{
+background:white;
+border-radius:14px;
+padding:14px;
+margin-bottom:12px;
+box-shadow:0 4px 10px rgba(0,0,0,.05);
+}
+
+.hizmet-title{
+font-weight:700;
+font-size:15px;
+}
+
+.hizmet-meta{
+font-size:12px;
+color:#6b7280;
+margin-top:4px;
+}
+
+.hizmet-phone{
+margin-top:8px;
+font-weight:600;
+color:#16a34a;
+}
+
+.hizmet-card{
+background:white;
+border-radius:18px;
+overflow:hidden;
+margin-bottom:14px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+transition:.2s ease;
+}
+
+.hizmet-card:hover{
+transform:translateY(-3px);
+}
+
+.hizmet-img{
+width:100%;
+height:160px;
+object-fit:cover;
+display:block;
+}
+
+.hizmet-body{
+padding:14px;
+}
+
+.hizmet-title{
+font-weight:800;
+font-size:16px;
+margin-bottom:4px;
+}
+
+.hizmet-meta{
+font-size:12px;
+color:#6b7280;
+}
+
+.hizmet-phone{
+margin-top:10px;
+font-weight:700;
+color:#16a34a;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.hizmet-actions{
+margin-top:10px;
+display:flex;
+gap:8px;
+}
+
+.call-btn{
+flex:1;
+background:#16a34a;
+color:white;
+padding:10px;
+border-radius:10px;
+text-align:center;
+font-weight:700;
+font-size:13px;
+text-decoration:none;
+}
+
+.whatsapp-btn{
+flex:1;
+background:#25d366;
+color:white;
+padding:10px;
+border-radius:10px;
+text-align:center;
+font-weight:700;
+font-size:13px;
+text-decoration:none;
+}
+
+/* BACKDROP */
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+
+display:flex;
+align-items:flex-end; /* 🔥 en önemli */
+justify-content:center;
+
+z-index:999;
+opacity:0;
+pointer-events:none;
+transition:.25s;
+}
+
+.modal.active{
+opacity:1;
+pointer-events:auto;
+}
+
+
+
+.modal-content.detay-modal{
+width:100%;
+max-width:900px;
+
+border-radius:22px 22px 0 0;
+padding:0;
+
+max-height:92vh;
+overflow:auto;
+
+animation:sheetIn .25s ease;
+}
+
+/* SLIDE UP */
+@keyframes sheetIn{
+from{transform:translateY(100%);}
+to{transform:translateY(0);}
+}
+
+
+
+
+@keyframes modalIn{
+from{transform:translateY(40px);opacity:0;}
+to{transform:translateY(0);opacity:1;}
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:800;
+margin-bottom:10px;
+}
+
+.modal-header button{
+background:none;
+border:none;
+font-size:20px;
+cursor:pointer;
+}
+
+
+.fab-btn{
+position:fixed;
+bottom:110px; /* footer üstü */
+right:16px;   /* SAĞ ALT */
+left:auto;
+transform:none;
+
+background:#2563eb;
+color:white;
+border:none;
+padding:14px 18px;
+border-radius:14px;
+
+font-weight:800;
+font-size:14px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+z-index:1000;
+}
+
+.page-header{
+padding:10px 16px 0;
+}
+
+.page-header .title{
+font-size:22px;
+font-weight:900;
+color:#0f172a;
+}
+
+.page-header .sub{
+font-size:13px;
+color:#6b7280;
+margin-top:4px;
+}
+
+.add-service-bar{
+position:sticky;
+top:70px; /* header altı */
+z-index:50;
+padding:10px 16px;
+background:#f3f6fb;
+}
+
+.add-service-btn{
+width:100%;
+background:#2563eb;
+color:white;
+border:none;
+padding:14px;
+border-radius:14px;
+font-weight:800;
+font-size:15px;
+box-shadow:0 6px 15px rgba(0,0,0,.1);
+}
+
+
+.submit-btn{
+position:fixed;
+z-index:9999;
+bottom:80px; /* 🔥 20px → 80px yap */
+left:50%;
+transform:translateX(-50%);
+
+width:90%;
+max-width:500px;
+
+background:#16a34a;
+color:white;
+border:none;
+
+padding:16px;
+border-radius:14px;
+
+font-weight:800;
+font-size:16px;
+
+z-index:1002; /* footerdan üstte */
+}
+
+
+/* ===============================
+DETAY MODAL PRO UI
+=============================== */
+
+.detay-modal{
+padding:0;
+overflow:hidden;
+border-radius:22px;
+}
+
+/* IMAGE */
+.detay-img-wrap{
+width:100%;
+height:200px;
+overflow:hidden;
+background:#000;
+}
+
+.detay-img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* BODY */
+.detay-body{
+padding:16px;
+}
+
+/* TITLE */
+#detayTitle{
+font-size:18px;
+font-weight:900;
+color:#0f172a;
+}
+
+/* META */
+.detay-meta{
+font-size:13px;
+color:#6b7280;
+margin-top:6px;
+}
+
+/* TEXT */
+.detay-text{
+margin-top:12px;
+font-size:14px;
+line-height:1.6;
+color:#374151;
+background:#f3f6fb;
+padding:12px;
+border-radius:12px;
+}
+
+/* PHONE */
+.detay-phone{
+margin-top:14px;
+font-weight:800;
+font-size:16px;
+color:#16a34a;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+/* ACTIONS */
+.detay-actions{
+margin-top:16px;
+display:flex;
+gap:10px;
+}
+
+/* BUTTONS */
+.detay-actions .call-btn,
+.detay-actions .whatsapp-btn{
+flex:1;
+padding:14px;
+border-radius:12px;
+font-weight:800;
+font-size:14px;
+text-align:center;
+text-decoration:none;
+}
+
+.detay-actions .call-btn{
+background:#16a34a;
+color:white;
+}
+
+.detay-actions .whatsapp-btn{
+background:#25d366;
+color:white;
+}
+
+/* PRESS EFFECT */
+.detay-actions a:active{
+transform:scale(.96);
+}
+
+
+
+/* ===============================
+FORM MODAL PRO UI
+=============================== */
+
+/* SHEET */
+.form-modal{
+width:100%;
+max-width:900px;
+
+border-radius:22px 22px 0 0;
+padding:0;
+
+max-height:92vh;
+overflow:auto;
+
+animation:sheetIn .25s ease;
+}
+
+/* HANDLE (iOS style) */
+.sheet-handle{
+width:40px;
+height:4px;
+background:#d1d5db;
+border-radius:10px;
+margin:10px auto 6px;
+}
+
+/* HEADER */
+.form-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:10px 16px;
+}
+
+/* TITLE */
+.form-title{
+font-size:18px;
+font-weight:900;
+color:#0f172a;
+}
+
+/* CLOSE (FORM İÇİN KOYU) */
+.close-btn.dark{
+background:#f1f5f9;
+color:#111;
+}
+
+/* INPUT SPACING FIX */
+.form-area{
+padding:10px 16px 20px;
+}
