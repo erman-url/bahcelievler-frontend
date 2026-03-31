@@ -278,13 +278,16 @@ font-size:13px;
 text-decoration:none;
 }
 
+/* BACKDROP */
 .modal{
 position:fixed;
 inset:0;
 background:rgba(0,0,0,.45);
+
 display:flex;
-align-items:center;
+align-items:flex-end; /* 🔥 en önemli */
 justify-content:center;
+
 z-index:999;
 opacity:0;
 pointer-events:none;
@@ -296,17 +299,25 @@ opacity:1;
 pointer-events:auto;
 }
 
-.modal-content{
+
+
+.modal-content.detay-modal{
 width:100%;
-max-width:520px;
-max-height:90vh;
+max-width:900px;
+
+border-radius:22px 22px 0 0;
+padding:0;
+
+max-height:92vh;
 overflow:auto;
-background:white;
-border-radius:20px;
-padding:16px;
-padding-bottom:120px; /* 90 → 120 */
-box-shadow:0 25px 60px rgba(0,0,0,.2);
-animation:modalIn .25s ease;
+
+animation:sheetIn .25s ease;
+}
+
+/* SLIDE UP */
+@keyframes sheetIn{
+from{transform:translateY(100%);}
+to{transform:translateY(0);}
 }
 
 
@@ -414,6 +425,8 @@ z-index:1002; /* footerdan üstte */
 }
 
 
+
+
 /* ===============================
 DETAY MODAL PRO UI
 =============================== */
@@ -513,6 +526,62 @@ color:white;
 transform:scale(.96);
 }
 
+
+
+/* ===============================
+FORM MODAL PRO UI
+=============================== */
+
+/* SHEET */
+.form-modal{
+width:100%;
+max-width:900px;
+
+border-radius:22px 22px 0 0;
+padding:0;
+
+max-height:92vh;
+overflow:auto;
+
+animation:sheetIn .25s ease;
+}
+
+/* HANDLE (iOS style) */
+.sheet-handle{
+width:40px;
+height:4px;
+background:#d1d5db;
+border-radius:10px;
+margin:10px auto 6px;
+}
+
+/* HEADER */
+.form-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:10px 16px;
+}
+
+/* TITLE */
+.form-title{
+font-size:18px;
+font-weight:900;
+color:#0f172a;
+}
+
+/* CLOSE (FORM İÇİN KOYU) */
+.close-btn.dark{
+background:#f1f5f9;
+color:#111;
+}
+
+/* INPUT SPACING FIX */
+.form-area{
+padding:10px 16px 20px;
+}
+
 </style>
 
 </head>
@@ -542,17 +611,27 @@ transform:scale(.96);
 
 </div>
 
-
 <!-- ===============================
-FORM MODAL (HİZMET EKLE)
+FORM MODAL (PRO SHEET STYLE)
 =============================== -->
 <div id="hizmetModal" class="modal">
 
-<div class="modal-content">
+<div class="modal-content form-modal">
 
-<div class="modal-header">
-<span>Hizmet Ekle</span>
-<button id="closeModal">✕</button>
+<!-- DRAG BAR (APP HİSSİ) -->
+<div class="sheet-handle"></div>
+
+<!-- HEADER -->
+<div class="form-header">
+
+<div class="form-title">
+Hizmet Ekle
+</div>
+
+<button id="closeModal" class="close-btn dark">
+✕
+</button>
+
 </div>
 
 <form class="form-area" id="hizmetForm">
