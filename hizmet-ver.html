@@ -563,33 +563,52 @@ HİZMETİ YAYINLA
 <div id="globalFooter"></div>
 
 <script>
-/* ===============================
-MODAL CONTROL (STABLE)
+    /* ===============================
+MODAL CONTROL (FULL FIX)
 =============================== */
 document.addEventListener("click", function(e){
 
-/* OPEN */
-if(e.target.closest("#openModalBtn")){
 const modal = document.getElementById("hizmetModal");
-if(modal){
+if(!modal) return;
+
+/* ===============================
+OPEN (BUTON)
+=============================== */
+if(e.target.closest("#openModalBtn")){
 modal.classList.add("active");
 document.body.style.overflow = "hidden";
-}
+return;
 }
 
-/* CLOSE BUTTON */
+/* ===============================
+OPEN (CARD CLICK)
+BUTONLARI HARİÇ TUT
+=============================== */
+if(
+e.target.closest(".hizmet-card") &&
+!e.target.closest(".hizmet-actions")
+){
+modal.classList.add("active");
+document.body.style.overflow = "hidden";
+return;
+}
+
+/* ===============================
+CLOSE (X BUTTON)
+=============================== */
 if(e.target.closest("#closeModal")){
-const modal = document.getElementById("hizmetModal");
-if(modal){
 modal.classList.remove("active");
 document.body.style.overflow = "";
-}
+return;
 }
 
-/* BACKDROP CLICK */
+/* ===============================
+CLOSE (BACKDROP)
+=============================== */
 if(e.target.id === "hizmetModal"){
-e.target.classList.remove("active");
+modal.classList.remove("active");
 document.body.style.overflow = "";
+return;
 }
 
 });
