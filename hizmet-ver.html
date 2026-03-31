@@ -287,10 +287,74 @@ font-size:13px;
 text-decoration:none;
 }
 
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:999;
+opacity:0;
+pointer-events:none;
+transition:.25s;
+}
+
+.modal.active{
+opacity:1;
+pointer-events:auto;
+}
+
+.modal-content{
+width:100%;
+max-width:520px;
+max-height:90vh;
+overflow:auto;
+background:white;
+border-radius:20px;
+padding:16px;
+box-shadow:0 25px 60px rgba(0,0,0,.2);
+animation:modalIn .25s ease;
+}
+
+@keyframes modalIn{
+from{transform:translateY(40px);opacity:0;}
+to{transform:translateY(0);opacity:1;}
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:800;
+margin-bottom:10px;
+}
+
+.modal-header button{
+background:none;
+border:none;
+font-size:20px;
+cursor:pointer;
+}
+
+.fab-btn{
+position:fixed;
+bottom:90px;
+left:50%;
+transform:translateX(-50%);
+background:#2563eb;
+color:white;
+border:none;
+padding:14px 22px;
+border-radius:30px;
+font-weight:800;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+z-index:1000;
+}
+
 </style>
 
 </head>
-
 <body>
 
 <div id="globalHeader"></div>
@@ -300,21 +364,36 @@ text-decoration:none;
 <main id="mainContent">
 
 <h1 class="page-title">
-📁 HİZMET TANITIM FORMU
+📁 HİZMETLER
 </h1>
 
 <section class="info-box">
-
-<strong>Hizmetlerinizi Yerel Toplulukla Buluşturun</strong>
-
+<strong>Bahçelievler Hizmet Rehberi</strong>
 <br><br>
-
-Bahçelievler genelinde sunduğunuz hizmetleri dijital ortamda tanıtarak
-potansiyel müşterilere ulaşabilirsiniz.
-
-Tanıtım kaydınız platform denetimi sonrası yayınlanır.
-
+Ustalara ulaşın veya kendi hizmetinizi ekleyin.
 </section>
+
+<!-- ✅ LİSTE ÜSTE ALINDI -->
+<div id="hizmetList" style="padding:16px"></div>
+
+</main>
+
+</div>
+
+<!-- ✅ FLOATING BUTTON -->
+<button id="openModalBtn" class="fab-btn">
++ Hizmet Ekle
+</button>
+
+<!-- ✅ MODAL FORM (ESKİ FORM TAŞINDI - HİÇBİR ŞEY SİLİNMEDİ) -->
+<div id="hizmetModal" class="modal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<span>Hizmet Ekle</span>
+<button id="closeModal">✕</button>
+</div>
 
 <form class="form-area" id="hizmetForm">
 
@@ -409,11 +488,7 @@ HİZMETİ YAYINLA
 
 </form>
 
-<div id="hizmetList" style="padding:16px"></div>
-
-
-</main>
-
+</div>
 </div>
 
 <script src="./assets/js/layout.js"></script>
@@ -423,8 +498,34 @@ HİZMETİ YAYINLA
 <script src="assets/js/footerLegal.js"></script>
 
 <div id="globalFooter"></div>
+
 <script>
 
+/* ===============================
+MODAL CONTROL
+=============================== */
+const modal = document.getElementById("hizmetModal");
+const openBtn = document.getElementById("openModalBtn");
+const closeBtn = document.getElementById("closeModal");
+
+openBtn.onclick = () => {
+modal.classList.add("active");
+document.body.style.overflow = "hidden";
+};
+
+closeBtn.onclick = () => {
+modal.classList.remove("active");
+document.body.style.overflow = "";
+};
+
+modal.addEventListener("click",(e)=>{
+if(e.target === modal){
+modal.classList.remove("active");
+document.body.style.overflow = "";
+}
+});
+
+</script>
 /* ===============================
 UTILS (XSS PROTECTION)
 =============================== */
