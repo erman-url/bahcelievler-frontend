@@ -572,9 +572,7 @@ return;
 /* RENDER */
 list.innerHTML = data.map(item=>{
 
-const img = item.gorsel 
-? item.gorsel.split(",")[0] 
-: "assets/img/no-image.jpg";
+const img = item.gorsel || "assets/img/no-image.jpg";
 
 return `
 <div class="hizmet-card">
@@ -612,6 +610,7 @@ WhatsApp
 
 </div>
 `;
+
 }).join("");
 
 }catch(e){
