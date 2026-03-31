@@ -570,14 +570,29 @@ return;
 }
 
 /* RENDER */
-list.innerHTML = data.map(item=>{
+/* RENDER (STRICT + PREMIUM) */
+const filteredData = data.filter(item => item.gorsel && item.gorsel.trim() !== "");
 
-const img = item.gorsel || "assets/img/no-image.jpg";
+if(filteredData.length === 0){
+list.innerHTML = `<div class="note">Henüz görselli hizmet yok</div>`;
+return;
+}
+
+list.innerHTML = filteredData.map(item=>{
+
+/* SAFE IMAGE */
+const img = item.gorsel;
+
+/* TELEFON CLEAN */
+const phone = item.telefon.replace(/\D/g,'');
 
 return `
 <div class="hizmet-card">
 
-<img src="${img}" class="hizmet-img" loading="lazy">
+<img src="${img}" 
+class="hizmet-img" 
+loading="lazy"
+onerror="this.src='assets/img/no-image.jpg'">
 
 <div class="hizmet-body">
 
@@ -595,12 +610,14 @@ ${escapeHTML(item.kategori)} • ${escapeHTML(item.mahalle)}
 
 <div class="hizmet-actions">
 
-<a href="tel:${item.telefon}" class="call-btn">
+<a href="tel:${phone}" class="call-btn">
 Ara
 </a>
 
-<a href="https://wa.me/90${item.telefon.replace(/^0/,'')}" 
-class="whatsapp-btn" target="_blank">
+<a href="https://wa.me/90${phone.replace(/^0/,'')}" 
+class="whatsapp-btn" 
+target="_blank"
+rel="noopener">
 WhatsApp
 </a>
 
