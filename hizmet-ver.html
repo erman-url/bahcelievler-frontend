@@ -201,25 +201,38 @@ HİZMETİ YAYINLA
 </div>
 </div>
 
-
 <!-- ===============================
-DETAY MODAL (YENİ - KRİTİK)
+DETAY MODAL (PREMIUM APP STYLE)
 =============================== -->
 <div id="detayModal" class="modal">
 
 <div class="modal-content detay-modal">
 
-<div class="modal-header">
-<span id="detayTitle"></span>
-<button id="closeDetayModal">✕</button>
-</div>
+<!-- HERO (IMAGE + OVERLAY HEADER) -->
+<div class="detay-hero">
 
-<div class="detay-img-wrap">
 <img id="detayImg" class="detay-img"
 onerror="this.src='assets/img/no-image.jpg'">
+
+<!-- OVERLAY -->
+<div class="detay-overlay">
+
+<div class="detay-top">
+
+<div class="detay-title" id="detayTitle"></div>
+
+<button id="closeDetayModal" class="close-btn">
+✕
+</button>
+
 </div>
 
-<div class="detay-body">
+</div>
+
+</div>
+
+<!-- CONTENT -->
+<div class="detay-content">
 
 <div class="detay-meta" id="detayMeta"></div>
 
@@ -227,7 +240,10 @@ onerror="this.src='assets/img/no-image.jpg'">
 
 <div class="detay-phone" id="detayPhone"></div>
 
-<div class="detay-actions">
+</div>
+
+<!-- FIXED CTA (EN KRİTİK) -->
+<div class="detay-footer">
 
 <a id="detayCall" class="call-btn">
 📞 Ara
@@ -236,8 +252,6 @@ onerror="this.src='assets/img/no-image.jpg'">
 <a id="detayWp" class="whatsapp-btn" target="_blank">
 💬 WhatsApp
 </a>
-
-</div>
 
 </div>
 
