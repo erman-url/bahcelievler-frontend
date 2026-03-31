@@ -392,6 +392,30 @@ font-size:15px;
 box-shadow:0 6px 15px rgba(0,0,0,.1);
 }
 
+
+.submit-btn{
+position:fixed;
+bottom:80px; /* 🔥 20px → 80px yap */
+left:50%;
+transform:translateX(-50%);
+
+width:90%;
+max-width:500px;
+
+background:#16a34a;
+color:white;
+border:none;
+
+padding:16px;
+border-radius:14px;
+
+font-weight:800;
+font-size:16px;
+
+z-index:1002; /* footerdan üstte */
+}
+
+
 </style>
 
 </head>
@@ -539,32 +563,35 @@ HİZMETİ YAYINLA
 
 <script>
 
+window.onload = function(){
+
 const modal = document.getElementById("hizmetModal");
 const openBtn = document.getElementById("openModalBtn");
 const closeBtn = document.getElementById("closeModal");
 
-if(openBtn){
+if(!modal || !openBtn || !closeBtn){
+console.log("Modal bulunamadı");
+return;
+}
+
 openBtn.onclick = () => {
 modal.classList.add("active");
 document.body.style.overflow = "hidden";
 };
-}
 
-if(closeBtn){
 closeBtn.onclick = () => {
 modal.classList.remove("active");
 document.body.style.overflow = "";
 };
-}
 
-if(modal){
 modal.onclick = (e)=>{
 if(e.target === modal){
 modal.classList.remove("active");
 document.body.style.overflow = "";
 }
 };
-}
+
+};
 
 /* ===============================
 UTILS (XSS PROTECTION)
