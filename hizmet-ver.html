@@ -563,36 +563,36 @@ HİZMETİ YAYINLA
 <div id="globalFooter"></div>
 
 <script>
+/* ===============================
+MODAL CONTROL (STABLE)
+=============================== */
+document.addEventListener("click", function(e){
 
-window.onload = function(){
-
+/* OPEN */
+if(e.target.closest("#openModalBtn")){
 const modal = document.getElementById("hizmetModal");
-const openBtn = document.getElementById("openModalBtn");
-const closeBtn = document.getElementById("closeModal");
-
-if(!modal || !openBtn || !closeBtn){
-console.log("Modal bulunamadı");
-return;
-}
-
-openBtn.onclick = () => {
+if(modal){
 modal.classList.add("active");
 document.body.style.overflow = "hidden";
-};
+}
+}
 
-closeBtn.onclick = () => {
-modal.classList.remove("active");
-document.body.style.overflow = "";
-};
-
-modal.onclick = (e)=>{
-if(e.target === modal){
+/* CLOSE BUTTON */
+if(e.target.closest("#closeModal")){
+const modal = document.getElementById("hizmetModal");
+if(modal){
 modal.classList.remove("active");
 document.body.style.overflow = "";
 }
-};
+}
 
-};
+/* BACKDROP CLICK */
+if(e.target.id === "hizmetModal"){
+e.target.classList.remove("active");
+document.body.style.overflow = "";
+}
+
+});
 
 /* ===============================
 UTILS (XSS PROTECTION)
