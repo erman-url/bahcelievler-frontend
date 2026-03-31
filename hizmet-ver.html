@@ -728,10 +728,7 @@ formModal.classList.add("active");
 document.body.style.overflow = "hidden";
 return;
 }
-
-/* ===============================
-DETAY MODAL OPEN (CARD)
-=============================== */
+/* DETAY MODAL OPEN (CARD) */
 const card = e.target.closest(".hizmet-card");
 
 if(card && !e.target.closest(".hizmet-actions")){
@@ -748,6 +745,13 @@ document.getElementById("detayPhone").innerText =
 "📞 " + card.dataset.telefon;
 
 document.getElementById("detayImg").src = card.dataset.img;
+
+/* 🔥 BURAYA EKLENECEK */
+document.getElementById("detayCall").href =
+"tel:" + card.dataset.telefon.replace(/\D/g,'');
+
+document.getElementById("detayWp").href =
+"https://wa.me/90" + card.dataset.telefon.replace(/^0/,'');
 
 detayModal.classList.add("active");
 document.body.style.overflow = "hidden";
