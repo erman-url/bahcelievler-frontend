@@ -133,15 +133,13 @@ color:#ef4444;
 }
 
 .submit-btn{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
 
-position:sticky;
-bottom:calc(env(safe-area-inset-bottom) + 10px);
-
-width:calc(100% - 32px);
-max-width:868px;
-margin:16px auto;
-
-display:block;
+width:90%;
+max-width:500px;
 
 background:#16a34a;
 color:white;
@@ -153,11 +151,7 @@ border-radius:14px;
 font-weight:800;
 font-size:16px;
 
-cursor:pointer;
-
-box-shadow:0 10px 25px rgba(0,0,0,.08);
-z-index:10;
-
+z-index:1001;
 }
 
 .submit-btn.loading{
@@ -313,9 +307,13 @@ overflow:auto;
 background:white;
 border-radius:20px;
 padding:16px;
+padding-bottom:90px; /* buton için alan */
 box-shadow:0 25px 60px rgba(0,0,0,.2);
 animation:modalIn .25s ease;
 }
+
+
+
 
 @keyframes modalIn{
 from{transform:translateY(40px);opacity:0;}
@@ -337,20 +335,6 @@ font-size:20px;
 cursor:pointer;
 }
 
-.fab-btn{
-position:fixed;
-bottom:90px;
-left:50%;
-transform:translateX(-50%);
-background:#2563eb;
-color:white;
-border:none;
-padding:14px 22px;
-border-radius:30px;
-font-weight:800;
-box-shadow:0 10px 25px rgba(0,0,0,.2);
-z-index:1000;
-}
 
 
 .fab-btn{
@@ -389,6 +373,26 @@ color:#6b7280;
 margin-top:4px;
 }
 
+.add-service-bar{
+position:sticky;
+top:70px; /* header altı */
+z-index:50;
+padding:10px 16px;
+background:#f3f6fb;
+}
+
+.add-service-btn{
+width:100%;
+background:#2563eb;
+color:white;
+border:none;
+padding:14px;
+border-radius:14px;
+font-weight:800;
+font-size:15px;
+box-shadow:0 6px 15px rgba(0,0,0,.1);
+}
+
 </style>
 
 </head>
@@ -410,6 +414,13 @@ margin-top:4px;
 <br><br>
 Ustalara ulaşın veya kendi hizmetinizi ekleyin.
 </section>
+
+
+<div class="add-service-bar">
+<button id="openModalBtn" class="add-service-btn">
++ Hizmet Ekle
+</button>
+</div>
 
 <!-- ✅ LİSTE ÜSTE ALINDI -->
 <div id="hizmetList" style="padding:16px"></div>
