@@ -561,60 +561,83 @@ HİZMETİ YAYINLA
 <script src="assets/js/footerLegal.js"></script>
 
 <div id="globalFooter"></div>
-
 <script>
-    /* ===============================
-MODAL CONTROL (FULL FIX)
+
+/* ===============================
+MODAL SYSTEM (DUAL - FULL FIX)
 =============================== */
 document.addEventListener("click", function(e){
 
-const modal = document.getElementById("hizmetModal");
-if(!modal) return;
+const formModal = document.getElementById("hizmetModal");
+const detayModal = document.getElementById("detayModal");
 
 /* ===============================
-OPEN (BUTON)
+FORM MODAL OPEN
 =============================== */
 if(e.target.closest("#openModalBtn")){
-modal.classList.add("active");
+formModal.classList.add("active");
 document.body.style.overflow = "hidden";
 return;
 }
 
 /* ===============================
-OPEN (CARD CLICK)
-BUTONLARI HARİÇ TUT
+DETAY MODAL OPEN (CARD)
 =============================== */
-if(
-e.target.closest(".hizmet-card") &&
-!e.target.closest(".hizmet-actions")
-){
-modal.classList.add("active");
+const card = e.target.closest(".hizmet-card");
+
+if(card && !e.target.closest(".hizmet-actions")){
+
+document.getElementById("detayTitle").innerText = card.dataset.firma;
+
+document.getElementById("detayMeta").innerText =
+card.dataset.kategori + " • " + card.dataset.mahalle;
+
+document.getElementById("detayText").innerText =
+card.dataset.detay || "Detay bilgisi girilmemiş";
+
+document.getElementById("detayPhone").innerText =
+"📞 " + card.dataset.telefon;
+
+document.getElementById("detayImg").src = card.dataset.img;
+
+detayModal.classList.add("active");
 document.body.style.overflow = "hidden";
+
 return;
 }
 
 /* ===============================
-CLOSE (X BUTTON)
+FORM CLOSE
 =============================== */
 if(e.target.closest("#closeModal")){
-modal.classList.remove("active");
+formModal.classList.remove("active");
 document.body.style.overflow = "";
 return;
 }
 
 /* ===============================
-CLOSE (BACKDROP)
+DETAY CLOSE
 =============================== */
-if(e.target.id === "hizmetModal"){
-modal.classList.remove("active");
+if(e.target.closest("#closeDetayModal")){
+detayModal.classList.remove("active");
+document.body.style.overflow = "";
+return;
+}
+
+/* ===============================
+BACKDROP
+=============================== */
+if(e.target.id === "hizmetModal" || e.target.id === "detayModal"){
+e.target.classList.remove("active");
 document.body.style.overflow = "";
 return;
 }
 
 });
 
+
 /* ===============================
-UTILS (XSS PROTECTION)
+UTILS (XSS)
 =============================== */
 function escapeHTML(str){
 return String(str || "").replace(/[&<>"']/g, function(m){
@@ -628,21 +651,26 @@ return ({
 });
 }
 
+
 /* ===============================
-CHARACTER COUNT
+CHAR COUNT
 =============================== */
 const textarea = document.querySelector('[name="detay"]');
 const charCount = document.getElementById('charCount');
 
+if(textarea){
 textarea.addEventListener('input', ()=>{
 charCount.textContent = textarea.value.length + " / 750";
 });
+}
+
 
 /* ===============================
 FILE VALIDATION
 =============================== */
 const fileInput = document.querySelector('[name="gorsel"]');
 
+if(fileInput){
 fileInput.addEventListener('change', ()=>{
 
 if(fileInput.files.length > 2){
@@ -660,22 +688,22 @@ return;
 }
 
 });
+}
+
 
 /* ===============================
-FORM SUBMIT (FULL STABLE)
+FORM SUBMIT
 =============================== */
-
 const form = document.getElementById("hizmetForm");
 const btn = document.querySelector(".submit-btn");
 
+if(form){
 form.addEventListener("submit", async function(e){
 
 e.preventDefault();
 
-/* DOUBLE SUBMIT BLOCK */
 if(btn.classList.contains("loading")) return;
 
-/* UI LOCK */
 btn.classList.add("loading");
 btn.innerText = "Gönderiliyor...";
 
@@ -688,29 +716,20 @@ method:"POST",
 body:formData
 });
 
-/* NETWORK ERROR */
-if(!res){
-throw new Error("Bağlantı hatası");
-}
+if(!res) throw new Error("Bağlantı hatası");
 
 const data = await res.json();
 
-/* BACKEND ERROR */
 if(!res.ok){
 throw new Error(data.error || "Sunucu hatası");
 }
 
-/* SUCCESS */
 alert("Hizmet başarıyla gönderildi ✔");
 
 this.reset();
 
-/* CHAR RESET */
-if(typeof charCount !== "undefined"){
-charCount.textContent = "0 / 750";
-}
+if(charCount) charCount.textContent = "0 / 750";
 
-/* LIST REFRESH */
 if(typeof loadHizmetler === "function"){
 loadHizmetler();
 }
@@ -727,38 +746,30 @@ btn.innerText = "HİZMETİ YAYINLA";
 }
 
 });
+}
 
 
 /* ===============================
-HİZMET LİSTE YÜKLE (FULL STABLE)
+LOAD HİZMETLER (DETAY DATA EKLİ)
 =============================== */
-
 async function loadHizmetler(){
 
 const list = document.getElementById("hizmetList");
-
-/* LOADING STATE */
 list.innerHTML = `<div class="note">Yükleniyor...</div>`;
 
 try{
 
 const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/hizmetler");
 
-/* API ERROR */
-if(!res.ok){
-throw new Error("Liste alınamadı");
-}
+if(!res.ok) throw new Error("Liste alınamadı");
 
 const data = await res.json();
 
-/* SAFE DATA CHECK */
 if(!Array.isArray(data) || data.length === 0){
 list.innerHTML = `<div class="note">Henüz hizmet yok</div>`;
 return;
 }
 
-/* RENDER */
-/* RENDER (STRICT + PREMIUM) */
 const filteredData = data.filter(item => item.gorsel && item.gorsel.trim() !== "");
 
 if(filteredData.length === 0){
@@ -768,25 +779,25 @@ return;
 
 list.innerHTML = filteredData.map(item=>{
 
-/* SAFE IMAGE */
 const img = item.gorsel;
-
-/* TELEFON CLEAN */
 const phone = item.telefon.replace(/\D/g,'');
 
 return `
-<div class="hizmet-card">
+<div class="hizmet-card"
+data-firma="${escapeHTML(item.firma)}"
+data-kategori="${escapeHTML(item.kategori)}"
+data-mahalle="${escapeHTML(item.mahalle)}"
+data-telefon="${escapeHTML(item.telefon)}"
+data-detay="${escapeHTML(item.detay || '')}"
+data-img="${img}"
+>
 
-<img src="${img}" 
-class="hizmet-img" 
-loading="lazy"
+<img src="${img}" class="hizmet-img" loading="lazy"
 onerror="this.src='assets/img/no-image.jpg'">
 
 <div class="hizmet-body">
 
-<div class="hizmet-title">
-${escapeHTML(item.firma)}
-</div>
+<div class="hizmet-title">${escapeHTML(item.firma)}</div>
 
 <div class="hizmet-meta">
 ${escapeHTML(item.kategori)} • ${escapeHTML(item.mahalle)}
@@ -798,21 +809,16 @@ ${escapeHTML(item.kategori)} • ${escapeHTML(item.mahalle)}
 
 <div class="hizmet-actions">
 
-<a href="tel:${phone}" class="call-btn">
-Ara
-</a>
+<a href="tel:${phone}" class="call-btn">Ara</a>
 
 <a href="https://wa.me/90${phone.replace(/^0/,'')}" 
-class="whatsapp-btn" 
-target="_blank"
-rel="noopener">
+class="whatsapp-btn" target="_blank" rel="noopener">
 WhatsApp
 </a>
 
 </div>
 
 </div>
-
 </div>
 `;
 
@@ -821,19 +827,14 @@ WhatsApp
 }catch(e){
 
 console.error("Liste yüklenemedi:", e);
-
 list.innerHTML = `<div class="note">Liste yüklenemedi</div>`;
 
 }
 
 }
 
-/* ===============================
-INIT
-=============================== */
 loadHizmetler();
 
 </script>
 
 </body>
-</html>
