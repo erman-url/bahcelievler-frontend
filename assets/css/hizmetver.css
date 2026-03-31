@@ -129,6 +129,7 @@ MODAL BASE (SHEET)
 =============================== */
 .modal{
 position:fixed;
+padding-bottom:env(safe-area-inset-bottom);
 inset:0;
 background:rgba(0,0,0,.45);
 display:flex;
@@ -146,6 +147,7 @@ pointer-events:auto;
 }
 
 .modal-content{
+max-height:calc(100vh - 90px); /* footer yüksekliği kadar boşluk */
 width:100%;
 max-width:900px;
 border-radius:22px 22px 0 0;
@@ -219,6 +221,7 @@ justify-content:center;
 /* CONTENT */
 .detay-content{
 padding:16px;
+padding-bottom:100px; /* CTA + footer boşluğu */
 }
 
 .detay-meta{
@@ -245,11 +248,17 @@ color:#16a34a;
 .detay-footer{
 position:sticky;
 bottom:0;
+
 background:white;
 padding:14px;
+
 display:flex;
 gap:10px;
+
 box-shadow:0 -5px 20px rgba(0,0,0,.08);
+
+/* 🔥 EN KRİTİK */
+margin-bottom:env(safe-area-inset-bottom);
 }
 
 /* ===============================
