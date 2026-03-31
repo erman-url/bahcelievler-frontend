@@ -487,6 +487,7 @@ return;
 list.innerHTML = filteredData.map(item=>{
 
 const img = item.gorsel;
+
 const phone = item.telefon.replace(/\D/g,'');
 
 return `
@@ -495,7 +496,7 @@ data-firma="${escapeHTML(item.firma)}"
 data-kategori="${escapeHTML(item.kategori)}"
 data-mahalle="${escapeHTML(item.mahalle)}"
 data-telefon="${escapeHTML(item.telefon)}"
-data-detay="${escapeHTML(item.detay || '')}"
+data-detay="${escapeHTML(item.detay && item.detay.trim() ? item.detay : '')}"
 data-img="${img}"
 >
 
