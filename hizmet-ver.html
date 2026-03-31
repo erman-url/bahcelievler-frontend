@@ -561,34 +561,35 @@ DETAY MODAL (YENİ - KRİTİK)
 =============================== -->
 <div id="detayModal" class="modal">
 
-<div class="modal-content">
+<div class="modal-content detay-modal">
 
 <div class="modal-header">
-<span id="detayTitle">Hizmet Detayı</span>
+<span id="detayTitle"></span>
 <button id="closeDetayModal">✕</button>
 </div>
 
-<img id="detayImg" class="hizmet-img" 
+<div class="detay-img-wrap">
+<img id="detayImg" class="detay-img"
 onerror="this.src='assets/img/no-image.jpg'">
+</div>
 
-<div class="hizmet-body">
+<div class="detay-body">
 
-<div class="hizmet-meta" id="detayMeta"></div>
+<div class="detay-meta" id="detayMeta"></div>
 
-<div id="detayText" style="
-margin-top:10px;
-font-size:14px;
-line-height:1.5;
-color:#374151;
-"></div>
+<div class="detay-text" id="detayText"></div>
 
-<div class="hizmet-phone" id="detayPhone"></div>
+<div class="detay-phone" id="detayPhone"></div>
 
-<div class="hizmet-actions" style="margin-top:12px">
+<div class="detay-actions">
 
-<a id="detayCall" class="call-btn">Ara</a>
+<a id="detayCall" class="call-btn">
+📞 Ara
+</a>
 
-<a id="detayWp" class="whatsapp-btn" target="_blank">WhatsApp</a>
+<a id="detayWp" class="whatsapp-btn" target="_blank">
+💬 WhatsApp
+</a>
 
 </div>
 
