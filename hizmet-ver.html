@@ -501,22 +501,27 @@ HİZMETİ YAYINLA
 
 <script>
 
-/* ===============================
-MODAL CONTROL
-=============================== */
+document.addEventListener("DOMContentLoaded", () => {
+
 const modal = document.getElementById("hizmetModal");
 const openBtn = document.getElementById("openModalBtn");
 const closeBtn = document.getElementById("closeModal");
 
-openBtn.onclick = () => {
+/* SAFETY CHECK */
+if(!modal || !openBtn || !closeBtn){
+console.warn("Modal element bulunamadı");
+return;
+}
+
+openBtn.addEventListener("click", () => {
 modal.classList.add("active");
 document.body.style.overflow = "hidden";
-};
+});
 
-closeBtn.onclick = () => {
+closeBtn.addEventListener("click", () => {
 modal.classList.remove("active");
 document.body.style.overflow = "";
-};
+});
 
 modal.addEventListener("click",(e)=>{
 if(e.target === modal){
@@ -525,6 +530,7 @@ document.body.style.overflow = "";
 }
 });
 
+});
 
 
 /* ===============================
