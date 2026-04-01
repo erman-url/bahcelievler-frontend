@@ -667,7 +667,7 @@ document.querySelector(".submit-btn").onclick = async () => {
 
   try {
 
-    const res = await fetch("/api/emlak-talep", {
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/emlak-talep", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
