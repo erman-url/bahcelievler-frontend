@@ -521,10 +521,11 @@ Talebiniz onay sonrası emlak danışmanlarına iletilir.
 </div>
 </div>
 
-
 <script>
 
-/* CHIP SELECT */
+/* ===============================
+CHIP SELECT
+=============================== */
 document.querySelectorAll(".chip-group").forEach(group=>{
   const input = document.querySelector(`input[name="${group.dataset.name}"]`);
 
@@ -538,23 +539,25 @@ document.querySelectorAll(".chip-group").forEach(group=>{
 });
 
 
-/* MAHALLE DATA */
+/* ===============================
+MAHALLE AUTOCOMPLETE
+=============================== */
 const mahalleler = [
 "Bahçelievler","Cumhuriyet","Çobançeşme","Fevzi Çakmak",
 "Hürriyet","Kocasinan Merkez","Siyavuşpaşa","Soğanlı",
 "Şirinevler","Yenibosna Merkez","Zafer"
 ];
 
-const input = document.getElementById("mahalleInput");
-const list = document.getElementById("mahalleList");
-const hidden = document.querySelector('input[name="mahalle"]');
+const mahalleInput = document.getElementById("mahalleInput");
+const mahalleList = document.getElementById("mahalleList");
+const mahalleHidden = document.querySelector('input[name="mahalle"]');
 
-input.addEventListener("input", ()=>{
-  const val = input.value.toLowerCase();
-  list.innerHTML = "";
+mahalleInput.addEventListener("input", ()=>{
+  const val = mahalleInput.value.toLowerCase();
+  mahalleList.innerHTML = "";
 
   if(!val){
-    list.style.display="none";
+    mahalleList.style.display="none";
     return;
   }
 
@@ -566,42 +569,35 @@ input.addEventListener("input", ()=>{
     div.innerText = m;
 
     div.onclick = ()=>{
-      input.value = m;
-      hidden.value = m;
-      list.style.display="none";
+      mahalleInput.value = m;
+      mahalleHidden.value = m;
+      mahalleList.style.display="none";
     }
 
-    list.appendChild(div);
+    mahalleList.appendChild(div);
   });
 
-  list.style.display = filtered.length ? "block" : "none";
+  mahalleList.style.display = filtered.length ? "block" : "none";
 });
 
 
-/* BUDGET SYNC */
+/* ===============================
+BUDGET SYNC
+=============================== */
 const range = document.getElementById("budgetRange");
 const number = document.getElementById("budgetInput");
 
-range.oninput = ()=>{
-  number.value = range.value;
-};
-
-number.oninput = ()=>{
-  range.value = number.value;
-};
-
-</script>
+range.oninput = ()=> number.value = range.value;
+number.oninput = ()=> range.value = number.value;
 
 
-<script>
-
-/* SUBMIT */
+/* ===============================
+SUBMIT
+=============================== */
 
 document.querySelector(".submit-btn").onclick = async () => {
 
   const btn = document.querySelector(".submit-btn");
-
-  /* DOUBLE CLICK BLOCK */
   if(btn.disabled) return;
 
   const data = {
@@ -619,25 +615,10 @@ document.querySelector(".submit-btn").onclick = async () => {
   data.tel = (data.tel || "").replace(/\D/g,"");
 
   /* VALIDATION */
-  if(!data.tur){
-    alert("Tür seçiniz");
-    return;
-  }
-
-  if(!data.durum){
-    alert("Durum seçiniz");
-    return;
-  }
-
-  if(!data.mahalle){
-    alert("Mahalle seçiniz");
-    return;
-  }
-
-  if(!data.tel || data.tel.length < 10){
-    alert("Geçerli telefon giriniz");
-    return;
-  }
+  if(!data.tur) return alert("Tür seçiniz");
+  if(!data.durum) return alert("Durum seçiniz");
+  if(!data.mahalle) return alert("Mahalle seçiniz");
+  if(!data.tel || data.tel.length < 10) return alert("Geçerli telefon giriniz");
 
   /* BUTTON STATE */
   btn.innerText = "Gönderiliyor...";
@@ -648,41 +629,38 @@ document.querySelector(".submit-btn").onclick = async () => {
 
     const res = await fetch("/api/emlak-talep", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
     });
 
     let result = {};
-
-    try{
-      result = await res.json();
-    }catch(e){
-      result = { ok:false };
-    }
+    try{ result = await res.json(); } catch(e){}
 
     if(res.ok && result.ok){
 
-      /* SUCCESS */
-      alert("Talebiniz başarıyla alındı ✅");
+      /* ===============================
+      SUCCESS SCREEN
+      =============================== */
 
-      /* FORM RESET (DAHA İYİ UX) */
+      document.querySelector(".page-wrapper").style.display = "none";
+      document.getElementById("successBox").style.display = "flex";
+
+      /* WHATSAPP AUTO LINK */
+      const msg = encodeURIComponent(
+        `${data.mahalle} bölgesinde ${data.tur} ${data.durum} talebi oluşturdum.`
+      );
+
+      document.getElementById("waBtn").href =
+        "https://wa.me/905XXXXXXXXX?text=" + msg;
+
+      /* RESET FORM */
       document.querySelector(".form-area").reset?.();
-
-      /* CHIP RESET */
       document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+      mahalleInput.value = "";
+      mahalleHidden.value = "";
+      number.value = "";
+      range.value = "";
 
-      /* AUTOCOMPLETE RESET */
-      document.getElementById("mahalleInput").value = "";
-      document.querySelector('[name="mahalle"]').value = "";
-
-      /* BUDGET RESET */
-      document.getElementById("budgetInput").value = "";
-      document.getElementById("budgetRange").value = "";
-
-      /* SAYFA YENİLEMEYİ KALDIRDIK → UX İYİ */
-      
     }else{
       alert(result.error || "Bir hata oluştu");
     }
@@ -697,6 +675,7 @@ document.querySelector(".submit-btn").onclick = async () => {
   btn.style.opacity = "1";
 
 };
+
 </script>
 
 
