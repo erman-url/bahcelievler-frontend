@@ -278,6 +278,61 @@ color:#6b7280;
 margin-top:10px;
 }
 
+.form-card{
+background:#fff;
+padding:14px;
+border-radius:18px;
+box-shadow:0 8px 24px rgba(0,0,0,.06);
+}
+
+.form-row{
+display:flex;
+gap:10px;
+margin-bottom:12px;
+}
+
+.form-col{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.form-col.full{
+flex:100%;
+}
+
+.form-control{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #e2e8f0;
+background:#f9fafb;
+font-size:14px;
+margin-top:6px;
+}
+
+.form-control:focus{
+border-color:#2563eb;
+background:#fff;
+outline:none;
+box-shadow:0 0 0 2px rgba(37,99,235,.15);
+}
+
+/* KVKK */
+.kvkk-label{
+display:flex;
+gap:8px;
+font-size:13px;
+align-items:center;
+}
+
+/* MOBİL STACK */
+@media(max-width:480px){
+.form-row{
+flex-direction:column;
+}
+}
+
 </style>
 
 </head>
@@ -322,12 +377,14 @@ margin-top:10px;
 Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğrudan sizinle paylaşılır.
 
 </div>
-
-<!-- FORM -->
-
 <form class="form-area">
 
-<div class="form-group">
+<div class="form-card">
+
+<!-- 1. SATIR -->
+<div class="form-row">
+
+<div class="form-col">
 <label>Gayrimenkul Türü</label>
 <select class="form-control" required>
 <option value="">Seçiniz</option>
@@ -340,7 +397,7 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 </select>
 </div>
 
-<div class="form-group">
+<div class="form-col">
 <label>Durum</label>
 <select class="form-control" required>
 <option value="">Seçiniz</option>
@@ -349,7 +406,12 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 </select>
 </div>
 
-<div class="form-group">
+</div>
+
+<!-- 2. SATIR -->
+<div class="form-row">
+
+<div class="form-col full">
 <label>Mahalle</label>
 <select class="form-control" required>
 <option value="">Seçiniz</option>
@@ -367,36 +429,63 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 </select>
 </div>
 
-<div class="form-group">
+</div>
+
+<!-- 3. SATIR -->
+<div class="form-row">
+
+<div class="form-col full">
 <label>Bütçe</label>
-<input class="form-control" type="number" placeholder="Örn: 1500000">
+<input class="form-control" type="number" inputmode="numeric" placeholder="₺ 1.500.000">
 </div>
 
-<div class="form-group">
+</div>
+
+<!-- 4. SATIR -->
+<div class="form-row">
+
+<div class="form-col full">
 <label>Detay</label>
-<textarea class="form-control" placeholder="Örn: 2+1, metroya yakın..." required></textarea>
+<textarea class="form-control" rows="3" placeholder="Örn: 2+1, metroya yakın..." required></textarea>
 </div>
 
-<div class="form-group">
+</div>
+
+<!-- 5. SATIR -->
+<div class="form-row">
+
+<div class="form-col">
 <label>Ad Soyad</label>
-<input class="form-control" type="text" required>
+<input class="form-control" type="text" autocomplete="name" required>
 </div>
 
-<div class="form-group">
+<div class="form-col">
 <label>Telefon</label>
-<input class="form-control" type="tel" required>
+<input class="form-control" type="tel" inputmode="tel" autocomplete="tel" required>
 </div>
 
-<div class="form-group">
+</div>
+
+<!-- 6. SATIR -->
+<div class="form-row">
+
+<div class="form-col full">
 <label>E-posta</label>
-<input class="form-control" type="email">
+<input class="form-control" type="email" autocomplete="email">
 </div>
 
-<div class="form-group">
-<label>
+</div>
+
+<!-- KVKK -->
+<div class="form-row">
+<div class="form-col full kvkk">
+<label class="kvkk-label">
 <input type="checkbox" required>
-KVKK metnini kabul ediyorum
+<span>KVKK metnini kabul ediyorum</span>
 </label>
+</div>
+</div>
+
 </div>
 
 </form>
