@@ -320,9 +320,8 @@ border-radius:14px;
 font-weight:800;
 z-index:10;
 }
-
 /* ===============================
-PREMIUM HEADER UPGRADE
+PREMIUM HEADER FINAL (PRO FIX)
 =============================== */
 
 .premium-header{
@@ -331,38 +330,62 @@ padding:18px;
 
 border-radius:20px;
 
-/* 🔥 premium gradient */
-background:linear-gradient(135deg,#1f6fd1,#0e4fa8);
+/* 🔥 daha dengeli gradient (okunabilirlik fix) */
+background:
+linear-gradient(135deg,#2b7be4,#0e4fa8),
+radial-gradient(circle at top right, rgba(255,255,255,.12), transparent);
 
 /* 🔥 derinlik */
 box-shadow:
-0 12px 30px rgba(0,0,0,.15),
-inset 0 1px 0 rgba(255,255,255,.2);
+0 12px 30px rgba(0,0,0,.18),
+inset 0 1px 0 rgba(255,255,255,.25);
 
-color:white;
+color:#fff;
+
+/* animasyon */
+transition:.2s ease;
 }
 
-/* FLEX LAYOUT */
+.premium-header:active{
+transform:scale(.98);
+}
+
+/* ===============================
+LAYOUT
+=============================== */
 .header-content{
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
 
-/* TEXT */
+/* ===============================
+TEXT (FIXED VISIBILITY)
+=============================== */
+
 .premium-header .title{
-font-size:20px;
+font-size:22px;
 font-weight:900;
 letter-spacing:.3px;
+color:#ffffff;
+
+/* 🔥 netlik */
+text-shadow:0 2px 8px rgba(0,0,0,.25);
 }
 
 .premium-header .sub{
 font-size:13px;
-opacity:.85;
+color:rgba(255,255,255,.88);
 margin-top:4px;
+
+/* 🔥 okunabilirlik */
+text-shadow:0 1px 4px rgba(0,0,0,.2);
 }
 
-/* ICON */
+/* ===============================
+ICON (UPGRADED)
+=============================== */
+
 .header-icon{
 width:48px;
 height:48px;
@@ -373,18 +396,15 @@ justify-content:center;
 
 border-radius:14px;
 
-/* glass effect */
-background:rgba(255,255,255,.15);
+/* 🔥 glass + visibility fix */
+background:rgba(255,255,255,.22);
 backdrop-filter:blur(10px);
 
+color:#ffffff;
 font-size:20px;
-}
 
-/* MICRO ANIMATION */
-.premium-header{
-transition:.2s ease;
-}
-
-.premium-header:active{
-transform:scale(.98);
+/* 🔥 premium shadow */
+box-shadow:
+0 6px 16px rgba(0,0,0,.25),
+inset 0 1px 0 rgba(255,255,255,.3);
 }
