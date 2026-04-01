@@ -562,7 +562,6 @@ Talebiniz onay sonrası emlak danışmanlarına iletilir.
 <button class="submit-btn">TALEBİ GÖNDER</button>
 </div>
 </div>
-
 <script>
 
 /* ===============================
@@ -632,24 +631,36 @@ const number = document.getElementById("budgetInput");
 range.oninput = ()=> number.value = range.value;
 number.oninput = ()=> range.value = number.value;
 
+
 /* ===============================
-SUBMIT (SECURE + VALIDATED)
+SUBMIT (FULL FIX)
 =============================== */
 
 document.querySelector(".submit-btn").onclick = async () => {
 
   const btn = document.querySelector(".submit-btn");
 
-  /* DOUBLE SUBMIT HARD LOCK */
   if(btn.classList.contains("loading")) return;
   btn.classList.add("loading");
 
-  /* SANITIZE */
+  let finished = false;
+
   function clean(str){
     return (str || "")
       .replace(/[<>]/g,"")
       .replace(/\s+/g," ")
       .trim();
+  }
+
+  function unlock(msg){
+    if(msg) alert(msg);
+
+    btn.innerText = "TALEBİ GÖNDER";
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.classList.remove("loading");
+
+    finished = true;
   }
 
   const data = {
@@ -664,36 +675,26 @@ document.querySelector(".submit-btn").onclick = async () => {
     kvkk: document.querySelector('[name="kvkk"]').checked
   };
 
-  /* TELEFON NORMALIZE */
   data.tel = (data.tel || "").replace(/\D/g,"");
-
-  /* BUDGET NORMALIZE */
   data.budget = parseInt(data.budget) || 0;
 
-  /* ===============================
-  VALIDATION (HARD)
-  =============================== */
-
+  /* VALIDATION */
   if(!data.tur) return unlock("Tür seçiniz");
   if(!data.durum) return unlock("Durum seçiniz");
   if(!data.mahalle) return unlock("Mahalle seçiniz");
 
-  /* TELEFON STRICT (TR GSM) */
   if(!/^5\d{9}$/.test(data.tel)){
     return unlock("Geçerli telefon giriniz (5XXXXXXXXX)");
   }
 
-  /* BUDGET LIMIT */
   if(data.budget < 100000){
     return unlock("Geçerli bütçe giriniz");
   }
 
-  /* KVKK */
   if(!data.kvkk){
     return unlock("KVKK onayı zorunlu");
   }
 
-  /* BUTTON STATE */
   btn.innerText = "Gönderiliyor...";
   btn.disabled = true;
   btn.style.opacity = "0.7";
@@ -709,17 +710,14 @@ document.querySelector(".submit-btn").onclick = async () => {
     let result = {};
     try{ result = await res.json(); } catch(e){}
 
-    /* DEBUG */
     console.log("STATUS:", res.status);
     console.log("RESULT:", result);
 
     if(res.ok){
 
-      /* SUCCESS */
       document.querySelector(".page-wrapper").style.display = "none";
       document.getElementById("successBox").style.display = "flex";
 
-      /* RESET */
       document.querySelector(".form-area").reset?.();
       document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
       mahalleInput.value = "";
@@ -727,28 +725,23 @@ document.querySelector(".submit-btn").onclick = async () => {
       number.value = "";
       range.value = "";
 
+      finished = true;
+      return;
+
     }else{
-      unlock(result.error || "Bir hata oluştu");
+      return unlock(result.error || "Bir hata oluştu");
     }
 
   } catch(e){
-    unlock("Bağlantı hatası");
+    return unlock("Bağlantı hatası");
   }
 
-  /* UNLOCK FUNCTION */
-  function unlock(msg){
-    alert(msg);
+  if(!finished){
     btn.innerText = "TALEBİ GÖNDER";
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.classList.remove("loading");
   }
-
-  /* NORMAL EXIT */
-  btn.innerText = "TALEBİ GÖNDER";
-  btn.disabled = false;
-  btn.style.opacity = "1";
-  btn.classList.remove("loading");
 };
 
 </script>
