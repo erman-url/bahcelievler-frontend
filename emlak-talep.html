@@ -676,7 +676,7 @@ document.querySelector(".submit-btn").onclick = async () => {
     let result = {};
     try{ result = await res.json(); } catch(e){}
 
-    if(res.ok && result.ok){
+    if(res.ok){
 
       /* SUCCESS SCREEN */
       document.querySelector(".page-wrapper").style.display = "none";
