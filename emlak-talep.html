@@ -632,36 +632,66 @@ const number = document.getElementById("budgetInput");
 range.oninput = ()=> number.value = range.value;
 number.oninput = ()=> range.value = number.value;
 
-
 /* ===============================
-SUBMIT
+SUBMIT (SECURE + VALIDATED)
 =============================== */
 
 document.querySelector(".submit-btn").onclick = async () => {
 
   const btn = document.querySelector(".submit-btn");
-  if(btn.disabled) return;
+
+  /* DOUBLE SUBMIT HARD LOCK */
+  if(btn.classList.contains("loading")) return;
+  btn.classList.add("loading");
+
+  /* SANITIZE */
+  function clean(str){
+    return (str || "")
+      .replace(/[<>]/g,"")
+      .replace(/\s+/g," ")
+      .trim();
+  }
 
   const data = {
-    tur: document.querySelector('[name="tur"]').value,
-    durum: document.querySelector('[name="durum"]').value,
-    mahalle: document.querySelector('[name="mahalle"]').value,
+    tur: clean(document.querySelector('[name="tur"]').value),
+    durum: clean(document.querySelector('[name="durum"]').value),
+    mahalle: clean(document.querySelector('[name="mahalle"]').value),
     budget: document.getElementById("budgetInput").value,
-    detay: document.querySelector('[name="detay"]').value,
-    ad: document.querySelector('[name="ad"]').value,
+    detay: clean(document.querySelector('[name="detay"]').value),
+    ad: clean(document.querySelector('[name="ad"]').value),
     tel: document.querySelector('[name="tel"]').value,
-    email: document.querySelector('[name="email"]').value,
+    email: clean(document.querySelector('[name="email"]').value),
     kvkk: document.querySelector('[name="kvkk"]').checked
   };
 
+  /* TELEFON NORMALIZE */
   data.tel = (data.tel || "").replace(/\D/g,"");
 
-  /* VALIDATION */
-  if(!data.tur) return alert("Tür seçiniz");
-  if(!data.durum) return alert("Durum seçiniz");
-  if(!data.mahalle) return alert("Mahalle seçiniz");
-  if(!data.tel || data.tel.length < 10) return alert("Geçerli telefon giriniz");
-  if(!data.kvkk) return alert("KVKK onayı zorunlu");
+  /* BUDGET NORMALIZE */
+  data.budget = parseInt(data.budget) || 0;
+
+  /* ===============================
+  VALIDATION (HARD)
+  =============================== */
+
+  if(!data.tur) return unlock("Tür seçiniz");
+  if(!data.durum) return unlock("Durum seçiniz");
+  if(!data.mahalle) return unlock("Mahalle seçiniz");
+
+  /* TELEFON STRICT (TR GSM) */
+  if(!/^5\d{9}$/.test(data.tel)){
+    return unlock("Geçerli telefon giriniz (5XXXXXXXXX)");
+  }
+
+  /* BUDGET LIMIT */
+  if(data.budget < 100000){
+    return unlock("Geçerli bütçe giriniz");
+  }
+
+  /* KVKK */
+  if(!data.kvkk){
+    return unlock("KVKK onayı zorunlu");
+  }
 
   /* BUTTON STATE */
   btn.innerText = "Gönderiliyor...";
@@ -679,17 +709,17 @@ document.querySelector(".submit-btn").onclick = async () => {
     let result = {};
     try{ result = await res.json(); } catch(e){}
 
-    /* ✅ DEBUG  */
-console.log("STATUS:", res.status);
-console.log("RESULT:", result);
+    /* DEBUG */
+    console.log("STATUS:", res.status);
+    console.log("RESULT:", result);
 
     if(res.ok){
 
-      /* SUCCESS SCREEN */
+      /* SUCCESS */
       document.querySelector(".page-wrapper").style.display = "none";
       document.getElementById("successBox").style.display = "flex";
 
-      /* FORM RESET */
+      /* RESET */
       document.querySelector(".form-area").reset?.();
       document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
       mahalleInput.value = "";
@@ -698,17 +728,27 @@ console.log("RESULT:", result);
       range.value = "";
 
     }else{
-      alert(result.error || "Bir hata oluştu");
+      unlock(result.error || "Bir hata oluştu");
     }
 
   } catch(e){
-    alert("Bağlantı hatası");
+    unlock("Bağlantı hatası");
   }
 
+  /* UNLOCK FUNCTION */
+  function unlock(msg){
+    alert(msg);
+    btn.innerText = "TALEBİ GÖNDER";
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.classList.remove("loading");
+  }
+
+  /* NORMAL EXIT */
   btn.innerText = "TALEBİ GÖNDER";
   btn.disabled = false;
   btn.style.opacity = "1";
-
+  btn.classList.remove("loading");
 };
 
 </script>
