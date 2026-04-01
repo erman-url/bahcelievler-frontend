@@ -650,7 +650,8 @@ document.querySelector(".submit-btn").onclick = async () => {
     detay: document.querySelector('[name="detay"]').value,
     ad: document.querySelector('[name="ad"]').value,
     tel: document.querySelector('[name="tel"]').value,
-    email: document.querySelector('[name="email"]').value
+    email: document.querySelector('[name="email"]').value,
+    kvkk: document.querySelector('[name="kvkk"]').checked
   };
 
   data.tel = (data.tel || "").replace(/\D/g,"");
@@ -660,6 +661,7 @@ document.querySelector(".submit-btn").onclick = async () => {
   if(!data.durum) return alert("Durum seçiniz");
   if(!data.mahalle) return alert("Mahalle seçiniz");
   if(!data.tel || data.tel.length < 10) return alert("Geçerli telefon giriniz");
+  if(!data.kvkk) return alert("KVKK onayı zorunlu");
 
   /* BUTTON STATE */
   btn.innerText = "Gönderiliyor...";
