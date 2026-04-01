@@ -165,9 +165,8 @@ font-size:12px;
 color:#e11d48;
 margin-top:6px;
 }
-
 /* =========================
-🔥 BUTTON (APP LEVEL)
+🔥 BUTTON (APP LEVEL - STABLE FINAL)
 ========================= */
 
 .submit-wrap{
@@ -177,7 +176,7 @@ right:0;
 bottom:calc(90px + env(safe-area-inset-bottom));
 padding:12px 16px;
 z-index:50;
-pointer-events:none; /* 🔥 sadece iç buton aktif */
+pointer-events:none; /* sadece iç buton aktif */
 }
 
 .submit-inner{
@@ -200,6 +199,31 @@ font-size:15px;
 cursor:pointer;
 transition:transform .15s ease, box-shadow .15s ease;
 box-shadow:0 10px 25px rgba(37,99,235,.3);
+}
+
+/* =========================
+💻 DESKTOP FIX (KRİTİK)
+========================= */
+
+@media(min-width:768px){
+
+.submit-wrap{
+left:50%;
+right:auto;
+transform:translateX(-50%);
+width:100%;
+max-width:700px; /* 🔥 ideal genişlik */
+padding:12px 0;
+}
+
+.submit-inner{
+border-radius:18px;
+}
+
+.submit-btn{
+border-radius:14px;
+}
+
 }
 
 /* hover desktop */
