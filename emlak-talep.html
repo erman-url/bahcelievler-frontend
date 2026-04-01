@@ -485,15 +485,15 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 
 <!-- DETAY -->
 <label style="margin-top:12px;">Detay</label>
-<textarea class="form-control" rows="3" placeholder="2+1, metroya yakın..." required></textarea>
+<textarea name="detay" class="form-control" rows="3" placeholder="2+1, metroya yakın..." required></textarea>
 
 <!-- KULLANICI -->
 <div class="form-row">
-  <input class="form-control" type="text" placeholder="Ad Soyad" required>
-  <input class="form-control" type="tel" placeholder="Telefon" required>
+ <input name="ad" class="form-control" type="text" placeholder="Ad Soyad" required>
+<input name="tel" class="form-control" type="tel" placeholder="Telefon" required>
 </div>
 
-<input class="form-control" type="email" placeholder="E-posta">
+<input name="email" class="form-control" type="email" placeholder="E-posta">
 
 <!-- KVKK -->
 <label class="kvkk-label">
@@ -591,6 +591,70 @@ number.oninput = ()=>{
 };
 
 </script>
+
+
+<script>
+
+/* SUBMIT */
+
+document.querySelector(".submit-btn").onclick = async () => {
+
+  const data = {
+    tur: document.querySelector('[name="tur"]').value,
+    durum: document.querySelector('[name="durum"]').value,
+    mahalle: document.querySelector('[name="mahalle"]').value,
+    budget: document.getElementById("budgetInput").value,
+    detay: document.querySelector("textarea").value,
+    ad: document.querySelector('input[type="text"]').value,
+    tel: document.querySelector('input[type="tel"]').value,
+    email: document.querySelector('input[type="email"]').value
+  };
+
+  /* VALIDATION */
+  if(!data.tur || !data.durum || !data.mahalle){
+    alert("Lütfen tüm seçimleri yapın");
+    return;
+  }
+
+  if(!data.tel){
+    alert("Telefon zorunlu");
+    return;
+  }
+
+  const btn = document.querySelector(".submit-btn");
+  btn.innerText = "Gönderiliyor...";
+  btn.disabled = true;
+
+  try {
+
+    const res = await fetch("/api/emlak-talep", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if(result.ok){
+      alert("Talebiniz alındı ✅");
+      location.reload();
+    }else{
+      alert(result.error || "Hata oluştu");
+    }
+
+  } catch(e){
+    alert("Bağlantı hatası");
+  }
+
+  btn.innerText = "TALEBİ GÖNDER";
+  btn.disabled = false;
+
+};
+
+</script>
+
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/news.js" defer></script>
