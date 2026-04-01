@@ -523,7 +523,7 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 
 <!-- KVKK -->
 <label class="kvkk-label">
-  <input type="checkbox" required>
+  <input type="checkbox" name="kvkk" required>
   <span>KVKK kabul</span>
 </label>
 
@@ -675,6 +675,10 @@ document.querySelector(".submit-btn").onclick = async () => {
 
     let result = {};
     try{ result = await res.json(); } catch(e){}
+
+    /* ✅ DEBUG  */
+console.log("STATUS:", res.status);
+console.log("RESULT:", result);
 
     if(res.ok){
 
