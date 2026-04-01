@@ -333,6 +333,94 @@ flex-direction:column;
 }
 }
 
+
+.form-card{
+background:#fff;
+padding:14px;
+border-radius:18px;
+box-shadow:0 8px 24px rgba(0,0,0,.06);
+}
+
+.form-row{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.form-control{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #e2e8f0;
+background:#f9fafb;
+font-size:14px;
+margin-top:6px;
+}
+
+/* CHIP */
+.chip-group{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:8px;
+}
+
+.chip{
+padding:10px 14px;
+border-radius:12px;
+background:#f1f5f9;
+font-size:13px;
+font-weight:600;
+cursor:pointer;
+}
+
+.chip.active{
+background:#2563eb;
+color:#fff;
+}
+
+/* AUTOCOMPLETE */
+.autocomplete-list{
+background:#fff;
+border-radius:12px;
+box-shadow:0 8px 20px rgba(0,0,0,.1);
+margin-top:6px;
+max-height:180px;
+overflow:auto;
+display:none;
+}
+
+.autocomplete-item{
+padding:10px;
+cursor:pointer;
+}
+
+.autocomplete-item:hover{
+background:#f1f5f9;
+}
+
+/* BUDGET */
+.budget-box{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+/* KVKK */
+.kvkk-label{
+display:flex;
+gap:8px;
+font-size:13px;
+margin-top:10px;
+}
+
+/* MOBİL */
+@media(max-width:480px){
+.form-row{
+flex-direction:column;
+}
+}
+
 </style>
 
 </head>
@@ -451,6 +539,77 @@ Talebiniz onay sonrası emlak danışmanlarına iletilir.
 <button class="submit-btn">TALEBİ GÖNDER</button>
 </div>
 </div>
+
+
+<script>
+
+/* CHIP SELECT */
+document.querySelectorAll(".chip-group").forEach(group=>{
+  const input = document.querySelector(`input[name="${group.dataset.name}"]`);
+
+  group.querySelectorAll(".chip").forEach(chip=>{
+    chip.onclick = ()=>{
+      group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+      chip.classList.add("active");
+      input.value = chip.dataset.value;
+    }
+  });
+});
+
+
+/* MAHALLE DATA */
+const mahalleler = [
+"Bahçelievler","Cumhuriyet","Çobançeşme","Fevzi Çakmak",
+"Hürriyet","Kocasinan Merkez","Siyavuşpaşa","Soğanlı",
+"Şirinevler","Yenibosna Merkez","Zafer"
+];
+
+const input = document.getElementById("mahalleInput");
+const list = document.getElementById("mahalleList");
+const hidden = document.querySelector('input[name="mahalle"]');
+
+input.addEventListener("input", ()=>{
+  const val = input.value.toLowerCase();
+  list.innerHTML = "";
+
+  if(!val){
+    list.style.display="none";
+    return;
+  }
+
+  const filtered = mahalleler.filter(m=>m.toLowerCase().includes(val));
+
+  filtered.forEach(m=>{
+    const div = document.createElement("div");
+    div.className="autocomplete-item";
+    div.innerText = m;
+
+    div.onclick = ()=>{
+      input.value = m;
+      hidden.value = m;
+      list.style.display="none";
+    }
+
+    list.appendChild(div);
+  });
+
+  list.style.display = filtered.length ? "block" : "none";
+});
+
+
+/* BUDGET SYNC */
+const range = document.getElementById("budgetRange");
+const number = document.getElementById("budgetInput");
+
+range.oninput = ()=>{
+  number.value = range.value;
+};
+
+number.oninput = ()=>{
+  range.value = number.value;
+};
+
+</script>
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/news.js" defer></script>
