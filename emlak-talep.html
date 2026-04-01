@@ -381,110 +381,56 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 
 <div class="form-card">
 
-<!-- 1. SATIR -->
-<div class="form-row">
-
-<div class="form-col">
+<!-- TÜR -->
 <label>Gayrimenkul Türü</label>
-<select class="form-control" required>
-<option value="">Seçiniz</option>
-<option>Daire</option>
-<option>Rezidans</option>
-<option>Villa</option>
-<option>Dükkan</option>
-<option>Ofis</option>
-<option>Arsa</option>
-</select>
+<div class="chip-group" data-name="tur">
+  <div class="chip" data-value="Daire">Daire</div>
+  <div class="chip" data-value="Rezidans">Rezidans</div>
+  <div class="chip" data-value="Villa">Villa</div>
+  <div class="chip" data-value="Dükkan">Dükkan</div>
+  <div class="chip" data-value="Ofis">Ofis</div>
+  <div class="chip" data-value="Arsa">Arsa</div>
+</div>
+<input type="hidden" name="tur" required>
+
+<!-- DURUM -->
+<label style="margin-top:12px;">Durum</label>
+<div class="chip-group" data-name="durum">
+  <div class="chip" data-value="Kiralık">Kiralık</div>
+  <div class="chip" data-value="Satılık">Satılık</div>
+</div>
+<input type="hidden" name="durum" required>
+
+<!-- MAHALLE SEARCH -->
+<label style="margin-top:12px;">Mahalle</label>
+<input type="text" class="form-control" id="mahalleInput" placeholder="Mahalle yaz..." autocomplete="off">
+<div class="autocomplete-list" id="mahalleList"></div>
+<input type="hidden" name="mahalle" required>
+
+<!-- BÜTÇE -->
+<label style="margin-top:12px;">Bütçe</label>
+<div class="budget-box">
+  <input type="range" min="500000" max="10000000" step="50000" id="budgetRange">
+  <input type="number" id="budgetInput" class="form-control" placeholder="₺">
 </div>
 
-<div class="form-col">
-<label>Durum</label>
-<select class="form-control" required>
-<option value="">Seçiniz</option>
-<option>Kiralık</option>
-<option>Satılık</option>
-</select>
-</div>
+<!-- DETAY -->
+<label style="margin-top:12px;">Detay</label>
+<textarea class="form-control" rows="3" placeholder="2+1, metroya yakın..." required></textarea>
 
-</div>
-
-<!-- 2. SATIR -->
+<!-- KULLANICI -->
 <div class="form-row">
-
-<div class="form-col full">
-<label>Mahalle</label>
-<select class="form-control" required>
-<option value="">Seçiniz</option>
-<option>Bahçelievler</option>
-<option>Cumhuriyet</option>
-<option>Çobançeşme</option>
-<option>Fevzi Çakmak</option>
-<option>Hürriyet</option>
-<option>Kocasinan Merkez</option>
-<option>Siyavuşpaşa</option>
-<option>Soğanlı</option>
-<option>Şirinevler</option>
-<option>Yenibosna Merkez</option>
-<option>Zafer</option>
-</select>
+  <input class="form-control" type="text" placeholder="Ad Soyad" required>
+  <input class="form-control" type="tel" placeholder="Telefon" required>
 </div>
 
-</div>
-
-<!-- 3. SATIR -->
-<div class="form-row">
-
-<div class="form-col full">
-<label>Bütçe</label>
-<input class="form-control" type="number" inputmode="numeric" placeholder="₺ 1.500.000">
-</div>
-
-</div>
-
-<!-- 4. SATIR -->
-<div class="form-row">
-
-<div class="form-col full">
-<label>Detay</label>
-<textarea class="form-control" rows="3" placeholder="Örn: 2+1, metroya yakın..." required></textarea>
-</div>
-
-</div>
-
-<!-- 5. SATIR -->
-<div class="form-row">
-
-<div class="form-col">
-<label>Ad Soyad</label>
-<input class="form-control" type="text" autocomplete="name" required>
-</div>
-
-<div class="form-col">
-<label>Telefon</label>
-<input class="form-control" type="tel" inputmode="tel" autocomplete="tel" required>
-</div>
-
-</div>
-
-<!-- 6. SATIR -->
-<div class="form-row">
-
-<div class="form-col full">
-<label>E-posta</label>
-<input class="form-control" type="email" autocomplete="email">
-</div>
-
-</div>
+<input class="form-control" type="email" placeholder="E-posta">
 
 <!-- KVKK -->
-<div class="form-row">
-<div class="form-col full kvkk">
 <label class="kvkk-label">
-<input type="checkbox" required>
-<span>KVKK metnini kabul ediyorum</span>
+  <input type="checkbox" required>
+  <span>KVKK kabul</span>
 </label>
-</div>
-</div>
 
 </div>
 
