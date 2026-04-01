@@ -109,14 +109,22 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-
 /* ===============================
 BASE
 =============================== */
 
+html, body{
+overflow-x:hidden;
+max-width:100%;
+}
+
 body{
 background:#f3f6fb;
 padding-top:env(safe-area-inset-top);
+}
+
+*{
+box-sizing:border-box;
 }
 
 .page-wrapper{
@@ -130,6 +138,7 @@ max-width:900px;
 margin:auto;
 }
 
+
 /* ===============================
 PREMIUM HEADER
 =============================== */
@@ -138,15 +147,12 @@ PREMIUM HEADER
 margin:16px;
 padding:18px;
 border-radius:20px;
-
 background:
 linear-gradient(135deg,#2b7be4,#0e4fa8),
 radial-gradient(circle at top right, rgba(255,255,255,.12), transparent);
-
 box-shadow:
 0 12px 30px rgba(0,0,0,.18),
 inset 0 1px 0 rgba(255,255,255,.25);
-
 color:#fff;
 }
 
@@ -179,6 +185,7 @@ background:rgba(255,255,255,.2);
 backdrop-filter:blur(10px);
 }
 
+
 /* ===============================
 INFO BOX
 =============================== */
@@ -193,6 +200,7 @@ font-size:14px;
 line-height:1.6;
 }
 
+
 /* ===============================
 FORM
 =============================== */
@@ -204,29 +212,130 @@ flex-direction:column;
 gap:16px;
 }
 
-.form-group{
+.form-card{
 background:#fff;
-padding:16px;
+padding:14px;
 border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.06);
+box-shadow:0 8px 24px rgba(0,0,0,.06);
 }
 
+/* FLEX FIX (TAŞMA ENGEL) */
+.form-row{
+display:flex;
+gap:10px;
+margin-top:10px;
+min-width:0;
+}
+
+.form-col{
+flex:1;
+display:flex;
+flex-direction:column;
+min-width:0;
+}
+
+.form-col.full{
+flex:100%;
+}
+
+/* INPUT FIX */
 .form-control{
 width:100%;
-padding:14px;
+max-width:100%;
+padding:12px;
 border-radius:12px;
 border:1px solid #e2e8f0;
 background:#f9fafb;
 font-size:14px;
-margin-top:8px;
+margin-top:6px;
 }
 
 .form-control:focus{
 border-color:#2563eb;
 background:#fff;
 outline:none;
-box-shadow:0 0 0 3px rgba(37,99,235,.15);
+box-shadow:0 0 0 2px rgba(37,99,235,.15);
 }
+
+
+/* ===============================
+CHIP (SEÇİM)
+=============================== */
+
+.chip-group{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:8px;
+max-width:100%;
+overflow:hidden;
+}
+
+.chip{
+padding:10px 14px;
+border-radius:12px;
+background:#f1f5f9;
+font-size:13px;
+font-weight:600;
+cursor:pointer;
+}
+
+.chip.active{
+background:#2563eb;
+color:#fff;
+}
+
+
+/* ===============================
+AUTOCOMPLETE
+=============================== */
+
+.autocomplete-list{
+position:relative;
+width:100%;
+max-width:100%;
+background:#fff;
+border-radius:12px;
+box-shadow:0 8px 20px rgba(0,0,0,.1);
+margin-top:6px;
+max-height:180px;
+overflow:auto;
+display:none;
+}
+
+.autocomplete-item{
+padding:10px;
+cursor:pointer;
+}
+
+.autocomplete-item:hover{
+background:#f1f5f9;
+}
+
+
+/* ===============================
+BUDGET
+=============================== */
+
+.budget-box{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+
+/* ===============================
+KVKK
+=============================== */
+
+.kvkk-label{
+display:flex;
+gap:8px;
+font-size:13px;
+margin-top:10px;
+align-items:center;
+}
+
 
 /* ===============================
 SUBMIT (APP LEVEL)
@@ -262,7 +371,17 @@ font-size:15px;
 box-shadow:0 10px 25px rgba(37,99,235,.3);
 }
 
-/* DESKTOP FIX */
+
+/* ===============================
+RESPONSIVE
+=============================== */
+
+@media(max-width:480px){
+.form-row{
+flex-direction:column;
+}
+}
+
 @media(min-width:768px){
 .submit-wrap{
 left:50%;
@@ -271,154 +390,16 @@ max-width:700px;
 }
 }
 
+
+/* ===============================
+NOTE
+=============================== */
+
 .note{
 text-align:center;
 font-size:13px;
 color:#6b7280;
 margin-top:10px;
-}
-
-.form-card{
-background:#fff;
-padding:14px;
-border-radius:18px;
-box-shadow:0 8px 24px rgba(0,0,0,.06);
-}
-
-.form-row{
-display:flex;
-gap:10px;
-margin-bottom:12px;
-}
-
-.form-col{
-flex:1;
-display:flex;
-flex-direction:column;
-}
-
-.form-col.full{
-flex:100%;
-}
-
-.form-control{
-width:100%;
-padding:12px;
-border-radius:12px;
-border:1px solid #e2e8f0;
-background:#f9fafb;
-font-size:14px;
-margin-top:6px;
-}
-
-.form-control:focus{
-border-color:#2563eb;
-background:#fff;
-outline:none;
-box-shadow:0 0 0 2px rgba(37,99,235,.15);
-}
-
-/* KVKK */
-.kvkk-label{
-display:flex;
-gap:8px;
-font-size:13px;
-align-items:center;
-}
-
-/* MOBİL STACK */
-@media(max-width:480px){
-.form-row{
-flex-direction:column;
-}
-}
-
-
-.form-card{
-background:#fff;
-padding:14px;
-border-radius:18px;
-box-shadow:0 8px 24px rgba(0,0,0,.06);
-}
-
-.form-row{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-
-.form-control{
-width:100%;
-padding:12px;
-border-radius:12px;
-border:1px solid #e2e8f0;
-background:#f9fafb;
-font-size:14px;
-margin-top:6px;
-}
-
-/* CHIP */
-.chip-group{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-top:8px;
-}
-
-.chip{
-padding:10px 14px;
-border-radius:12px;
-background:#f1f5f9;
-font-size:13px;
-font-weight:600;
-cursor:pointer;
-}
-
-.chip.active{
-background:#2563eb;
-color:#fff;
-}
-
-/* AUTOCOMPLETE */
-.autocomplete-list{
-background:#fff;
-border-radius:12px;
-box-shadow:0 8px 20px rgba(0,0,0,.1);
-margin-top:6px;
-max-height:180px;
-overflow:auto;
-display:none;
-}
-
-.autocomplete-item{
-padding:10px;
-cursor:pointer;
-}
-
-.autocomplete-item:hover{
-background:#f1f5f9;
-}
-
-/* BUDGET */
-.budget-box{
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-
-/* KVKK */
-.kvkk-label{
-display:flex;
-gap:8px;
-font-size:13px;
-margin-top:10px;
-}
-
-/* MOBİL */
-@media(max-width:480px){
-.form-row{
-flex-direction:column;
-}
 }
 
 </style>
