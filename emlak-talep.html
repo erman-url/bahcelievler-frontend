@@ -497,8 +497,7 @@ margin-bottom:10px;
 <br><br>
 Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğrudan sizinle paylaşılır.
 
-</div>
-<form class="form-area">
+</div><form class="form-area">
 
 <div class="form-card">
 
@@ -542,11 +541,10 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 <!-- KULLANICI -->
 <div class="form-row">
  <input name="ad" class="form-control" type="text" placeholder="Ad Soyad" required>
-<input name="tel" class="form-control" type="tel" placeholder="Telefon" required>
+ <input name="tel" class="form-control" type="tel" placeholder="Telefon" required>
 </div>
 
 <input name="email" class="form-control" type="email" placeholder="E-posta">
-
 
 <!-- KVKK -->
 <label class="kvkk-label">
@@ -559,6 +557,21 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 <div class="note">
 Talebiniz onay sonrası emlak danışmanlarına iletilir.
 </div>
+
+</div> <!-- form-card -->
+
+</form>
+
+<!-- SUBMIT -->
+<div class="submit-wrap">
+  <div class="submit-inner">
+    <button type="button" class="submit-btn">
+      TALEBİ GÖNDER
+    </button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
 <div id="successBox" class="success-box" style="display:none;">
 
   <div class="success-card">
@@ -578,8 +591,12 @@ Talebiniz onay sonrası emlak danışmanlarına iletilir.
 </main>
 
 </div>
-<script>
 
+</script>
+
+
+
+<script>
 /* ===============================
 FORM SUBMIT ENGELLE (GLOBAL)
 =============================== */
