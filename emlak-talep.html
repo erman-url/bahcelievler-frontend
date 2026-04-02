@@ -695,9 +695,8 @@ function toast(msg){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),2500);
 }
-
 /* ===============================
-SUBMIT
+SUBMIT (FINAL STABLE PRO)
 =============================== */
 
 const btn = document.querySelector(".submit-btn");
@@ -737,6 +736,7 @@ btn.addEventListener("click", async () => {
   data.tel = (data.tel || "").replace(/\D/g,"");
   data.budget = parseInt(data.budget) || 0;
 
+  /* VALIDATION */
   if(!data.tur) return unlock("Gayrimenkul türü seçiniz");
   if(!data.durum) return unlock("İlan durumu seçiniz");
   if(!data.mahalle) return unlock("Mahalle seçiniz");
@@ -766,57 +766,82 @@ btn.addEventListener("click", async () => {
       body: JSON.stringify(data)
     });
 
-    const json = await res.json();
+    let json;
+    try {
+      json = await res.json();
+    } catch {
+      return unlock("Sunucu yanıtı hatalı");
+    }
 
-    if(json.ok){
+    if(!json || !json.ok){
+      return unlock("İşlem başarısız");
+    }
 
-      document.querySelector(".page-wrapper").style.display = "none";
+    /* ===============================
+    SUCCESS (FULL SCREEN OVERRIDE)
+    =============================== */
 
-      const box = document.getElementById("successBox");
-      box.style.display = "flex";
+    document.body.innerHTML = `
+      <div style="
+        position:fixed;
+        inset:0;
+        background:#f3f6fb;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        z-index:9999;
+      ">
 
-      box.innerHTML = `
-        <div class="success-card">
+        <div style="
+          background:#fff;
+          padding:28px;
+          border-radius:22px;
+          text-align:center;
+          box-shadow:0 15px 40px rgba(0,0,0,.12);
+          max-width:400px;
+          width:100%;
+        ">
 
-          <div class="success-icon">🏡</div>
+          <div style="font-size:42px;margin-bottom:10px;">🏡</div>
 
-          <h2>Talebiniz Başarıyla Alındı</h2>
+          <h2 style="margin-bottom:10px;">
+            Talebiniz Başarıyla Alındı
+          </h2>
 
-          <p>
+          <p style="font-size:14px;color:#555;line-height:1.6;">
             Talebiniz sistemimize kaydedilmiştir.<br><br>
             Bölgedeki yetkili emlak danışmanları,
-            kriterlerinize uygun ilanlarla sizinle
-            en kısa sürede iletişime geçecektir.
+            kriterlerinize uygun ilanlarla
+            en kısa sürede sizinle iletişime geçecektir.
           </p>
 
           <button onclick="location.href='/'"
           style="
-          margin-top:15px;
-          padding:14px;
-          border:none;
-          border-radius:14px;
-          background:#2563eb;
-          color:#fff;
-          font-weight:700;
-          width:100%;
+            margin-top:18px;
+            padding:14px;
+            border:none;
+            border-radius:14px;
+            background:#2563eb;
+            color:#fff;
+            font-weight:700;
+            width:100%;
+            cursor:pointer;
           ">
-          Ana Sayfaya Dön
+            Ana Sayfaya Dön
           </button>
 
         </div>
-      `;
 
-    } else {
-      unlock("İşlem başarısız");
-    }
+      </div>
+    `;
 
   } catch(e){
-    console.error(e);
+    console.error("FETCH ERROR:", e);
     unlock("Bağlantı hatası");
   }
 
 });
-
 });
 </script>
 
