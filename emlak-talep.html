@@ -552,146 +552,10 @@ Talebiniz onay sonrası emlak danışmanlarına iletilir.
 </main>
 
 </div>
-
 <script>
 
 /* ===============================
-FORM SUBMIT ENGELLE (KRİTİK)
-=============================== */
-document.querySelector(".form-area")?.addEventListener("submit", e => e.preventDefault());
-
-/* ===============================
-CHIP SELECT
-=============================== */
-document.querySelectorAll(".chip-group").forEach(group=>{
-  const input = document.querySelector(`input[name="${group.dataset.name}"]`);
-
-  group.querySelectorAll(".chip").forEach(chip=>{
-    chip.onclick = ()=>{
-      group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
-      chip.classList.add("active");
-      input.value = chip.dataset.value;
-    }
-  });
-});
-
-/* ===============================
-SUBMIT (FULL FIX STABLE)
-=============================== */
-
-document.querySelector(".submit-btn")?.addEventListener("click", async () => {
-
-  const btn = document.querySelector(".submit-btn");
-
-  if(btn.classList.contains("loading")) return;
-  btn.classList.add("loading");
-
-  function clean(str){
-    return (str || "")
-      .replace(/[<>]/g,"")
-      .replace(/\s+/g," ")
-      .trim();
-  }
-
-  function unlock(msg){
-    if(msg) alert(msg);
-
-    btn.innerText = "TALEBİ GÖNDER";
-    btn.disabled = false;
-    btn.style.opacity = "1";
-    btn.classList.remove("loading");
-  }
-
-  const data = {
-    tur: clean(document.querySelector('[name="tur"]').value),
-    durum: clean(document.querySelector('[name="durum"]').value),
-    mahalle: clean(document.querySelector('[name="mahalle"]').value),
-    budget: document.getElementById("budgetInput").value,
-    detay: clean(document.querySelector('[name="detay"]').value),
-    ad: clean(document.querySelector('[name="ad"]').value),
-    tel: document.querySelector('[name="tel"]').value,
-    email: clean(document.querySelector('[name="email"]').value),
-    kvkk: document.querySelector('[name="kvkk"]').checked
-  };
-
-  data.tel = (data.tel || "").replace(/\D/g,"");
-  data.budget = parseInt(data.budget) || 0;
-
-  /* VALIDATION */
-  if(!data.tur) return unlock("Tür seçiniz");
-  if(!data.durum) return unlock("Durum seçiniz");
-  if(!data.mahalle) return unlock("Mahalle seçiniz");
-
-  if(!/^5\d{9}$/.test(data.tel)){
-    return unlock("Geçerli telefon giriniz (5XXXXXXXXX)");
-  }
-
-  if(data.budget < 100000){
-    return unlock("Geçerli bütçe giriniz");
-  }
-
-  if(!data.kvkk){
-    return unlock("KVKK onayı zorunlu");
-  }
-
-  btn.innerText = "Gönderiliyor...";
-  btn.disabled = true;
-  btn.style.opacity = "0.7";
-
-  try {
-
-    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/emlak-talep", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
-    });
-
-    const raw = await res.text();
-
-    let result = {};
-    try{
-      result = JSON.parse(raw);
-    }catch(e){
-      console.warn("JSON parse fail:", raw);
-    }
-
-    console.log("STATUS:", res.status);
-    console.log("RAW RESPONSE:", raw);
-
-    if(res.ok){
-
-      document.querySelector(".page-wrapper").style.display = "none";
-      document.getElementById("successBox").style.display = "flex";
-
-      document.querySelector(".form-area")?.reset?.();
-      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-
-      document.getElementById("mahalleInput").value = "";
-      document.querySelector('[name="mahalle"]').value = "";
-
-      document.getElementById("budgetInput").value = "";
-      document.getElementById("budgetRange").value = "";
-
-      return;
-
-    }else{
-      return unlock(result.error || "Sunucu hatası");
-    }
-
-  } catch(e){
-    console.error("FETCH ERROR:", e);
-    return unlock("Bağlantı hatası");
-  }
-
-  unlock();
-});
-
-</script>
-
-<script>
-
-/* ===============================
-FORM SUBMIT ENGELLE
+FORM SUBMIT ENGELLE (GLOBAL)
 =============================== */
 document.querySelector(".form-area")?.addEventListener("submit", e => e.preventDefault());
 
@@ -763,7 +627,7 @@ if(range && number){
 }
 
 /* ===============================
-SUBMIT (TEK VE DOĞRU)
+SUBMIT (TEK – STABİL – PRO)
 =============================== */
 
 document.querySelector(".submit-btn")?.addEventListener("click", async () => {
@@ -804,6 +668,7 @@ document.querySelector(".submit-btn")?.addEventListener("click", async () => {
   data.tel = (data.tel || "").replace(/\D/g,"");
   data.budget = parseInt(data.budget) || 0;
 
+  /* VALIDATION */
   if(!data.tur) return unlock("Tür seçiniz");
   if(!data.durum) return unlock("Durum seçiniz");
   if(!data.mahalle) return unlock("Mahalle seçiniz");
@@ -833,19 +698,21 @@ document.querySelector(".submit-btn")?.addEventListener("click", async () => {
     });
 
     const raw = await res.text();
+
     console.log("STATUS:", res.status);
     console.log("RAW:", raw);
 
     if(res.ok){
       document.querySelector(".page-wrapper").style.display = "none";
       document.getElementById("successBox").style.display = "flex";
+      return;
     } else {
-      unlock("Sunucu hatası");
+      return unlock("Sunucu hatası");
     }
 
   } catch(e){
-    console.error(e);
-    unlock("Bağlantı hatası");
+    console.error("FETCH ERROR:", e);
+    return unlock("Bağlantı hatası");
   }
 
 });
