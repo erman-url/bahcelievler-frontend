@@ -603,7 +603,7 @@ FORM SUBMIT ENGELLE
 document.querySelector(".form-area")?.addEventListener("submit", e => e.preventDefault());
 
 /* ===============================
-CHIP SELECT (NULL SAFE)
+CHIP SELECT
 =============================== */
 document.querySelectorAll(".chip-group").forEach(group=>{
   const input = document.querySelector(`input[name="${group.dataset.name}"]`);
@@ -664,7 +664,7 @@ if(mahalleInput && mahalleList && mahalleHidden){
 }
 
 /* ===============================
-BUDGET SYNC (SAFE)
+BUDGET SYNC
 =============================== */
 const range = document.getElementById("budgetRange");
 const number = document.getElementById("budgetInput");
@@ -675,26 +675,29 @@ if(range && number){
 }
 
 /* ===============================
-TOAST (UX FIX)
+TOAST (PRO UX)
 =============================== */
 function toast(msg){
   const el = document.createElement("div");
   el.innerText = msg;
-  el.style.position="fixed";
-  el.style.bottom="160px";
-  el.style.left="50%";
-  el.style.transform="translateX(-50%)";
-  el.style.background="#111";
-  el.style.color="#fff";
-  el.style.padding="12px 18px";
-  el.style.borderRadius="10px";
-  el.style.zIndex="9999";
+  el.style.cssText = `
+    position:fixed;
+    bottom:160px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#111;
+    color:#fff;
+    padding:12px 18px;
+    border-radius:12px;
+    z-index:9999;
+    font-weight:600;
+  `;
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),2500);
 }
 
 /* ===============================
-SUBMIT (HARD FIX)
+SUBMIT
 =============================== */
 
 const btn = document.querySelector(".submit-btn");
@@ -702,13 +705,10 @@ if(!btn) return;
 
 btn.addEventListener("click", async () => {
 
-  console.log("CLICK TRIGGERED"); // 🔥 debug
-
   if(btn.classList.contains("loading")) return;
 
   function unlock(msg){
     if(msg) toast(msg);
-
     btn.innerText = "TALEBİ GÖNDER";
     btn.disabled = false;
     btn.style.opacity = "1";
@@ -734,25 +734,23 @@ btn.addEventListener("click", async () => {
     kvkk: document.querySelector('[name="kvkk"]')?.checked
   };
 
-  console.log("DATA:", data); // 🔥 debug
-
   data.tel = (data.tel || "").replace(/\D/g,"");
   data.budget = parseInt(data.budget) || 0;
 
-  if(!data.tur) return unlock("Tür seçiniz");
-  if(!data.durum) return unlock("Durum seçiniz");
+  if(!data.tur) return unlock("Gayrimenkul türü seçiniz");
+  if(!data.durum) return unlock("İlan durumu seçiniz");
   if(!data.mahalle) return unlock("Mahalle seçiniz");
 
   if(!/^5\d{9}$/.test(data.tel)){
-    return unlock("Geçerli telefon giriniz (5XXXXXXXXX)");
+    return unlock("Telefon formatı hatalı");
   }
 
   if(data.budget < 100000){
-    return unlock("Geçerli bütçe giriniz");
+    return unlock("Bütçe minimum 100.000 olmalı");
   }
 
   if(!data.kvkk){
-    return unlock("KVKK onayı zorunlu");
+    return unlock("KVKK onayı gereklidir");
   }
 
   btn.classList.add("loading");
@@ -768,20 +766,52 @@ btn.addEventListener("click", async () => {
       body: JSON.stringify(data)
     });
 
-    const raw = await res.text();
+    const json = await res.json();
 
-    console.log("STATUS:", res.status);
-    console.log("RAW:", raw);
+    if(json.ok){
 
-    if(res.ok){
       document.querySelector(".page-wrapper").style.display = "none";
-      document.getElementById("successBox").style.display = "flex";
+
+      const box = document.getElementById("successBox");
+      box.style.display = "flex";
+
+      box.innerHTML = `
+        <div class="success-card">
+
+          <div class="success-icon">🏡</div>
+
+          <h2>Talebiniz Başarıyla Alındı</h2>
+
+          <p>
+            Talebiniz sistemimize kaydedilmiştir.<br><br>
+            Bölgedeki yetkili emlak danışmanları,
+            kriterlerinize uygun ilanlarla sizinle
+            en kısa sürede iletişime geçecektir.
+          </p>
+
+          <button onclick="location.href='/'"
+          style="
+          margin-top:15px;
+          padding:14px;
+          border:none;
+          border-radius:14px;
+          background:#2563eb;
+          color:#fff;
+          font-weight:700;
+          width:100%;
+          ">
+          Ana Sayfaya Dön
+          </button>
+
+        </div>
+      `;
+
     } else {
-      unlock("Sunucu hatası");
+      unlock("İşlem başarısız");
     }
 
   } catch(e){
-    console.error("FETCH ERROR:", e);
+    console.error(e);
     unlock("Bağlantı hatası");
   }
 
