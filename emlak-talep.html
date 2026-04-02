@@ -530,7 +530,7 @@ Talebiniz bölgedeki emlak danışmanlarına iletilir. Size uygun ilanlar doğru
 <!-- BÜTÇE -->
 <label style="margin-top:12px;">Bütçe</label>
 <div class="budget-box">
-  <input type="range" min="15000" max="10000000" step="50000" id="budgetRange">
+  <input type="range" min="15000" max="50000000" step="1000" id="budgetRange">
   <input type="number" id="budgetInput" class="form-control" placeholder="₺">
 </div>
 
@@ -745,9 +745,9 @@ btn.addEventListener("click", async () => {
     return unlock("Telefon formatı hatalı");
   }
 
-  if(data.budget < 100000){
-    return unlock("Bütçe minimum 100.000 olmalı");
-  }
+if(data.budget < 15000){
+  return unlock("Bütçe minimum 15.000 olmalı");
+}
 
   if(!data.kvkk){
     return unlock("KVKK onayı gereklidir");
