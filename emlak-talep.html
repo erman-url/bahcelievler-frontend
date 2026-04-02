@@ -594,26 +594,27 @@ Talebiniz onay sonrası emlak danışmanlarına iletilir.
 
 </script>
 
-
-
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
 /* ===============================
-FORM SUBMIT ENGELLE (GLOBAL)
+FORM SUBMIT ENGELLE
 =============================== */
 document.querySelector(".form-area")?.addEventListener("submit", e => e.preventDefault());
 
 /* ===============================
-CHIP SELECT
+CHIP SELECT (NULL SAFE)
 =============================== */
 document.querySelectorAll(".chip-group").forEach(group=>{
   const input = document.querySelector(`input[name="${group.dataset.name}"]`);
+  if(!input) return;
 
   group.querySelectorAll(".chip").forEach(chip=>{
-    chip.onclick = ()=>{
+    chip.addEventListener("click", ()=>{
       group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
       chip.classList.add("active");
       input.value = chip.dataset.value;
-    }
+    });
   });
 });
 
@@ -630,58 +631,83 @@ const mahalleInput = document.getElementById("mahalleInput");
 const mahalleList = document.getElementById("mahalleList");
 const mahalleHidden = document.querySelector('input[name="mahalle"]');
 
-mahalleInput?.addEventListener("input", ()=>{
-  const val = mahalleInput.value.toLowerCase();
-  mahalleList.innerHTML = "";
+if(mahalleInput && mahalleList && mahalleHidden){
 
-  if(!val){
-    mahalleList.style.display="none";
-    return;
-  }
+  mahalleInput.addEventListener("input", ()=>{
+    const val = mahalleInput.value.toLowerCase();
+    mahalleList.innerHTML = "";
 
-  const filtered = mahalleler.filter(m=>m.toLowerCase().includes(val));
-
-  filtered.forEach(m=>{
-    const div = document.createElement("div");
-    div.className="autocomplete-item";
-    div.innerText = m;
-
-    div.onclick = ()=>{
-      mahalleInput.value = m;
-      mahalleHidden.value = m;
+    if(!val){
       mahalleList.style.display="none";
+      return;
     }
 
-    mahalleList.appendChild(div);
+    const filtered = mahalleler.filter(m=>m.toLowerCase().includes(val));
+
+    filtered.forEach(m=>{
+      const div = document.createElement("div");
+      div.className="autocomplete-item";
+      div.innerText = m;
+
+      div.onclick = ()=>{
+        mahalleInput.value = m;
+        mahalleHidden.value = m;
+        mahalleList.style.display="none";
+      };
+
+      mahalleList.appendChild(div);
+    });
+
+    mahalleList.style.display = filtered.length ? "block" : "none";
   });
 
-  mahalleList.style.display = filtered.length ? "block" : "none";
-});
+}
 
 /* ===============================
-BUDGET SYNC
+BUDGET SYNC (SAFE)
 =============================== */
 const range = document.getElementById("budgetRange");
 const number = document.getElementById("budgetInput");
 
 if(range && number){
-  range.oninput = ()=> number.value = range.value;
-  number.oninput = ()=> range.value = number.value;
+  range.addEventListener("input", ()=> number.value = range.value);
+  number.addEventListener("input", ()=> range.value = number.value);
 }
 
 /* ===============================
-SUBMIT (TEK – STABİL – PRO)
+TOAST (UX FIX)
+=============================== */
+function toast(msg){
+  const el = document.createElement("div");
+  el.innerText = msg;
+  el.style.position="fixed";
+  el.style.bottom="160px";
+  el.style.left="50%";
+  el.style.transform="translateX(-50%)";
+  el.style.background="#111";
+  el.style.color="#fff";
+  el.style.padding="12px 18px";
+  el.style.borderRadius="10px";
+  el.style.zIndex="9999";
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2500);
+}
+
+/* ===============================
+SUBMIT (HARD FIX)
 =============================== */
 
-document.querySelector(".submit-btn")?.addEventListener("click", async () => {
+const btn = document.querySelector(".submit-btn");
+if(!btn) return;
 
-  const btn = document.querySelector(".submit-btn");
+btn.addEventListener("click", async () => {
+
+  console.log("CLICK TRIGGERED"); // 🔥 debug
 
   if(btn.classList.contains("loading")) return;
-  btn.classList.add("loading");
 
   function unlock(msg){
-    if(msg) alert(msg);
+    if(msg) toast(msg);
 
     btn.innerText = "TALEBİ GÖNDER";
     btn.disabled = false;
@@ -697,21 +723,22 @@ document.querySelector(".submit-btn")?.addEventListener("click", async () => {
   }
 
   const data = {
-    tur: clean(document.querySelector('[name="tur"]').value),
-    durum: clean(document.querySelector('[name="durum"]').value),
-    mahalle: clean(document.querySelector('[name="mahalle"]').value),
-    budget: document.getElementById("budgetInput").value,
-    detay: clean(document.querySelector('[name="detay"]').value),
-    ad: clean(document.querySelector('[name="ad"]').value),
-    tel: document.querySelector('[name="tel"]').value,
-    email: clean(document.querySelector('[name="email"]').value),
-    kvkk: document.querySelector('[name="kvkk"]').checked
+    tur: clean(document.querySelector('[name="tur"]')?.value),
+    durum: clean(document.querySelector('[name="durum"]')?.value),
+    mahalle: clean(document.querySelector('[name="mahalle"]')?.value),
+    budget: document.getElementById("budgetInput")?.value,
+    detay: clean(document.querySelector('[name="detay"]')?.value),
+    ad: clean(document.querySelector('[name="ad"]')?.value),
+    tel: document.querySelector('[name="tel"]')?.value,
+    email: clean(document.querySelector('[name="email"]')?.value),
+    kvkk: document.querySelector('[name="kvkk"]')?.checked
   };
+
+  console.log("DATA:", data); // 🔥 debug
 
   data.tel = (data.tel || "").replace(/\D/g,"");
   data.budget = parseInt(data.budget) || 0;
 
-  /* VALIDATION */
   if(!data.tur) return unlock("Tür seçiniz");
   if(!data.durum) return unlock("Durum seçiniz");
   if(!data.mahalle) return unlock("Mahalle seçiniz");
@@ -728,6 +755,7 @@ document.querySelector(".submit-btn")?.addEventListener("click", async () => {
     return unlock("KVKK onayı zorunlu");
   }
 
+  btn.classList.add("loading");
   btn.innerText = "Gönderiliyor...";
   btn.disabled = true;
   btn.style.opacity = "0.7";
@@ -748,20 +776,19 @@ document.querySelector(".submit-btn")?.addEventListener("click", async () => {
     if(res.ok){
       document.querySelector(".page-wrapper").style.display = "none";
       document.getElementById("successBox").style.display = "flex";
-      return;
     } else {
-      return unlock("Sunucu hatası");
+      unlock("Sunucu hatası");
     }
 
   } catch(e){
     console.error("FETCH ERROR:", e);
-    return unlock("Bağlantı hatası");
+    unlock("Bağlantı hatası");
   }
 
 });
 
+});
 </script>
-
 
 
 <script src="assets/js/core.js" defer></script>
