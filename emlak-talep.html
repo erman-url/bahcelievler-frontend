@@ -336,19 +336,36 @@ margin-top:10px;
 align-items:center;
 }
 
-
 /* ===============================
-SUBMIT (APP LEVEL)
+SUBMIT (APP LEVEL - FIXED)
 =============================== */
 
 .submit-wrap{
 position:fixed;
 left:0;
 right:0;
-bottom:calc(90px + env(safe-area-inset-bottom));
+
+/* 🔥 ALT BOŞLUK ARTIRILDI (footer + nav fix) */
+bottom:120px;
+
 padding:12px 16px;
-z-index:50;
+
+/* 🔥 her şeyin üstünde */
+z-index:999;
+
 pointer-events:none;
+
+/* 🔥 max genişlik kontrol */
+max-width:900px;
+margin:auto;
+}
+
+/* desktop ortalama fix */
+@media(min-width:768px){
+.submit-wrap{
+left:50%;
+transform:translateX(-50%);
+}
 }
 
 .submit-inner{
@@ -369,8 +386,17 @@ color:#fff;
 font-weight:800;
 font-size:15px;
 box-shadow:0 10px 25px rgba(37,99,235,.3);
+
+/* 🔥 dokunma hissi */
+cursor:pointer;
 }
 
+/* 🔥 mobil safe area desteği */
+@supports (bottom: env(safe-area-inset-bottom)){
+.submit-wrap{
+bottom:calc(120px + env(safe-area-inset-bottom));
+}
+}
 
 /* ===============================
 RESPONSIVE
