@@ -633,7 +633,7 @@ number.oninput = ()=> range.value = number.value;
 
 
 /* ===============================
-SUBMIT (FULL FIX)
+SUBMIT (FULL FIX - STABLE)
 =============================== */
 
 document.querySelector(".submit-btn").onclick = async () => {
@@ -707,35 +707,47 @@ document.querySelector(".submit-btn").onclick = async () => {
       body: JSON.stringify(data)
     });
 
+    /* 🔥 KRİTİK FIX: güvenli parse */
+    const raw = await res.text();
+
     let result = {};
-    try{ result = await res.json(); } catch(e){}
+    try{
+      result = JSON.parse(raw);
+    }catch(e){
+      console.warn("JSON parse fail:", raw);
+    }
 
     console.log("STATUS:", res.status);
-    console.log("RESULT:", result);
+    console.log("RAW RESPONSE:", raw);
 
     if(res.ok){
 
+      // 🔥 SUCCESS HER KOŞULDA GÖSTER
       document.querySelector(".page-wrapper").style.display = "none";
       document.getElementById("successBox").style.display = "flex";
 
-      document.querySelector(".form-area").reset?.();
+      document.querySelector(".form-area")?.reset?.();
       document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-      mahalleInput.value = "";
-      mahalleHidden.value = "";
-      number.value = "";
-      range.value = "";
+
+      document.getElementById("mahalleInput").value = "";
+      document.querySelector('[name="mahalle"]').value = "";
+
+      document.getElementById("budgetInput").value = "";
+      document.getElementById("budgetRange").value = "";
 
       finished = true;
       return;
 
     }else{
-      return unlock(result.error || "Bir hata oluştu");
+      return unlock(result.error || "Sunucu hatası");
     }
 
   } catch(e){
+    console.error("FETCH ERROR:", e);
     return unlock("Bağlantı hatası");
   }
 
+  /* 🔥 FALLBACK: buton kilitlenmesin */
   if(!finished){
     btn.innerText = "TALEBİ GÖNDER";
     btn.disabled = false;
