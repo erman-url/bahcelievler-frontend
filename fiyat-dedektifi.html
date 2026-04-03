@@ -497,87 +497,149 @@ RADARA EKLE
 
 </div>
 
-<div id="globalFooter"></div>
-
 <script src="assets/js/priceList.js"></script>
-
 <script>
 
-/* ✅ DEBUG GUARD */
-document.addEventListener("DOMContentLoaded",function(){
-if(!document.getElementById("globalHeader")) console.error("globalHeader eksik")
-if(!document.getElementById("sideMenu")) console.error("sideMenu eksik")
-})
+/* ===============================
+GLOBAL ERROR CATCH (PRO)
+=============================== */
+window.addEventListener("error", e => {
+  console.log("GLOBAL ERROR:", e.message);
+});
 
+/* ===============================
+INIT
+=============================== */
+document.addEventListener("DOMContentLoaded", () => {
+
+  // DEBUG GUARD
+  if(!document.getElementById("globalHeader")){
+    console.error("globalHeader eksik");
+  }
+
+  if(!document.getElementById("sideMenu")){
+    console.error("sideMenu eksik");
+  }
+
+  // MODAL CLICK SAFE
+  const modalEl = document.getElementById("priceModal");
+  if(modalEl){
+    modalEl.addEventListener("click", function(e){
+      if(e.target === this){
+        closeModal();
+      }
+    });
+  }
+
+  // DATA LOAD
+  if (typeof loadLastPrices === "function") {
+    loadLastPrices();
+  } else {
+    console.error("loadLastPrices bulunamadı");
+  }
+
+  loadSemtChart();
+
+});
+
+/* ===============================
+MODAL
+=============================== */
 function openModal(){
-const modal=document.getElementById("priceModal")
-modal.style.display="flex"
-document.body.classList.add("modal-open")
+  const modal = document.getElementById("priceModal");
+  if(!modal) return;
+
+  modal.style.display = "flex";
+  document.body.classList.add("modal-open");
 }
 
 function closeModal(){
-const modal=document.getElementById("priceModal")
-modal.style.display="none"
-document.body.classList.remove("modal-open")
+  const modal = document.getElementById("priceModal");
+  if(!modal) return;
+
+  modal.style.display = "none";
+  document.body.classList.remove("modal-open");
 }
 
-document.getElementById("priceModal").addEventListener("click",function(e){
-if(e.target===this){
-closeModal()
-}
-})
-
-document.addEventListener("DOMContentLoaded", () => {
-if (typeof loadLastPrices === "function") {
-loadLastPrices()
-} else {
-console.error("loadLastPrices bulunamadı")
-}
-loadSemtChart()
-})
-
+/* ===============================
+REFRESH
+=============================== */
 window.refreshPrices = function(){
-if (typeof loadLastPrices === "function") {
-loadLastPrices()
-}
-if (typeof loadSemtChart === "function") {
-loadSemtChart()
-}
+
+  if (typeof loadLastPrices === "function") {
+    loadLastPrices();
+  }
+
+  if (typeof loadSemtChart === "function") {
+    loadSemtChart();
+  }
+
 }
 
+/* ===============================
+LOAD CHART (FULL SAFE)
+=============================== */
 async function loadSemtChart(){
-try{
-const res = await fetch("/api/semt-endeks")
-const data = await res.json()
 
-if(!data || !data.length){
-console.warn("grafik veri yok")
-return
-}
+  try{
 
-const ctx = document.getElementById("priceChart").getContext("2d")
+    // Chart.js check
+    if(typeof Chart === "undefined"){
+      console.error("Chart.js yüklenmemiş");
+      return;
+    }
 
-if(window.priceChartInstance instanceof Chart){
-window.priceChartInstance.destroy()
-}
+    const res = await fetch("/api/semt-endeks");
 
-window.priceChartInstance = new Chart(ctx, {
-type: "line",
-data: {
-labels: data.map(i => i.gun),
-datasets: [{
-data: data.map(i => i.ortalama),
-tension: 0.3
-}]
-},
-options: {
-plugins:{ legend:{ display:false } }
-}
-})
+    if(!res.ok){
+      throw new Error("API error");
+    }
 
-}catch(e){
-console.error("grafik hata", e)
-}
+    const data = await res.json();
+
+    if(!Array.isArray(data) || data.length === 0){
+      console.warn("grafik veri yok");
+      return;
+    }
+
+    const canvas = document.getElementById("priceChart");
+    if(!canvas){
+      console.error("priceChart bulunamadı");
+      return;
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    // destroy old chart
+    if(window.priceChartInstance && typeof window.priceChartInstance.destroy === "function"){
+      window.priceChartInstance.destroy();
+    }
+
+    window.priceChartInstance = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.map(i => i.gun || ""),
+        datasets: [{
+          data: data.map(i => i.ortalama || 0),
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins:{
+          legend:{ display:false }
+        },
+        scales:{
+          x:{ display:true },
+          y:{ display:true }
+        }
+      }
+    });
+
+  }catch(e){
+    console.error("grafik hata:", e);
+  }
+
 }
 
 </script>
