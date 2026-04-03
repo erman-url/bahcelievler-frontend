@@ -124,6 +124,56 @@ margin-bottom:10px;
 
 }
 
+
+/* ===============================
+PREMIUM HEADER (HİZMET STİLİ)
+=============================== */
+
+.premium-header{
+margin:16px;
+padding:18px;
+border-radius:20px;
+
+background:
+linear-gradient(135deg,#2b7be4,#0e4fa8),
+radial-gradient(circle at top right, rgba(255,255,255,.12), transparent);
+
+box-shadow:
+0 12px 30px rgba(0,0,0,.18),
+inset 0 1px 0 rgba(255,255,255,.25);
+
+color:#fff;
+}
+
+.header-content{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.header-text .title{
+font-size:22px;
+font-weight:900;
+text-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+
+.header-text .sub{
+font-size:13px;
+opacity:.9;
+margin-top:4px;
+}
+
+.header-icon{
+width:48px;
+height:48px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:14px;
+background:rgba(255,255,255,.2);
+font-size:20px;
+}
+
 </style>
 
 </head>
@@ -134,7 +184,22 @@ margin-bottom:10px;
 
 <div class="page-wrapper">
 
-<h1 class="page-title">📢 Duyurular</h1>
+<div class="premium-header">
+
+  <div class="header-content">
+
+    <div class="header-text">
+      <div class="title">Duyurular</div>
+      <div class="sub">Bahçelievler resmi ve önemli gelişmeler</div>
+    </div>
+
+    <div class="header-icon">
+      <i class="fa-solid fa-bullhorn"></i>
+    </div>
+
+  </div>
+
+</div>
 
 <div id="duyuruList" class="duyuru-list">
 
