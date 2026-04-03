@@ -334,6 +334,7 @@ inset 0 1px 0 rgba(255,255,255,.3);
 
 </head>
 
+FULL FIX (EKSİLTME YOK)
 <body>
 
 <div id="globalHeader"></div>
@@ -435,10 +436,10 @@ class="fd-input"
 inputmode="numeric"
 pattern="[0-9]*"
 placeholder="869XXXXXXXXXXXX"
-onblur="getProductByBarcode()"
+onblur="if(typeof getProductByBarcode==='function') getProductByBarcode()"
 >
 
-<button type="button" onclick="startScanner()" style="width:60px;height:46px;border-radius:10px">
+<button type="button" onclick="if(typeof startScanner==='function'){startScanner()}" style="width:60px;height:46px;border-radius:10px">
 <i class="fa-solid fa-barcode"></i>
 </button>
 
@@ -448,9 +449,13 @@ onblur="getProductByBarcode()"
 
 <div id="scanner"></div>
 
-<button type="button" onclick="stopScanner()" class="fd-submit" style="margin-top:8px">
+<button type="button" onclick="if(typeof stopScanner==='function'){stopScanner()}" class="fd-submit" style="margin-top:8px">
 Kamerayı Kapat
 </button>
+
+</div>
+
+</div>
 
 </div>
 
@@ -501,6 +506,13 @@ RADARA EKLE
 </div>
 
 </div>
+
+<script>
+window.runOCR = window.runOCR || function(){};
+window.getProductByBarcode = window.getProductByBarcode || function(){};
+window.startScanner = window.startScanner || function(){};
+window.stopScanner = window.stopScanner || function(){};
+</script>
 
 <script src="assets/js/priceList.js"></script>
 <script>
