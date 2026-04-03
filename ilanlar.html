@@ -128,7 +128,6 @@
 
   </div>
 </div>
-
 <script>
 
 /* ===============================
@@ -145,12 +144,18 @@ function escapeHTML(str){
   }[m]));
 }
 
+/* 🔥 FIXED IMAGE SYSTEM */
 function safeImage(url){
-  if(!url) return "https://picsum.photos/300";
-  if(typeof url !== "string") return "https://picsum.photos/300";
+
+  if(!url) return "";
+
+  if(typeof url !== "string") return "";
+
   if(url.startsWith("data:")) return url;
+
   if(url.startsWith("http")) return url;
-  return "https://picsum.photos/300";
+
+  return "";
 }
 
 function goDetail(id){
@@ -189,8 +194,9 @@ async function fetchWithTimeout(url,opt={},t=8000){
     throw e;
   }
 }
+
 /* ===============================
-LOAD ADS (FULL FIX + PREMIUM + FILTER READY)
+LOAD ADS
 =============================== */
 
 let ALL_ADS = [];
@@ -209,7 +215,6 @@ async function loadAds(){
 
     if(!grid) return;
 
-    /* 🔥 GLOBAL CACHE (FILTER İÇİN) */
     ALL_ADS = Array.isArray(data) ? data : [];
 
     if(!Array.isArray(data) || data.length === 0){
@@ -217,63 +222,81 @@ async function loadAds(){
       return;
     }
 
-    let html = "";
-
-    data.slice(0,50).forEach(ad=>{
-
-      if(!ad) return;
-
-      const img = safeImage(
-        ad.image_url || ad.image_url_2 || ad.image_url_3
-      );
-
-      /* 🔥 PREMIUM BADGE */
-      const premium = Number(ad.price) > 500000 ? 
-      `<div style="
-        position:absolute;
-        top:8px;
-        right:8px;
-        background:#2563eb;
-        color:#fff;
-        font-size:10px;
-        padding:4px 6px;
-        border-radius:6px;
-      ">ÖNE ÇIKAN</div>` : "";
-
-      html += `
-      <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
-
-        <div class="ad-image">
-          <img src="${img}" loading="lazy">
-
-          ${premium}
-
-          <div class="price-badge">
-            ${escapeHTML(String(ad.price||""))} TL
-          </div>
-        </div>
-
-        <div class="ad-body">
-
-          <div class="ad-title">
-            ${escapeHTML(ad.title||"")}
-          </div>
-
-          <div class="ad-meta">
-            <span>${escapeHTML(ad.district||"")}</span>
-            <span>${timeAgo(ad.created_at)}</span>
-          </div>
-
-        </div>
-
-      </div>`;
-    });
-
-    grid.innerHTML = html;
+    renderAds(data);
 
   }catch(e){
     console.log("LOAD ADS ERROR:", e);
   }
+}
+
+/* ===============================
+RENDER (TEK MERKEZ)
+=============================== */
+
+function renderAds(data){
+
+  const grid = document.getElementById("adsGrid");
+  if(!grid) return;
+
+  if(!Array.isArray(data) || data.length === 0){
+    grid.innerHTML = "<p style='padding:20px'>Sonuç bulunamadı</p>";
+    return;
+  }
+
+  let html = "";
+
+  data.slice(0,50).forEach(ad=>{
+
+    if(!ad) return;
+
+    const img = safeImage(
+      ad.image_url || ad.image_url_2 || ad.image_url_3
+    );
+
+    console.log("DB IMAGE:", ad.image_url?.slice?.(0,50));
+
+    const premium = Number(ad.price) > 500000 ? 
+    `<div style="
+      position:absolute;
+      top:8px;
+      right:8px;
+      background:#2563eb;
+      color:#fff;
+      font-size:10px;
+      padding:4px 6px;
+      border-radius:6px;
+    ">ÖNE ÇIKAN</div>` : "";
+
+    html += `
+    <div class="ad-card" onclick="goDetail(${JSON.stringify(ad.id)})">
+
+      <div class="ad-image">
+        <img src="${img || 'assets/images/no-image.jpg'}" loading="lazy">
+
+        ${premium}
+
+        <div class="price-badge">
+          ${escapeHTML(String(ad.price||""))} TL
+        </div>
+      </div>
+
+      <div class="ad-body">
+
+        <div class="ad-title">
+          ${escapeHTML(ad.title||"")}
+        </div>
+
+        <div class="ad-meta">
+          <span>${escapeHTML(ad.district||"")}</span>
+          <span>${timeAgo(ad.created_at)}</span>
+        </div>
+
+      </div>
+
+    </div>`;
+  });
+
+  grid.innerHTML = html;
 }
 
 /* ===============================
@@ -324,7 +347,6 @@ btn.onclick = async ()=>{
     const contact = document.getElementById("adContact")?.value.trim();
     const delete_token = document.getElementById("deleteCode")?.value;
 
-    /* PRICE NORMALIZE */
     let rawPrice = rawInput.trim()
       .replace(/\s/g,"")
       .replace(/\./g,"")
@@ -332,7 +354,6 @@ btn.onclick = async ()=>{
 
     const price = Number(rawPrice);
 
-    /* VALIDATION */
     if(!title || title.length < 3) throw "Başlık kısa";
     if(title.length > 50) throw "Başlık çok uzun";
 
@@ -351,7 +372,7 @@ btn.onclick = async ()=>{
     if(!delete_token || delete_token.length < 3)
       throw "Şifre min 3 karakter";
 
-    /* IMAGE BASE64 */
+    /* 🔥 IMAGE BASE64 + DEBUG */
     const files = document.getElementById("adImages")?.files || [];
 
     const toBase64 = file => new Promise(res=>{
@@ -370,11 +391,19 @@ btn.onclick = async ()=>{
 
     let image_url="",image_url_2="",image_url_3="";
 
-    if(files[0]) image_url = await toBase64(files[0]);
-    if(files[1]) image_url_2 = await toBase64(files[1]);
-    if(files[2]) image_url_3 = await toBase64(files[2]);
+    if(files[0]){
+      image_url = await toBase64(files[0]);
+      console.log("UPLOAD IMG1:", image_url?.slice(0,50));
+    }
 
-    /* PAYLOAD */
+    if(files[1]){
+      image_url_2 = await toBase64(files[1]);
+    }
+
+    if(files[2]){
+      image_url_3 = await toBase64(files[2]);
+    }
+
     const payload = {
       title,
       price,
@@ -388,6 +417,8 @@ btn.onclick = async ()=>{
       image_url_2,
       image_url_3
     };
+
+    console.log("PAYLOAD:", payload);
 
     btn.disabled = true;
     btn.innerText = "Gönderiliyor...";
@@ -411,6 +442,7 @@ btn.onclick = async ()=>{
     location.reload();
 
   }catch(err){
+    console.log("SUBMIT ERROR:", err);
     alert(err);
     btn.disabled = false;
     btn.innerText = "İLANI YAYINLA";
@@ -420,13 +452,11 @@ btn.onclick = async ()=>{
 
 });
 
-
 /* ===============================
-🔥 FILTER SYSTEM (FULL FIX)
+FILTER SYSTEM
 =============================== */
 
 function toggleFilter(){
-
   const panel = document.getElementById("filterPanel");
   if(!panel) return;
 
@@ -434,19 +464,15 @@ function toggleFilter(){
     panel.style.display === "none" ? "grid" : "none";
 }
 
-/* SELECT CHANGE AUTO FILTER */
 document.addEventListener("change",(e)=>{
-
   if(
     e.target.id === "filterCategory" ||
     e.target.id === "filterDistrict"
   ){
     applyFilter();
   }
-
 });
 
-/* APPLY FILTER */
 function applyFilter(){
 
   if(!Array.isArray(ALL_ADS)) return;
@@ -467,7 +493,6 @@ function applyFilter(){
   renderAds(filtered);
 }
 
-/* RESET */
 function resetFilter(){
 
   const cat = document.getElementById("filterCategory");
@@ -477,44 +502,6 @@ function resetFilter(){
   if(dist) dist.value = "";
 
   renderAds(ALL_ADS);
-}
-
-/* RENDER */
-function renderAds(data){
-
-  const grid = document.getElementById("adsGrid");
-  if(!grid) return;
-
-  if(!Array.isArray(data) || data.length === 0){
-    grid.innerHTML = "<p style='padding:20px'>Sonuç bulunamadı</p>";
-    return;
-  }
-
-  let html = "";
-
-  data.slice(0,50).forEach(ad=>{
-
-    const img = safeImage(
-      ad.image_url || ad.image_url_2 || ad.image_url_3
-    );
-
-    html += `
-    <div class="ad-card" onclick="goDetail(${ad.id})">
-      <div class="ad-image">
-        <img src="${img}">
-        <div class="price-badge">${ad.price} TL</div>
-      </div>
-      <div class="ad-body">
-        <div class="ad-title">${escapeHTML(ad.title)}</div>
-        <div class="ad-meta">
-          <span>${escapeHTML(ad.district)}</span>
-          <span>${timeAgo(ad.created_at)}</span>
-        </div>
-      </div>
-    </div>`;
-  });
-
-  grid.innerHTML = html;
 }
 
 </script>
