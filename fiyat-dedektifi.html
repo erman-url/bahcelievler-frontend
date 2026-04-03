@@ -228,6 +228,60 @@ width:100% !important;
 height:150px !important;
 }
 
+/* ===============================
+PREMIUM HEADER (GLOBAL)
+=============================== */
+
+.premium-header{
+margin:16px;
+padding:20px;
+border-radius:22px;
+
+background:
+linear-gradient(135deg,#2b7be4,#0e4fa8),
+radial-gradient(circle at top right, rgba(255,255,255,.15), transparent);
+
+box-shadow:
+0 14px 35px rgba(0,0,0,.18),
+inset 0 1px 0 rgba(255,255,255,.25);
+
+color:#fff;
+}
+
+.header-content{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+}
+
+.header-text .title{
+font-size:24px;
+font-weight:900;
+text-shadow:0 3px 10px rgba(0,0,0,.3);
+}
+
+.header-text .sub{
+font-size:14px;
+opacity:.9;
+margin-top:6px;
+line-height:1.4;
+}
+
+.header-icon{
+width:52px;
+height:52px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:16px;
+background:rgba(255,255,255,.2);
+font-size:22px;
+box-shadow:
+0 6px 18px rgba(0,0,0,.25),
+inset 0 1px 0 rgba(255,255,255,.3);
+}
+
 </style>
 
 </head>
@@ -240,10 +294,22 @@ height:150px !important;
 <div class="page-wrapper">
 <div class="page-container">
 
-<!-- 🔁 ORİJİNAL HEADER KORUNDU -->
-<div class="fd-header">
-<h1><i class="fa-solid fa-magnifying-glass"></i> Fiyat Dedektifi</h1>
-<p>Semt fiyat endeksi</p>
+<div class="premium-header">
+
+  <div class="header-content">
+
+    <div class="header-text">
+    <div class="title">📊 Semt Fiyat Endeksi</div>
+
+      <div class="sub">Gerçek kullanıcı verileriyle mahalle enflasyonu</div>
+    </div>
+
+    <div class="header-icon">
+      <i class="fa-solid fa-magnifying-glass-dollar"></i>
+    </div>
+
+  </div>
+
 </div>
 
 <div class="fd-card">
