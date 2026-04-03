@@ -416,7 +416,7 @@ id="imageInput"
 type="file"
 accept="image/*"
 capture="environment"
-onchange="if(this.files.length){runOCR(this.files[0])}"
+onchange="if(this.files.length && typeof runOCR==='function'){runOCR(this.files[0])}"
 >
 
 <p style="font-size:12px;color:#888">
