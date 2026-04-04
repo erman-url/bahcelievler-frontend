@@ -135,242 +135,223 @@ Bahçelievler Forum
 
 <canvas id="game"></canvas>
 
+
 <script>
 
-/* DOM FIX */
-document.addEventListener("DOMContentLoaded",()=>{
-let start=document.getElementById("startScreen");
-if(start) start.style.display="flex";
-});
+/* =========================
+STATE
+========================= */
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const size = 7;
+const grid = document.getElementById("grid");
 
-let W,H;
-function resize(){
-W = canvas.width = window.innerWidth;
-H = canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener("resize",resize);
+let path = [];
+let isDrawing = false;
+let currentNumber = 1;
+let score = 0;
+let combo = 0;
 
-const SKY="#1abc9c";
+/* NODE MAP (DAHA ZOR LAYOUT) */
+const nodes = {
+  1:[0,0],
+  2:[6,6],
+  3:[0,6],
+  4:[6,0],
+  5:[3,3],
+  6:[2,4],
+  7:[4,2],
+  8:[1,5],
+  9:[5,1],
+  10:[3,5]
+};
 
-let balloons=[];
-let score=0;
-let lives=5;
-let time=300;
-let running=false;
-let spawnTick=0;
-let speedMultiplier=1;
+/* =========================
+SOUND SYSTEM (ULTRA LIGHT)
+========================= */
 
-/* BALLOON */
-class Balloon{
-constructor(x,y,r,s,level=1){
-this.x=x;
-this.y=y;
-this.r=r;
-this.s=s;
-this.level=level;
-}
-draw(){
-ctx.beginPath();
-ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-ctx.fillStyle=this.level===1?"rgba(255,255,255,0.7)":"rgba(255,150,150,0.9)";
-ctx.fill();
-}
-update(){
-this.y+=this.s*speedMultiplier;
-}
-}
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioCtx();
 
-/* SPAWN */
-function spawn(){
-if(balloons.length>=3) return;
+function play(freq, duration=0.1){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
 
-let r=30;
-let x=Math.random()*(W-2*r)+r;
-let s=1.5;
+  osc.frequency.value = freq;
+  osc.type = "sine";
 
-balloons.push(new Balloon(x,-r,r,s,1));
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
 }
 
-/* SPLIT */
-function split(b){
+/* =========================
+INIT
+========================= */
 
-if(b.level===1){
+function init(){
+  grid.innerHTML="";
+  path=[];
+  currentNumber=1;
+  score=0;
+  combo=0;
 
-for(let i=0;i<2;i++){
-balloons.push(new Balloon(
-b.x+(Math.random()-0.5)*30,
-b.y,
-b.r*0.6,
-b.s+0.5,
-2
-));
+  for(let y=0;y<size;y++){
+    for(let x=0;x<size;x++){
+
+      const cell=document.createElement("div");
+      cell.className="cell";
+      cell.dataset.x=x;
+      cell.dataset.y=y;
+
+      for(let key in nodes){
+        let [ny,nx]=nodes[key];
+        if(ny==y && nx==x){
+          const n=document.createElement("div");
+          n.className="node";
+          n.innerText=key;
+          cell.appendChild(n);
+        }
+      }
+
+      grid.appendChild(cell);
+    }
+  }
 }
 
-score+=2;
+init();
 
-}else{
-score+=1;
+/* =========================
+TOUCH SYSTEM (IMPROVED)
+========================= */
+
+grid.addEventListener("pointerdown",start);
+grid.addEventListener("pointermove",move);
+document.addEventListener("pointerup",()=>isDrawing=false);
+
+function start(e){
+
+  const cell=e.target.closest(".cell");
+  if(!cell) return;
+
+  const x=+cell.dataset.x;
+  const y=+cell.dataset.y;
+
+  if(nodes[1][0]!==y || nodes[1][1]!==x) return;
+
+  navigator.vibrate?.(15);
+  play(200);
+
+  isDrawing=true;
+  path=[];
+  currentNumber=1;
+  combo=0;
+
+  fill(cell,x,y);
 }
 
-updateUI();
+function move(e){
+
+  if(!isDrawing) return;
+
+  const el=document.elementFromPoint(e.clientX,e.clientY);
+  const cell=el?.closest(".cell");
+  if(!cell) return;
+
+  const x=+cell.dataset.x;
+  const y=+cell.dataset.y;
+
+  if(path.some(p=>p.x===x && p.y===y)) return;
+
+  if(path.length>0){
+    const last=path[path.length-1];
+    if(Math.abs(last.x-x)+Math.abs(last.y-y)!==1) return;
+  }
+
+  let next=currentNumber+1;
+
+  /* DOĞRU HAMLE */
+  if(nodes[next]){
+    let [ny,nx]=nodes[next];
+
+    if(ny===y && nx===x){
+      currentNumber++;
+      combo++;
+
+      navigator.vibrate?.(10);
+      play(300 + combo*40);
+
+      score += 10 * combo;
+    }
+  }
+
+  /* YANLIŞ NODE */
+  for(let key in nodes){
+    let [ny,nx]=nodes[key];
+    if(ny===y && nx===x && key!=next){
+      play(120);
+      navigator.vibrate?.(50);
+      return;
+    }
+  }
+
+  fill(cell,x,y);
+
+  /* WIN */
+  if(currentNumber===Object.keys(nodes).length && path.length===size*size){
+
+    play(800,0.3);
+    navigator.vibrate?.([50,50,50]);
+
+    setTimeout(()=>{
+      alert("🎉 Süper! Skor: "+score);
+    },150);
+  }
 }
 
-/* HIT */
-function hit(x,y){
-for(let i=balloons.length-1;i>=0;i--){
-let b=balloons[i];
-let dx=x-b.x;
-let dy=y-b.y;
+/* =========================
+FILL (VISUAL BOOST)
+========================= */
 
-if(Math.sqrt(dx*dx+dy*dy)<b.r){
-split(b);
-balloons.splice(i,1);
-return;
-}
-}
+function fill(cell,x,y){
+  cell.classList.add("filled");
+
+  /* glow effect */
+  cell.style.boxShadow="0 0 12px rgba(99,102,241,0.6)";
+
+  path.push({x,y});
 }
 
-/* INPUT */
-canvas.addEventListener("mousedown",(e)=>{
-if(!running)return;
-let rect=canvas.getBoundingClientRect();
-hit(e.clientX-rect.left,e.clientY-rect.top);
-});
+/* =========================
+RESET
+========================= */
 
-canvas.addEventListener("touchstart",(e)=>{
-if(!running)return;
-let rect=canvas.getBoundingClientRect();
-hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
-});
+function resetGame(){
+  document.querySelectorAll(".cell").forEach(c=>{
+    c.classList.remove("filled");
+    c.style.boxShadow="none";
+  });
 
-/* UI */
-function updateUI(){
-document.getElementById("score").innerText=score;
-document.getElementById("lives").innerText="❤️".repeat(lives);
-document.getElementById("time").innerText=time+"s";
+  path=[];
+  currentNumber=1;
+  score=0;
+  combo=0;
 }
 
-/* LOOP */
-function loop(){
-if(!running)return;
+/* =========================
+NAV
+========================= */
 
-ctx.clearRect(0,0,W,H);
-
-ctx.fillStyle=SKY;
-ctx.fillRect(0,0,W,H);
-
-for(let i=balloons.length-1;i>=0;i--){
-let b=balloons[i];
-b.update();
-b.draw();
-
-if(b.y>H-70){
-balloons.splice(i,1);
-
-// SADECE KÜÇÜK BALON HASAR
-if(b.level===2){
-lives--;
-updateUI();
-}
-
-if(lives<=0){
-endGame("Can bitti");
-}
-}
-}
-
-spawnTick++;
-if(spawnTick>80){
-spawn();
-spawnTick=0;
-}
-
-requestAnimationFrame(loop);
-}
-
-/* TIMER */
-let timerInterval;
-
-function startTimer(){
-clearInterval(timerInterval);
-
-timerInterval=setInterval(()=>{
-time--;
-updateUI();
-
-// 2. dakika sonrası hızlanma
-if(time===180){
-speedMultiplier=1.2;
-}
-
-// süre bitince
-if(time<=0){
-endGame("Süre doldu");
-}
-
-},1000);
-}
-
-let gameEnded=false;
-
-/* START */
-function startGame(){
-
-let start=document.getElementById("startScreen");
-let over=document.getElementById("gameOver");
-
-if(start) start.style.display="none";
-if(over) over.style.display="none";
-
-gameEnded=false;
-clearInterval(timerInterval);
-
-score=0;
-lives=5;
-time=300;
-balloons=[];
-running=true;
-speedMultiplier=1;
-
-updateUI();
-startTimer();
-loop();
-}
-
-/* RESTART */
-function restartGame(){
-gameEnded=false;
-clearInterval(timerInterval);
-startGame();
-}
-
-/* BACK */
 function goBack(){
-window.location.href="online-oyunlar.html";
-}
-
-/* END */
-function endGame(reason){
-if(gameEnded) return;
-gameEnded=true;
-
-running=false;
-clearInterval(timerInterval);
-
-let over=document.getElementById("gameOver");
-let scoreText=document.getElementById("finalScore");
-let title=document.getElementById("endTitle");
-
-if(over) over.style.display="flex";
-if(scoreText) scoreText.innerText="Skor: "+score;
-if(title) title.innerText=reason;
+  window.history.back();
 }
 
 </script>
+
 
 </body>
 </html>
