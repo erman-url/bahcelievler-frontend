@@ -7,64 +7,116 @@
 
 <title>2048 Oyna | Bahçelievler Forum</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="description" content="2048 oyununu mobilde premium deneyimle oyna. Hızlı, akıcı ve ücretsiz.">
+<meta name="robots" content="index, follow">
+
+<!-- OPEN GRAPH -->
+<meta property="og:title" content="2048 Oyna">
+<meta property="og:description" content="Mobil uyumlu 2048 oyunu">
+<meta property="og:type" content="website">
+
+<!-- TWITTER -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="2048 Oyna">
+<meta name="twitter:description" content="Mobil uyumlu premium 2048 oyunu">
 
 <style>
 
 /* =========================
-🔥 PREMIUM UI
+ROOT
 ========================= */
+:root{
+--bg:#0f172a;
+--card:rgba(255,255,255,0.06);
+--primary:#2563eb;
+--radius:18px;
+}
+
+/* =========================
+BASE
+========================= */
+*{box-sizing:border-box;}
 
 body{
 margin:0;
-font-family:system-ui;
-background:radial-gradient(circle at top,#eef2ff,#ffffff);
+font-family:-apple-system,system-ui;
+background:linear-gradient(180deg,#0f172a,#020617);
+color:white;
+height:100vh;
+display:flex;
+flex-direction:column;
 }
 
-/* HEADER */
+/* =========================
+HEADER (APP STYLE)
+========================= */
 .header{
-background:#1e3a8a;
-color:white;
-padding:16px;
-text-align:center;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px;
+padding-top:calc(14px + env(safe-area-inset-top));
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(12px);
 font-weight:700;
 }
 
-/* WRAPPER */
-.container{
-max-width:420px;
-margin:auto;
-padding:16px;
+.back{
+background:var(--card);
+border:none;
+color:white;
+padding:8px 12px;
+border-radius:10px;
 }
 
-/* SCORE */
+/* =========================
+CONTAINER
+========================= */
+.container{
+flex:1;
+display:flex;
+flex-direction:column;
+max-width:420px;
+width:100%;
+margin:auto;
+padding:14px;
+}
+
+/* =========================
+SCORE
+========================= */
 .score-box{
 display:flex;
 justify-content:space-between;
-margin-bottom:10px;
+margin-bottom:12px;
 }
 
 .score{
-background:#2563eb;
-color:white;
+background:var(--card);
 padding:10px 14px;
 border-radius:12px;
 font-weight:700;
+backdrop-filter:blur(10px);
 }
 
-/* GRID */
+/* =========================
+GRID
+========================= */
 .grid{
-background:#e5e7eb;
-padding:10px;
-border-radius:20px;
+flex:1;
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:10px;
+padding:10px;
+background:var(--card);
+border-radius:20px;
+backdrop-filter:blur(12px);
 }
 
-/* TILE */
+/* =========================
+TILE
+========================= */
 .tile{
-width:100%;
 aspect-ratio:1;
 display:flex;
 align-items:center;
@@ -72,50 +124,52 @@ justify-content:center;
 font-weight:800;
 font-size:22px;
 border-radius:14px;
-background:#f3f4f6;
-transition:.15s;
+background:rgba(255,255,255,0.08);
+transition:.2s;
 }
 
 /* COLORS */
-.t2{background:#fef3c7;}
+.t2{background:#fef3c7;color:#000;}
 .t4{background:#fde68a;}
 .t8{background:#fbbf24;}
-.t16{background:#f59e0b;color:#fff;}
-.t32{background:#f97316;color:#fff;}
-.t64{background:#ef4444;color:#fff;}
-.t128{background:#60a5fa;color:#fff;}
-.t256{background:#3b82f6;color:#fff;}
-.t512{background:#2563eb;color:#fff;}
-.t1024{background:#1d4ed8;color:#fff;}
-.t2048{background:#111827;color:#fff;}
+.t16{background:#f59e0b;}
+.t32{background:#f97316;}
+.t64{background:#ef4444;}
+.t128{background:#60a5fa;}
+.t256{background:#3b82f6;}
+.t512{background:#2563eb;}
+.t1024{background:#1d4ed8;}
+.t2048{background:#000;}
 
-/* BUTTON */
+/* =========================
+BUTTON
+========================= */
 .btn{
-margin-top:15px;
-width:100%;
-padding:12px;
+margin-top:12px;
+padding:14px;
 border:none;
-border-radius:12px;
-background:#2563eb;
+border-radius:14px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
 color:white;
 font-weight:700;
 }
 
-/* GAME OVER */
+/* =========================
+OVERLAY
+========================= */
 .overlay{
 position:fixed;
-top:0;left:0;
-width:100%;height:100%;
-background:rgba(0,0,0,.6);
+inset:0;
 display:none;
+background:rgba(0,0,0,.7);
 align-items:center;
 justify-content:center;
 }
 
 .box{
-background:white;
-padding:20px;
-border-radius:16px;
+background:#020617;
+padding:24px;
+border-radius:20px;
 text-align:center;
 }
 
@@ -124,12 +178,17 @@ text-align:center;
 
 <body>
 
-<div class="header">2048 Oyun</div>
+<!-- HEADER -->
+<div class="header">
+<button class="back" onclick="goBack()">←</button>
+<div>2048</div>
+<div></div>
+</div>
 
 <div class="container">
 
 <div class="score-box">
-<div class="score" id="score">Skor: 0</div>
+<div class="score" id="score">0</div>
 </div>
 
 <div class="grid" id="grid"></div>
@@ -142,24 +201,32 @@ text-align:center;
 <div class="box">
 <h3>Oyun Bitti</h3>
 <p id="final"></p>
-<button class="btn" onclick="init()">Tekrar Oyna</button>
+<button class="btn" onclick="init()">Tekrar</button>
 </div>
 </div>
 
 <script>
 
+/* =========================
+STATE
+========================= */
 let grid = [];
 let score = 0;
 
-/* INIT */
+/* =========================
+INIT
+========================= */
 function init(){
 grid = Array(4).fill().map(()=>Array(4).fill(0));
 score = 0;
 spawn(); spawn();
 draw();
+document.getElementById("over").style.display="none";
 }
 
-/* SPAWN */
+/* =========================
+SPAWN
+========================= */
 function spawn(){
 let empty=[];
 grid.forEach((r,i)=>r.forEach((c,j)=>{if(!c) empty.push([i,j])}));
@@ -170,7 +237,9 @@ let [i,j]=empty[Math.floor(Math.random()*empty.length)];
 grid[i][j]=Math.random()<0.9?2:4;
 }
 
-/* DRAW */
+/* =========================
+DRAW
+========================= */
 function draw(){
 const g=document.getElementById("grid");
 g.innerHTML="";
@@ -184,11 +253,14 @@ g.appendChild(d);
 });
 });
 
-document.getElementById("score").innerText="Skor: "+score;
+document.getElementById("score").innerText=score;
 }
 
-/* MOVE */
+/* =========================
+MOVE
+========================= */
 function move(dir){
+
 let moved=false;
 
 function slide(row){
@@ -229,15 +301,20 @@ if(moved){
 spawn();
 draw();
 }
+
 }
 
-/* GAME OVER */
+/* =========================
+GAME OVER
+========================= */
 function gameOver(){
 document.getElementById("final").innerText="Skor: "+score;
 document.getElementById("over").style.display="flex";
 }
 
-/* INPUT */
+/* =========================
+INPUT
+========================= */
 document.addEventListener("keydown",e=>{
 if(e.key==="ArrowUp") move("up");
 if(e.key==="ArrowDown") move("down");
@@ -245,7 +322,9 @@ if(e.key==="ArrowLeft") move("left");
 if(e.key==="ArrowRight") move("right");
 });
 
-/* TOUCH */
+/* =========================
+TOUCH (OPTIMIZED)
+========================= */
 let sx=0,sy=0;
 
 document.addEventListener("touchstart",e=>{
@@ -257,14 +336,25 @@ document.addEventListener("touchend",e=>{
 let dx=e.changedTouches[0].clientX-sx;
 let dy=e.changedTouches[0].clientY-sy;
 
+let threshold=40;
+
 if(Math.abs(dx)>Math.abs(dy)){
-if(dx>30) move("right");
-if(dx<-30) move("left");
+if(dx>threshold) move("right");
+if(dx<-threshold) move("left");
 }else{
-if(dy>30) move("down");
-if(dy<-30) move("up");
+if(dy>threshold) move("down");
+if(dy<-threshold) move("up");
 }
 });
+
+/* =========================
+BACK
+========================= */
+function goBack(){
+if(confirm("Çıkmak istiyor musun?")){
+history.back();
+}
+}
 
 /* START */
 init();
