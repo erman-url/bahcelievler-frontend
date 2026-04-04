@@ -1,128 +1,174 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flow Puzzle </title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Puzzle Pro</title>
+
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-:root{
-  --bg:#f0f2f5;
-  --panel:#b9c8e8;
-  --cell:#e3ebfb;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);
-  font-family:Arial,Helvetica,sans-serif;
-  display:flex;justify-content:center;
-}
-.app{width:95vw;max-width:430px}
 
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:14px 10px;font-weight:700
+/* =========================
+GLOBAL RESET
+========================= */
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#0f172a;
+  font-family:system-ui;
 }
-.badge{background:#fff;padding:6px 10px;border-radius:14px}
 
-.wrapper{
-  background:var(--panel);padding:12px;border-radius:28px;
-  box-shadow:0 10px 30px rgba(0,0,0,.08) inset;
+/* =========================
+APP LAYOUT
+========================= */
+.game{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
 }
-.grid{display:grid;gap:5px}
+
+/* =========================
+TOP BAR
+========================= */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  background:rgba(15,23,42,0.95);
+  color:#fff;
+  font-weight:600;
+  backdrop-filter:blur(10px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+
+.back-btn{
+  background:rgba(255,255,255,0.1);
+  border:none;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+/* =========================
+GRID
+========================= */
+.grid{
+  flex:1;
+  margin:10px;
+  padding:10px;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:3px;
+  background:#1e293b;
+  border-radius:20px;
+}
+
+/* CELL */
 .cell{
-  aspect-ratio:1;background:var(--cell);
-  border-radius:12px;position:relative;overflow:hidden;
-  touch-action:none;
+  aspect-ratio:1;
+  background:#334155;
+  border-radius:8px;
+  position:relative;
+  overflow:hidden;
 }
 
-/* PATH BASE (smooth-ish) */
+/* PATH */
 .cell.filled::before{
-  content:"";position:absolute;inset:0;border-radius:12px;
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(270deg,#2b5ed7,#7a3fd1,#2b5ed7);
   background-size:300% 300%;
-  animation:flow 1.8s linear infinite;
-  opacity:.95;
+  animation:flow 2s linear infinite;
 }
 
-/* COLORS */
-.cell[data-color="1"]::before{background:linear-gradient(270deg,#ff5f6d,#ffc371,#ff5f6d)}
-.cell[data-color="2"]::before{background:linear-gradient(270deg,#36d1dc,#5b86e5,#36d1dc)}
-.cell[data-color="3"]::before{background:linear-gradient(270deg,#c471f5,#fa71cd,#c471f5)}
-.cell[data-color="4"]::before{background:linear-gradient(270deg,#11998e,#38ef7d,#11998e)}
-.cell[data-color="5"]::before{background:linear-gradient(270deg,#f7971e,#ffd200,#f7971e)}
-.cell[data-color="6"]::before{background:linear-gradient(270deg,#00c6ff,#0072ff,#00c6ff)}
-.cell[data-color="7"]::before{background:linear-gradient(270deg,#ff9966,#ff5e62,#ff9966)}
-.cell[data-color="8"]::before{background:linear-gradient(270deg,#7f7fd5,#86a8e7,#7f7fd5)}
-
+/* NODE */
 .node{
-  position:absolute;top:50%;left:50%;
+  position:absolute;
+  top:50%;
+  left:50%;
   transform:translate(-50%,-50%);
-  width:68%;height:68%;
-  background:#000;color:#fff;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:800;z-index:2;
+  width:70%;
+  height:70%;
+  background:#000;
+  color:#fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  z-index:2;
 }
 
-.controls{display:flex;gap:10px;margin-top:14px}
+/* CONTROLS */
+.controls{
+  display:flex;
+  gap:10px;
+  padding:10px;
+}
+
 button{
-  flex:1;padding:14px;border:0;border-radius:22px;
-  background:#e1e1e1;font-weight:600
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:20px;
+  background:#1d4ed8;
+  color:#fff;
+  font-weight:600;
 }
 
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:flex;align-items:center;justify-content:center;z-index:10
+/* ANIMATION */
+@keyframes flow{
+  0%{background-position:0%}
+  100%{background-position:100%}
 }
-.modal-box{
-  background:#fff;padding:24px;border-radius:18px;text-align:center;
-  width:85%;max-width:320px
-}
-.hidden{display:none}
 
-@keyframes flow{0%{background-position:0%}100%{background-position:100%}}
 </style>
 </head>
 
 <body>
-<div class="app">
-  <div class="header">
-    <div>LEVEL <span id="lv">1</span></div>
-    <div class="badge">⏱ <span id="time">90</span>s</div>
+
+<div class="game">
+
+  <div class="topbar">
+    <button class="back-btn" onclick="goBack()">← Geri</button>
+    <div>Puzzle Pro</div>
+    <div></div>
   </div>
 
-  <div class="wrapper">
-    <div id="grid" class="grid"></div>
-  </div>
+  <div id="grid" class="grid"></div>
 
   <div class="controls">
-    <button onclick="resetBoard()">Sıfırla</button>
-    <button onclick="alert('İpucu: Önce uzun hatları çöz')">İpucu</button>
+    <button onclick="resetGame()">Sıfırla</button>
   </div>
-</div>
 
-<div id="modal" class="modal hidden">
-  <div class="modal-box">
-    <h2 id="modalText"></h2>
-    <p id="scoreText"></p>
-    <button onclick="nextLevel()">Devam</button>
-  </div>
 </div>
 
 <script>
 
 /* =========================
-CORE STATE
+STATE
 ========================= */
 
 const size = 7;
 const grid = document.getElementById("grid");
 
-let cells = [];
 let path = [];
 let isDrawing = false;
 let currentNumber = 1;
 
-/* NODE LAYOUT */
+/* NODE MAP */
 const nodes = {
   1:[0,0],
   2:[6,6],
@@ -137,149 +183,117 @@ const nodes = {
 };
 
 /* =========================
-GRID CREATE
+INIT
 ========================= */
 
-function initGrid(){
+function init(){
 
   grid.innerHTML="";
-  cells=[];
   path=[];
   currentNumber=1;
-
-  grid.style.gridTemplateColumns=`repeat(${size},1fr)`;
 
   for(let y=0;y<size;y++){
     for(let x=0;x<size;x++){
 
-      const div=document.createElement("div");
-      div.className="cell";
-      div.dataset.x=x;
-      div.dataset.y=y;
+      const cell=document.createElement("div");
+      cell.className="cell";
+      cell.dataset.x=x;
+      cell.dataset.y=y;
 
-      /* NODE */
       for(let key in nodes){
         let [ny,nx]=nodes[key];
         if(ny==y && nx==x){
           const n=document.createElement("div");
           n.className="node";
           n.innerText=key;
-          div.appendChild(n);
+          cell.appendChild(n);
         }
       }
 
-      grid.appendChild(div);
-      cells.push(div);
+      grid.appendChild(cell);
     }
   }
 }
 
-initGrid();
+init();
 
 /* =========================
-TOUCH ENGINE (CRITICAL FIX)
+TOUCH SYSTEM
 ========================= */
 
-grid.addEventListener("pointerdown",startDraw);
-grid.addEventListener("pointermove",moveDraw);
-document.addEventListener("pointerup",endDraw);
+grid.addEventListener("pointerdown",start);
+grid.addEventListener("pointermove",move);
+document.addEventListener("pointerup",()=>isDrawing=false);
 
-function startDraw(e){
+function start(e){
 
-  const cell = e.target.closest(".cell");
+  const cell=e.target.closest(".cell");
   if(!cell) return;
 
-  const x = +cell.dataset.x;
-  const y = +cell.dataset.y;
+  const x=+cell.dataset.x;
+  const y=+cell.dataset.y;
 
-  /* SADECE 1'DEN BAŞLA */
-  if(nodes[1][0] !== y || nodes[1][1] !== x) return;
+  if(nodes[1][0]!==y || nodes[1][1]!==x) return;
 
-  isDrawing = true;
-  path = [];
-  currentNumber = 1;
+  navigator.vibrate?.(10);
 
-  fillCell(cell,x,y);
+  isDrawing=true;
+  path=[];
+  currentNumber=1;
+
+  fill(cell,x,y);
 }
 
-function moveDraw(e){
+function move(e){
+
   if(!isDrawing) return;
 
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  const cell = el?.closest(".cell");
+  const el=document.elementFromPoint(e.clientX,e.clientY);
+  const cell=el?.closest(".cell");
   if(!cell) return;
 
-  processCell(cell);
-}
+  const x=+cell.dataset.x;
+  const y=+cell.dataset.y;
 
-function endDraw(){
-  isDrawing=false;
-}
-
-/* =========================
-GAME LOGIC
-========================= */
-
-function processCell(cell){
-
-  const x = +cell.dataset.x;
-  const y = +cell.dataset.y;
-
-  /* tekrar geçemez */
   if(path.some(p=>p.x===x && p.y===y)) return;
 
-  /* adjacency */
   if(path.length>0){
-    const last = path[path.length-1];
-    const dx = Math.abs(last.x-x);
-    const dy = Math.abs(last.y-y);
-    if(dx+dy!==1) return;
+    const last=path[path.length-1];
+    if(Math.abs(last.x-x)+Math.abs(last.y-y)!==1) return;
   }
 
-  /* doğru sayı mı */
-  const nextNumber = currentNumber + 1;
+  let next=currentNumber+1;
 
-  if(nodes[nextNumber]){
-    const [ny,nx] = nodes[nextNumber];
-
+  if(nodes[next]){
+    let [ny,nx]=nodes[next];
     if(ny===y && nx===x){
       currentNumber++;
+      navigator.vibrate?.(15);
     }
   }
 
-  /* yanlış node’a girme */
   for(let key in nodes){
-    const [ny,nx]=nodes[key];
-    if(ny===y && nx===x && key != nextNumber){
+    let [ny,nx]=nodes[key];
+    if(ny===y && nx===x && key!=next){
       return;
     }
   }
 
-  fillCell(cell,x,y);
+  fill(cell,x,y);
 
-  checkWin();
+  if(currentNumber===Object.keys(nodes).length && path.length===size*size){
+    navigator.vibrate?.([30,50,30]);
+    setTimeout(()=>alert("🎉 Tebrikler!"),200);
+  }
 }
 
 /* =========================
 FILL
 ========================= */
 
-function fillCell(cell,x,y){
+function fill(cell,x,y){
   cell.classList.add("filled");
   path.push({x,y});
-}
-
-/* =========================
-WIN CONTROL
-========================= */
-
-function checkWin(){
-
-  if(currentNumber !== Object.keys(nodes).length) return;
-
-  if(path.length !== size*size) return;
-
-  alert("🎉 Doğru çözüm!");
 }
 
 /* =========================
@@ -290,11 +304,19 @@ function resetGame(){
   document.querySelectorAll(".cell").forEach(c=>{
     c.classList.remove("filled");
   });
-
   path=[];
   currentNumber=1;
 }
 
+/* =========================
+NAV
+========================= */
+
+function goBack(){
+  window.history.back();
+}
+
 </script>
+
 </body>
 </html>
