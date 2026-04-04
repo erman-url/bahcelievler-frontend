@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Yıldız Oluştur PRO+</title>
+<style>
+
+/* =========================
+BASE
+========================= */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,Segoe UI,Roboto;
+}
+
+body{
+background:#020617;
+color:#fff;
+overflow:hidden;
+-webkit-tap-highlight-color:transparent;
+}
+
+/* =========================
+CANVAS BG
+========================= */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+}
+
+/* =========================
+INTRO
+========================= */
+#introScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#020617;
+z-index:999;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:20px;
+}
+
+.startBtn{
+margin-top:20px;
+padding:12px 18px;
+background:#22c55e;
+border:none;
+border-radius:10px;
+font-weight:600;
+font-size:14px;
+}
+
+/* =========================
+LAYOUT
+========================= */
+.game{
+position:relative;
+z-index:1;
+height:100vh;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:12px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(12px);
+border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+/* SCORE */
+.score{
+position:absolute;
+top:58px;
+right:12px;
+font-size:12px;
+opacity:0.7;
+}
+
+/* =========================
+PLAY (SCROLL FIX)
+========================= */
+.play{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:flex-start;
+gap:10px;
+overflow-y:auto;
+padding-bottom:110px; /* footer boşluğu */
+}
+
+/* =========================
+CORE
+========================= */
+.core{
+width:140px;
+height:140px;
+border-radius:50%;
+background:radial-gradient(circle at 30% 30%,#111,#000);
+display:flex;
+align-items:center;
+justify-content:center;
+margin-top:8px;
+font-size:13px;
+box-shadow:inset 0 0 30px rgba(0,0,0,0.9);
+transition:0.3s;
+}
+
+.core.fusion{
+background:radial-gradient(circle,#ffcc00,#ff6600);
+box-shadow:0 0 80px #ff9900;
+animation:pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse{
+from{transform:scale(1);}
+to{transform:scale(1.12);}
+}
+
+/* =========================
+BARS
+========================= */
+.bars{
+width:92%;
+}
+
+.bar{
+height:8px;
+background:#111;
+border-radius:10px;
+overflow:hidden;
+margin:5px 0;
+}
+
+.fill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#22c55e,#4ade80);
+transition:0.25s;
+}
+
+/* =========================
+ELEMENT GRID
+========================= */
+.elements{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+padding:10px;
+width:100%;
+max-width:420px;
+}
+
+.element{
+background:#111827;
+border-radius:12px;
+padding:10px;
+text-align:center;
+font-size:12px;
+transition:0.2s;
+touch-action:none;
+}
+
+.element span{
+font-size:18px;
+display:block;
+margin-bottom:4px;
+}
+
+.element:active{
+transform:scale(0.95);
+}
+
+.dragging{
+opacity:0.5;
+transform:scale(1.1);
+}
+
+/* =========================
+FOOTER (MERGED FIX)
+========================= */
+.footer{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+display:flex;
+gap:6px;
+padding:8px;
+padding-bottom:calc(8px + env(safe-area-inset-bottom));
+background:rgba(2,6,23,0.75);
+backdrop-filter:blur(14px);
+z-index:10;
+}
+
+/* =========================
+BUTTONS (COMPACT PRO)
+========================= */
+button{
+flex:1;
+padding:10px 8px;
+border:none;
+border-radius:10px;
+font-weight:600;
+font-size:12px;
+min-height:38px;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:active{
+transform:scale(0.96);
+}
+
+.fusionBtn{
+background:#22c55e;
+}
+
+.resetBtn{
+background:#ef4444;
+}
+
+.hintBtn{
+background:#3b82f6;
+}
+
+/* =========================
+LANDSCAPE
+========================= */
+@media (orientation:landscape){
+
+.play{
+flex-direction:row;
+align-items:flex-start;
+justify-content:center;
+gap:20px;
+padding-bottom:80px;
+}
+
+.elements{
+grid-template-columns:repeat(5,1fr);
+}
+
+.core{
+width:120px;
+height:120px;
+}
+
+}
+
+/* =========================
+SCROLLBAR HIDE
+========================= */
+.play::-webkit-scrollbar{
+display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- INTRO -->
+<div id="introScreen">
+<h1>☀️ Yıldız Oluştur</h1>
+<p>Hidrojen + Helyum kullanarak yıldız oluştur</p>
+<button class="startBtn" onclick="startGame()">Başla</button>
+</div>
+
+<div class="game">
+
+<div class="header">
+<div onclick="history.back()">← Geri</div>
+<div>PRO</div>
+</div>
+
+<div class="score">Skor: <span id="score">0</span></div>
+
+<div class="play">
+
+<div id="core" class="core">Çekirdek</div>
+
+<div class="bars">
+<div>Basınç</div>
+<div class="bar"><div id="pressure" class="fill"></div></div>
+<div>Sıcaklık</div>
+<div class="bar"><div id="temp" class="fill"></div></div>
+</div>
+
+<div class="elements">
+<div class="element" data="H"><span>⚪</span>Hidrojen</div>
+<div class="element" data="He"><span>🟡</span>Helyum</div>
+<div class="element" data="O"><span>🔵</span>Oksijen</div>
+<div class="element" data="C"><span>⚫</span>Karbon</div>
+<div class="element" data="Fe"><span>🟤</span>Demir</div>
+<div class="element" data="N"><span>🟢</span>Azot</div>
+<div class="element" data="Au"><span>🟠</span>Altın</div>
+<div class="element" data="Hg"><span>⚙️</span>Cıva</div>
+<div class="element" data="Cl"><span>🧪</span>Klor</div>
+</div>
+
+</div>
+
+<div class="footer">
+  <button class="fusionBtn">Füzyon</button>
+  <button class="resetBtn">Temizle</button>
+  <button class="hintBtn">İpucu</button>
+</div>
+
+</div>
+
+<script>
+
+/* INTRO */
+function startGame(){
+document.getElementById("introScreen").style.display="none";
+}
+
+/* CANVAS BG */
+const c=document.getElementById("bg");
+const ctx=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+let stars = Array.from({length:250},()=>({
+x:Math.random()*c.width,
+y:Math.random()*c.height,
+r:Math.random()*1.2,
+speed:Math.random()*0.3
+}));
+
+function draw(){
+ctx.fillStyle="#020617";
+ctx.fillRect(0,0,c.width,c.height);
+
+stars.forEach(s=>{
+s.y += s.speed;
+if(s.y > c.height) s.y = 0;
+
+ctx.globalAlpha = 0.8;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fillStyle="#fff";
+ctx.fill();
+});
+
+requestAnimationFrame(draw);
+}
+
+/* STATE */
+let selected=new Set();
+let score=0;
+let hintUsed=false;
+let dragItem=null;
+
+/* SOUND */
+function sound(f){
+let a=new (window.AudioContext||window.webkitAudioContext)();
+let o=a.createOscillator();
+o.frequency.value=f;
+o.connect(a.destination);
+o.start();
+setTimeout(()=>o.stop(),100);
+}
+
+/* DRAG */
+document.querySelectorAll(".element").forEach(el=>{
+el.addEventListener("touchstart",()=>{
+dragItem=el.dataset;
+el.classList.add("dragging");
+});
+el.addEventListener("mousedown",()=>{
+dragItem=el.dataset;
+el.classList.add("dragging");
+});
+});
+
+document.getElementById("core").addEventListener("touchend",drop);
+document.getElementById("core").addEventListener("mouseup",drop);
+
+function drop(){
+if(!dragItem)return;
+selected.add(dragItem);
+updateBars();
+sound(500);
+document.querySelectorAll(".dragging").forEach(e=>e.classList.remove("dragging"));
+dragItem=null;
+}
+
+/* BARS */
+function updateBars(){
+let p=selected.size*15;
+let t=selected.has("H")?70:20;
+document.getElementById("pressure").style.width=p+"%";
+document.getElementById("temp").style.width=t+"%";
+}
+
+/* FUSION */
+function fusion(){
+let core=document.getElementById("core");
+
+if(selected.has("H")&&selected.has("He")&&selected.size<=4){
+core.classList.add("fusion");
+core.innerHTML="☀️ Yıldız!";
+score+=10;
+document.getElementById("score").innerText=score;
+sound(800);
+}else{
+core.classList.remove("fusion");
+core.innerHTML="💥 Çöküş";
+sound(200);
+}
+}
+
+/* RESET */
+function resetGame(){
+selected.clear();
+document.getElementById("core").classList.remove("fusion");
+document.getElementById("core").innerHTML="Çekirdek";
+updateBars();
+sound(200);
+}
+
+/* HINT */
+function useHint(){
+if(hintUsed)return alert("İpucu bitti");
+hintUsed=true;
+alert("Hidrojen + Helyum");
+}
+
+</script>
+
+</body>
+</html>
