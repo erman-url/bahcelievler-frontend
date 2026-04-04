@@ -109,289 +109,192 @@ button{
 </div>
 
 <script>
-/* ===== CORE STATE ===== */
-let levelIndex=0, gridSize, nodes;
-let gridEl=document.getElementById("grid");
-let cells=[]; // 2D array [y][x] => element
-let colorMap=[]; // 2D array color int or 0
-let pathMap={}; // color -> [{x,y},...]
-let endpoints={}; // color -> [{x,y},{x,y}]
-let activeColor=null, isDrawing=false;
 
-/* TIMER */
-let tInt, timeLeft=90;
+/* =========================
+CORE STATE
+========================= */
 
-/* ===== LEVELS (zor eğri) ===== */
-const levels=[
-{size:6,nodes:[
- {x:0,y:0,c:1},{x:5,y:5,c:1},
- {x:0,y:5,c:2},{x:5,y:0,c:2},
- {x:2,y:2,c:3},{x:3,y:3,c:3}
-]},
-{size:7,nodes:[
- {x:0,y:0,c:1},{x:6,y:6,c:1},
- {x:0,y:6,c:2},{x:6,y:0,c:2},
- {x:3,y:0,c:3},{x:3,y:6,c:3},
- {x:1,y:3,c:4},{x:5,y:3,c:4}
-]},
-{size:7,nodes:[
- {x:0,y:0,c:1},{x:6,y:6,c:1},
- {x:0,y:6,c:2},{x:6,y:0,c:2},
- {x:2,y:1,c:3},{x:4,y:5,c:3},
- {x:1,y:5,c:4},{x:5,y:1,c:4},
- {x:3,y:3,c:5},{x:6,y:3,c:5}
-]},
-{size:8,nodes:[
- {x:0,y:0,c:1},{x:7,y:7,c:1},
- {x:0,y:7,c:2},{x:7,y:0,c:2},
- {x:3,y:3,c:3},{x:4,y:4,c:3},
- {x:2,y:5,c:4},{x:5,y:2,c:4},
- {x:1,y:3,c:5},{x:6,y:3,c:5},
- {x:2,y:1,c:6},{x:5,y:6,c:6}
-]},
-{size:9,nodes:[
- {x:0,y:0,c:1},{x:8,y:8,c:1},
- {x:0,y:8,c:2},{x:8,y:0,c:2},
- {x:4,y:0,c:3},{x:4,y:8,c:3},
- {x:0,y:4,c:4},{x:8,y:4,c:4},
- {x:2,y:2,c:5},{x:6,y:6,c:5},
- {x:2,y:6,c:6},{x:6,y:2,c:6},
- {x:1,y:7,c:7},{x:7,y:1,c:7},
- {x:3,y:4,c:8},{x:5,y:4,c:8}
-]}
-];
+const size = 7;
+const grid = document.getElementById("grid");
 
-/* ===== INIT ===== */
-function loadLevel(){
-  clearInterval(tInt);
-  timeLeft = Math.max(60, 90 - levelIndex*8);
-  tick();
+let cells = [];
+let path = [];
+let isDrawing = false;
+let currentNumber = 1;
 
-  const L = levels[levelIndex];
-  gridSize=L.size; nodes=L.nodes;
+/* NODE LAYOUT */
+const nodes = {
+  1:[0,0],
+  2:[6,6],
+  3:[1,5],
+  4:[1,1],
+  5:[3,3],
+  6:[3,2],
+  7:[5,1],
+  8:[5,4],
+  9:[3,4],
+  10:[3,3]
+};
 
-  document.getElementById("lv").innerText=levelIndex+1;
-  gridEl.innerHTML="";
-  gridEl.style.gridTemplateColumns=`repeat(${gridSize},1fr)`;
+/* =========================
+GRID CREATE
+========================= */
 
-  // init arrays
-  cells = Array.from({length:gridSize},()=>Array(gridSize));
-  colorMap = Array.from({length:gridSize},()=>Array(gridSize).fill(0));
-  pathMap = {};
-  endpoints = {};
+function initGrid(){
 
-  // map endpoints
-  for(const n of nodes){
-    if(!endpoints[n.c]) endpoints[n.c]=[];
-    endpoints[n.c].push({x:n.x,y:n.y});
-  }
+  grid.innerHTML="";
+  cells=[];
+  path=[];
+  currentNumber=1;
 
-  // build grid
-  for(let y=0;y<gridSize;y++){
-    for(let x=0;x<gridSize;x++){
-      const el=document.createElement("div");
-      el.className="cell";
-      el.dataset.x=x; el.dataset.y=y;
+  grid.style.gridTemplateColumns=`repeat(${size},1fr)`;
 
-      const node = nodes.find(n=>n.x===x && n.y===y);
-      if(node){
-        const d=document.createElement("div");
-        d.className="node"; d.innerText=node.c;
-        el.appendChild(d);
-        el.dataset.endpoint=node.c;
+  for(let y=0;y<size;y++){
+    for(let x=0;x<size;x++){
+
+      const div=document.createElement("div");
+      div.className="cell";
+      div.dataset.x=x;
+      div.dataset.y=y;
+
+      /* NODE */
+      for(let key in nodes){
+        let [ny,nx]=nodes[key];
+        if(ny==y && nx==x){
+          const n=document.createElement("div");
+          n.className="node";
+          n.innerText=key;
+          div.appendChild(n);
+        }
       }
 
-      el.addEventListener("pointerdown",onDown);
-      el.addEventListener("pointerenter",onEnter);
-
-      gridEl.appendChild(el);
-      cells[y][x]=el;
+      grid.appendChild(div);
+      cells.push(div);
     }
   }
 }
-document.addEventListener("pointerup",()=>isDrawing=false);
 
-/* ===== TIMER ===== */
-function tick(){
-  document.getElementById("time").innerText=timeLeft;
-  tInt=setInterval(()=>{
-    timeLeft--;
-    document.getElementById("time").innerText=timeLeft;
-    if(timeLeft<=0){
-      clearInterval(tInt);
-      showModal("Süre doldu ❌","0 ⭐");
-    }
-  },1000);
-}
+initGrid();
 
-/* ===== DRAW LOGIC ===== */
-function onDown(e){
-  const el=e.currentTarget;
-  const x=+el.dataset.x, y=+el.dataset.y;
+/* =========================
+TOUCH ENGINE (CRITICAL FIX)
+========================= */
 
-  // start only on endpoint
-  if(!el.dataset.endpoint) return;
+grid.addEventListener("pointerdown",startDraw);
+grid.addEventListener("pointermove",moveDraw);
+document.addEventListener("pointerup",endDraw);
 
-  activeColor = +el.dataset.endpoint;
+function startDraw(e){
+
+  const cell = e.target.closest(".cell");
+  if(!cell) return;
+
+  const x = +cell.dataset.x;
+  const y = +cell.dataset.y;
+
+  /* SADECE 1'DEN BAŞLA */
+  if(nodes[1][0] !== y || nodes[1][1] !== x) return;
+
   isDrawing = true;
+  path = [];
+  currentNumber = 1;
 
-  // clear previous path of this color
-  clearColor(activeColor);
-
-  // start path
-  addCell(x,y,activeColor);
+  fillCell(cell,x,y);
 }
 
-function onEnter(e){
+function moveDraw(e){
   if(!isDrawing) return;
-  const el=e.currentTarget;
-  const x=+el.dataset.x, y=+el.dataset.y;
 
-  // adjacency
-  const path = pathMap[activeColor];
-  const last = path[path.length-1];
-  if(Math.abs(last.x-x)+Math.abs(last.y-y)!==1) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el?.closest(".cell");
+  if(!cell) return;
 
-  const existing = colorMap[y][x];
+  processCell(cell);
+}
 
-  // backtrack (undo by drag back)
-  if(path.length>=2){
-    const prev = path[path.length-2];
-    if(prev.x===x && prev.y===y){
-      removeLast(activeColor);
+function endDraw(){
+  isDrawing=false;
+}
+
+/* =========================
+GAME LOGIC
+========================= */
+
+function processCell(cell){
+
+  const x = +cell.dataset.x;
+  const y = +cell.dataset.y;
+
+  /* tekrar geçemez */
+  if(path.some(p=>p.x===x && p.y===y)) return;
+
+  /* adjacency */
+  if(path.length>0){
+    const last = path[path.length-1];
+    const dx = Math.abs(last.x-x);
+    const dy = Math.abs(last.y-y);
+    if(dx+dy!==1) return;
+  }
+
+  /* doğru sayı mı */
+  const nextNumber = currentNumber + 1;
+
+  if(nodes[nextNumber]){
+    const [ny,nx] = nodes[nextNumber];
+
+    if(ny===y && nx===x){
+      currentNumber++;
+    }
+  }
+
+  /* yanlış node’a girme */
+  for(let key in nodes){
+    const [ny,nx]=nodes[key];
+    if(ny===y && nx===x && key != nextNumber){
       return;
     }
   }
 
-  // override: if other color, clear that color path
-  if(existing && existing!==activeColor){
-    clearColor(existing);
-  }
-
-  // if same color but not last (loop), ignore
-  if(existing===activeColor){
-    return;
-  }
-
-  addCell(x,y,activeColor);
-
-  // if reached other endpoint, lock path (stop drawing)
-  if(isEndpoint(x,y,activeColor) && pathMap[activeColor].length>1){
-    isDrawing=false;
-  }
+  fillCell(cell,x,y);
 
   checkWin();
 }
 
-function addCell(x,y,c){
-  colorMap[y][x]=c;
-  if(!pathMap[c]) pathMap[c]=[];
-  pathMap[c].push({x,y});
+/* =========================
+FILL
+========================= */
 
-  const el=cells[y][x];
-  el.classList.add("filled");
-  el.setAttribute("data-color",c);
+function fillCell(cell,x,y){
+  cell.classList.add("filled");
+  path.push({x,y});
 }
 
-function removeLast(c){
-  const path=pathMap[c];
-  const last=path.pop();
-  const {x,y}=last;
+/* =========================
+WIN CONTROL
+========================= */
 
-  // if it's endpoint keep it colored
-  if(isEndpoint(x,y,c)) return;
-
-  colorMap[y][x]=0;
-  const el=cells[y][x];
-  el.classList.remove("filled");
-  el.removeAttribute("data-color");
-}
-
-function clearColor(c){
-  const path=pathMap[c];
-  if(!path) return;
-
-  for(const {x,y} of path){
-    // keep endpoints
-    if(isEndpoint(x,y,c)) continue;
-    colorMap[y][x]=0;
-    const el=cells[y][x];
-    el.classList.remove("filled");
-    el.removeAttribute("data-color");
-  }
-  // reset path to only endpoints if starting from one
-  pathMap[c]=[];
-}
-
-/* ===== HELPERS ===== */
-function isEndpoint(x,y,c){
-  const eps=endpoints[c]||[];
-  return eps.some(p=>p.x===x && p.y===y);
-}
-
-/* ===== WIN CHECK ===== */
 function checkWin(){
-  // all cells filled?
-  for(let y=0;y<gridSize;y++){
-    for(let x=0;x<gridSize;x++){
-      if(colorMap[y][x]===0) return;
-    }
-  }
-  // all colors connected (endpoints reachable in same path)
-  for(const c in endpoints){
-    const path=pathMap[c];
-    if(!path || path.length===0) return;
 
-    const [a,b]=endpoints[c];
-    const hasA = path.some(p=>p.x===a.x && p.y===a.y);
-    const hasB = path.some(p=>p.x===b.x && p.y===b.y);
-    if(!(hasA && hasB)) return;
-  }
+  if(currentNumber !== Object.keys(nodes).length) return;
 
-  clearInterval(tInt);
+  if(path.length !== size*size) return;
 
-  // simple star score
-  const t=timeLeft;
-  const star = t>50?3:(t>25?2:1);
-  showModal(
-    levelIndex===levels.length-1 ? "🎉 Tüm bölümler tamam!" : "✔ Bölüm tamamlandı",
-    `${star} ⭐  (kalan süre: ${t}s)`
-  );
+  alert("🎉 Doğru çözüm!");
 }
 
-/* ===== UI ===== */
-function resetBoard(){
-  // clear all non-endpoint cells
-  for(let y=0;y<gridSize;y++){
-    for(let x=0;x<gridSize;x++){
-      if(!cells[y][x].dataset.endpoint){
-        cells[y][x].classList.remove("filled");
-        cells[y][x].removeAttribute("data-color");
-        colorMap[y][x]=0;
-      }else{
-        const c=+cells[y][x].dataset.endpoint;
-        colorMap[y][x]=c;
-      }
-    }
-  }
-  pathMap={};
+/* =========================
+RESET
+========================= */
+
+function resetGame(){
+  document.querySelectorAll(".cell").forEach(c=>{
+    c.classList.remove("filled");
+  });
+
+  path=[];
+  currentNumber=1;
 }
 
-function showModal(text,score){
-  document.getElementById("modalText").innerText=text;
-  document.getElementById("scoreText").innerText=score||"";
-  document.getElementById("modal").classList.remove("hidden");
-}
-function nextLevel(){
-  document.getElementById("modal").classList.add("hidden");
-  if(levelIndex<levels.length-1){
-    levelIndex++;
-    loadLevel();
-  }
-}
-
-/* START */
-loadLevel();
 </script>
 </body>
 </html>
