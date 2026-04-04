@@ -220,7 +220,7 @@ hit(e.clientX-rect.left,e.clientY-rect.top);
 });
 
 /* =========================
-LOOP
+LOOP (PRO BALANCE)
 ========================= */
 function loop(){
 if(!running)return;
@@ -232,12 +232,23 @@ let b=balloons[i];
 b.update();
 b.draw();
 
-if(b.y>H){
-balloons.splice(i,1);
-lives--;
-updateUI();
+if(b.y > H){
 
-if(lives<=0) endGame("Can bitti");
+  balloons.splice(i,1);
+
+  // SADECE küçük balon ceza
+  if(b.type === 2){
+    lives--;
+
+    // haptic feedback
+    navigator.vibrate?.(40);
+  }
+
+  updateUI();
+
+  if(lives <= 0){
+    endGame("Can bitti");
+  }
 }
 }
 
