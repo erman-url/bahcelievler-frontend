@@ -48,33 +48,33 @@
 <style>
 
 /* =========================
-EKSTRA PREMIUM UI (GÜNCELLENDİ)
+EKSTRA PREMIUM UI (FINAL)
 ========================= */
 
 #globalHeader{
-max-width:1000px;
-margin:auto;
-position:sticky;
-top:0;
-z-index:1000;
-backdrop-filter:blur(10px);
+  max-width:1000px;
+  margin:auto;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  backdrop-filter:blur(10px);
 }
 
-/* 🔥 PREMIUM BACKGROUND (OVERRIDE) */
+/* 🔥 PREMIUM BACKGROUND */
 body{
-background:
-radial-gradient(circle at top,#eef2ff 0%,#f8fbff 60%,#ffffff 100%) !important;
-padding-top:env(safe-area-inset-top);
-font-family:system-ui;
+  background:
+  radial-gradient(circle at top,#eef2ff 0%,#f8fbff 60%,#ffffff 100%) !important;
+  padding-top:env(safe-area-inset-top);
+  font-family:system-ui;
 }
-
 
 /* =========================
-CARD SYSTEM (ULTRA PREMIUM)
+CARD SYSTEM (APP LEVEL)
 ========================= */
 
 .game-card{
   position:relative;
+  overflow:hidden;
 
   display:flex;
   align-items:center;
@@ -84,26 +84,72 @@ CARD SYSTEM (ULTRA PREMIUM)
   border-radius:22px;
 
   background:
-  linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,245,255,0.8));
+  linear-gradient(145deg,rgba(255,255,255,0.95),rgba(240,245,255,0.85));
 
-  backdrop-filter:blur(16px) saturate(160%);
+  backdrop-filter:blur(18px) saturate(160%);
 
   border:1px solid rgba(255,255,255,0.7);
 
   box-shadow:
-    0 8px 20px rgba(0,0,0,0.06),
-    0 2px 6px rgba(0,0,0,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+    0 10px 25px rgba(0,0,0,0.06),
+    0 4px 10px rgba(0,0,0,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.9);
 
   transition:all .25s ease;
 }
 
+/* ✨ LIGHT EFFECT */
+.game-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    120deg,
+    rgba(255,255,255,0.7),
+    transparent 40%
+  );
+  opacity:.35;
+  pointer-events:none;
+}
+
+/* 👉 APP HOVER */
+.game-card:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.12),
+    0 8px 20px rgba(37,99,235,0.15);
+}
+
+/* 👉 TOUCH FEEDBACK */
+.game-card:active{
+  transform:scale(.96);
+}
+
+/* 👉 RIGHT ARROW UX */
+.game-card::after{
+  content:"›";
+  position:absolute;
+  right:16px;
+  font-size:20px;
+  font-weight:700;
+  color:#9ca3af;
+  opacity:.6;
+  transition:.2s;
+}
+
+.game-card:hover::after{
+  transform:translateX(6px);
+  color:#2563eb;
+  opacity:1;
+}
 
 /* =========================
-ICON (GLOW + DEPTH)
+ICON (APP STYLE)
 ========================= */
 
 .game-icon{
+  position:relative;
+
   width:52px;
   height:52px;
 
@@ -120,15 +166,31 @@ ICON (GLOW + DEPTH)
   font-size:22px;
 
   box-shadow:
-    0 10px 25px rgba(37,99,235,.45),
+    0 12px 30px rgba(37,99,235,.45),
     inset 0 2px 6px rgba(255,255,255,.35);
+}
+
+/* ✨ ICON GLOW */
+.game-icon::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:20px;
+  background:radial-gradient(
+    circle,
+    rgba(37,99,235,.25),
+    transparent 70%
+  );
+  z-index:-1;
 }
 
 /* =========================
 TEXT
 ========================= */
 
-.game-info{margin-left:14px;}
+.game-info{
+  margin-left:14px;
+}
 
 .game-title{
   font-size:16px;
@@ -146,23 +208,23 @@ BUTTON
 ========================= */
 
 .btn{
-margin-top:10px;
-padding:12px 18px;
-border:none;
-border-radius:14px;
+  margin-top:10px;
+  padding:12px 18px;
+  border:none;
+  border-radius:14px;
 
-background:linear-gradient(135deg,#2563eb,#1d4ed8);
-color:white;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:white;
 
-font-weight:600;
-cursor:pointer;
+  font-weight:600;
+  cursor:pointer;
 
-transition:.25s;
+  transition:.25s;
 }
 
 .btn:hover{
-transform:scale(1.06);
-box-shadow:0 10px 25px rgba(37,99,235,.4);
+  transform:scale(1.06);
+  box-shadow:0 10px 25px rgba(37,99,235,.4);
 }
 
 /* =========================
@@ -170,15 +232,15 @@ LAYOUT
 ========================= */
 
 .page-wrapper{
-max-width:900px;
-margin:auto;
-padding-bottom:160px;
+  max-width:900px;
+  margin:auto;
+  padding-bottom:160px;
 }
 
 .game-grid{
-display:grid;
-gap:16px;
-padding:16px;
+  display:grid;
+  gap:20px;
+  padding:18px;
 }
 
 /* =========================
@@ -186,24 +248,25 @@ GAME AREA
 ========================= */
 
 .game-area{
-display:none;
-padding:20px;
+  display:none;
+  padding:20px;
 }
 
 canvas{
-width:100%;
-max-width:420px;
+  width:100% !important;
+  max-width:420px;
+  height:auto;
 
-background:white;
+  background:linear-gradient(180deg,#dbeafe,#eff6ff);
 
-border-radius:20px;
+  border-radius:20px;
 
-box-shadow:
-0 20px 50px rgba(0,0,0,.15),
-inset 0 1px 0 rgba(255,255,255,.5);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.15),
+    inset 0 1px 0 rgba(255,255,255,.5);
 
-margin:auto;
-display:block;
+  margin:auto;
+  display:block;
 }
 
 /* =========================
@@ -211,16 +274,16 @@ NAV / UI
 ========================= */
 
 .back{
-margin-bottom:14px;
-color:#2563eb;
-font-weight:600;
-cursor:pointer;
+  margin-bottom:14px;
+  color:#2563eb;
+  font-weight:600;
+  cursor:pointer;
 }
 
 .score{
-text-align:center;
-font-weight:700;
-margin-bottom:10px;
+  text-align:center;
+  font-weight:700;
+  margin-bottom:10px;
 }
 
 /* =========================
@@ -228,72 +291,54 @@ GAME OVER MODAL
 ========================= */
 
 .game-over{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
 
-background:rgba(0,0,0,.55);
-backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(6px);
 
-display:none;
-align-items:center;
-justify-content:center;
+  display:none;
+  align-items:center;
+  justify-content:center;
 
-z-index:999;
+  z-index:999;
 }
 
 .over-box{
-background:white;
+  background:white;
 
-padding:28px;
-border-radius:20px;
+  padding:28px;
+  border-radius:20px;
 
-text-align:center;
-max-width:280px;
+  text-align:center;
+  max-width:280px;
 
-box-shadow:0 20px 50px rgba(0,0,0,.2);
+  box-shadow:0 20px 50px rgba(0,0,0,.2);
 }
 
+.game-over h3{
+  font-size:22px;
+  color:#2563eb;
+}
+
+.game-over p{
+  font-weight:700;
+  font-size:18px;
+}
 
 /* =========================
 MENU FIX
 ========================= */
 
 .menu-overlay{
-z-index:9999 !important;
-}
-
-
-/* CARD ARASI BOŞLUK */
-.game-grid{
-gap:20px !important;
-}
-
-canvas{
-width:100% !important;
-max-width:420px;
-height:auto;
-}
-
-/* FLAPPY PREMIUM EFFECT */
-canvas{
-background:linear-gradient(180deg,#dbeafe,#eff6ff);
-}
-
-.game-over h3{
-font-size:22px;
-color:#2563eb;
-}
-
-.game-over p{
-font-weight:700;
-font-size:18px;
+  z-index:9999 !important;
 }
 
 /* ===============================
-PREMIUM HEADER (GLOBAL SYSTEM)
+PREMIUM HEADER (GLOBAL)
 =============================== */
 
 .premium-header{
@@ -339,26 +384,6 @@ PREMIUM HEADER (GLOBAL SYSTEM)
   background:rgba(255,255,255,.2);
   font-size:20px;
 }
-
-.game-card::after{
-  content:"›";
-
-  position:absolute;
-  right:16px;
-
-  font-size:22px;
-  font-weight:700;
-
-  color:#9ca3af;
-
-  transition:.2s;
-}
-
-.game-card:hover::after{
-  transform:translateX(4px);
-  color:#2563eb;
-}
-
 </style>
 
 </head>
