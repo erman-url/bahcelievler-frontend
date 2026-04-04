@@ -140,7 +140,7 @@ score=0;
 lives=3;
 
 speed=2;
-gap=150;
+gap=170;
 
 startTime=Date.now();
 gameOver=false;
@@ -217,15 +217,15 @@ UPDATE
 ========================= */
 function update(){
 
-bird.vy += 0.4;
+bird.vy += 0.32;
 bird.y += bird.vy;
 
 /* rotation */
-bird.rot = Math.min(Math.max(bird.vy*0.05,-0.5),0.8);
+bird.rot = Math.min(Math.max(bird.vy*0.04,-0.4),0.6);
 
 /* difficulty scaling */
 let elapsed = (Date.now()-startTime)/1000;
-speed = 2 + elapsed*0.05;
+speed = 1.4 + elapsed*0.035;
 
 pipes.forEach((p,i)=>{
 p.x -= speed;
@@ -306,9 +306,26 @@ animationId=requestAnimationFrame(loop);
 /* =========================
 INPUT
 ========================= */
+let lastFlap = 0;
+
 function flap(){
-if(paused||gameOver)return;
-bird.vy=-7;
+
+if(paused || gameOver) return;
+
+let now = Date.now();
+
+/* spam engelle */
+if(now - lastFlap < 120) return;
+lastFlap = now;
+
+/* kontrollü zıplama */
+bird.vy = -6;
+
+/* üst limite çarpınca yumuşat */
+if(bird.y < 60){
+bird.vy = -4;
+}
+
 }
 
 c.addEventListener("click",flap);
