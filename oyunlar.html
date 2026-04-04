@@ -239,6 +239,50 @@ HEADER FIX
   margin:0 auto;
 }
 
+.premium-header{
+  margin:16px;
+  padding:18px;
+  border-radius:20px;
+
+  background:
+  linear-gradient(135deg,#2b7be4,#0e4fa8),
+  radial-gradient(circle at top right, rgba(255,255,255,.12), transparent);
+
+  box-shadow:
+  0 12px 30px rgba(0,0,0,.18),
+  inset 0 1px 0 rgba(255,255,255,.25);
+
+  color:#fff;
+}
+
+.header-content{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.premium-header .title{
+  font-size:22px;
+  font-weight:900;
+}
+
+.premium-header .sub{
+  font-size:13px;
+  margin-top:4px;
+  opacity:.9;
+}
+
+.header-icon{
+  width:48px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  background:rgba(255,255,255,.2);
+  font-size:20px;
+}
+
 </style>
 
 </head>
@@ -250,11 +294,23 @@ HEADER FIX
 <div class="page-wrapper">
 
 <!-- HERO -->
-<div class="games-hero">
-  <div class="games-title">🎮 Oyun Merkezi</div>
-  <div class="games-sub">
-    Hızlı oyna, ödül kazan ve eğlenceyi keşfet
+<div class="page-header premium-header">
+
+  <div class="header-content">
+
+    <div class="header-text">
+      <div class="title">Oyun Merkezi</div>
+      <div class="sub">
+        Hızlı oyna, ödül kazan ve eğlenceyi keşfet
+      </div>
+    </div>
+
+    <div class="header-icon">
+      <i class="fas fa-gamepad"></i>
+    </div>
+
   </div>
+
 </div>
 
 <!-- GRID -->
