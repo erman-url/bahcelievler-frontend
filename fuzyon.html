@@ -356,166 +356,113 @@ START BUTTON (SUN FIX)
 
 <script>
 
-/* =========================
-INIT
-========================= */
-const intro = document.getElementById("introScreen");
-const core = document.getElementById("core");
-
-/* =========================
-START GAME (FIX)
-========================= */
+/* INTRO */
 function startGame(){
-  intro.style.display = "none";
+document.getElementById("introScreen").style.display="none";
 }
 
-/* =========================
-BG CANVAS (PERF FIX)
-========================= */
-const c = document.getElementById("bg");
-const ctx = c.getContext("2d");
+/* BG */
+const c=document.getElementById("bg");
+const ctx=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
 
-function resizeCanvas(){
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-/* ⭐ STAR SYSTEM */
-let stars = Array.from({length:180}, () => ({
-  x: Math.random()*c.width,
-  y: Math.random()*c.height,
-  r: Math.random()*1.2,
-  speed: Math.random()*0.3
+let stars=Array.from({length:250},()=>({
+x:Math.random()*c.width,
+y:Math.random()*c.height,
+r:Math.random()*1.5,
+speed:Math.random()*0.4
 }));
 
 function draw(){
-  ctx.fillStyle = "#020617";
-  ctx.fillRect(0,0,c.width,c.height);
+ctx.fillStyle="#020617";
+ctx.fillRect(0,0,c.width,c.height);
 
-  for(let s of stars){
-    s.y += s.speed;
-    if(s.y > c.height) s.y = 0;
+stars.forEach(s=>{
+s.y+=s.speed;
+if(s.y>c.height)s.y=0;
 
-    ctx.globalAlpha = 0.6;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-    ctx.fillStyle = "#fff";
-    ctx.fill();
-  }
+ctx.globalAlpha=0.5+Math.random()*0.5;
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fillStyle="#fff";
+ctx.fill();
+});
 
-  requestAnimationFrame(draw);
+requestAnimationFrame(draw);
 }
 draw();
 
-/* =========================
-STATE
-========================= */
-let selected = new Set();
-let hintUsed = false;
-let dragItem = null;
+/* STATE */
+let selected=new Set();
+let hintUsed=false;
+let dragItem=null;
 
-/* =========================
-SOUND (OPTIMIZED)
-========================= */
-let audioCtx;
-
-function sound(freq){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
-  const o = audioCtx.createOscillator();
-  o.frequency.value = freq;
-  o.connect(audioCtx.destination);
-  o.start();
-
-  setTimeout(()=>o.stop(), 80);
+/* SOUND */
+function sound(f){
+let a=new (window.AudioContext||window.webkitAudioContext)();
+let o=a.createOscillator();
+o.frequency.value=f;
+o.connect(a.destination);
+o.start();
+setTimeout(()=>o.stop(),100);
 }
 
-/* =========================
-DRAG SYSTEM (MOBIL FIX)
-========================= */
-document.querySelectorAll(".element").forEach(el => {
-
-  el.addEventListener("pointerdown", () => {
-    dragItem = el.getAttribute("data");
-  });
-
+/* DRAG FIX */
+document.querySelectorAll(".element").forEach(el=>{
+el.addEventListener("touchstart",()=>{dragItem=el.getAttribute("data");});
+el.addEventListener("mousedown",()=>{dragItem=el.getAttribute("data");});
 });
 
-/* DROP */
-document.addEventListener("pointerup", handleDrop);
+document.addEventListener("touchend",handleDrop);
+document.addEventListener("mouseup",handleDrop);
 
 function handleDrop(e){
-  if(!dragItem) return;
+if(!dragItem)return;
 
-  const rect = core.getBoundingClientRect();
+let core=document.getElementById("core");
+let rect=core.getBoundingClientRect();
 
-  const x = e.clientX;
-  const y = e.clientY;
+let x=e.changedTouches?e.changedTouches[0].clientX:e.clientX;
+let y=e.changedTouches?e.changedTouches[0].clientY:e.clientY;
 
-  if(
-    x > rect.left &&
-    x < rect.right &&
-    y > rect.top &&
-    y < rect.bottom
-  ){
-    selected.add(dragItem);
-    sound(500);
-  }
-
-  dragItem = null;
+if(x>rect.left && x<rect.right && y>rect.top && y<rect.bottom){
+selected.add(dragItem);
+sound(500);
 }
 
-/* =========================
-FUSION
-========================= */
+dragItem=null;
+}
+
+/* FUSION */
 function fusion(){
-
-  if(selected.has("H") && selected.has("He")){
-    core.classList.add("fusion");
-    core.innerHTML = "☀️ Yıldız!";
-    sound(800);
-  }else{
-    core.classList.remove("fusion");
-    core.innerHTML = "💥 Çöküş";
-    sound(200);
-  }
-
+let core=document.getElementById("core");
+if(selected.has("H")&&selected.has("He")){
+core.classList.add("fusion");
+core.innerHTML="☀️ Yıldız!";
+}else{
+core.innerHTML="💥 Çöküş";
+}
 }
 
-/* =========================
-RESET
-========================= */
+/* RESET */
 function resetGame(){
-  selected.clear();
-  core.classList.remove("fusion");
-  core.innerHTML = "Çekirdek";
+selected.clear();
+document.getElementById("core").innerHTML="Çekirdek";
 }
 
-/* =========================
-HINT
-========================= */
+/* HINT */
 function useHint(){
-  if(hintUsed){
-    alert("İpucu bitti");
-    return;
-  }
-  hintUsed = true;
-  alert("Hidrojen + Helyum");
+if(hintUsed)return alert("İpucu bitti");
+hintUsed=true;
+alert("Hidrojen + Helyum");
 }
 
-/* =========================
-NAV
-========================= */
 function goBack(){
-  if(history.length > 1){
-    history.back();
-  }else{
-    window.location.href = "online-oyunlar.html";
-  }
+if(history.length > 1){
+history.back();
+}else{
+window.location.href = "online-oyunlar.html"; // fallback
+}
 }
 
 </script>
