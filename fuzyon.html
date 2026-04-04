@@ -96,7 +96,7 @@ opacity:0.7;
 }
 
 /* =========================
-PLAY (SCROLL FIX)
+PLAY
 ========================= */
 .play{
 flex:1;
@@ -106,44 +106,43 @@ align-items:center;
 justify-content:flex-start;
 gap:10px;
 overflow-y:auto;
-padding-bottom:110px; /* footer boşluğu */
+padding-bottom:110px;
 }
 
 /* =========================
-CORE
+CORE (UPGRADE)
 ========================= */
 .core{
-width:140px;
-height:140px;
+width:180px;
+height:180px;
 border-radius:50%;
-background:radial-gradient(circle at 30% 30%,#111,#000);
+background:radial-gradient(circle,#0f172a,#000);
 display:flex;
 align-items:center;
 justify-content:center;
-margin-top:8px;
-font-size:13px;
-box-shadow:inset 0 0 30px rgba(0,0,0,0.9);
+margin-top:12px;
+font-size:14px;
+box-shadow:
+0 0 80px rgba(255,204,0,0.15),
+inset 0 0 50px rgba(0,0,0,0.9);
 transition:0.3s;
 }
 
 .core.fusion{
 background:radial-gradient(circle,#ffcc00,#ff6600);
-box-shadow:0 0 80px #ff9900;
+box-shadow:0 0 120px #ff9900;
 animation:pulse 0.5s infinite alternate;
 }
 
 @keyframes pulse{
 from{transform:scale(1);}
-to{transform:scale(1.12);}
+to{transform:scale(1.15);}
 }
 
 /* =========================
 BARS
 ========================= */
-.bars{
-width:92%;
-}
-
+.bars{width:92%;}
 .bar{
 height:8px;
 background:#111;
@@ -151,7 +150,6 @@ border-radius:10px;
 overflow:hidden;
 margin:5px 0;
 }
-
 .fill{
 height:100%;
 width:0%;
@@ -166,7 +164,7 @@ ELEMENT GRID
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:8px;
-padding:10px;
+padding:25px 10px 0;
 width:100%;
 max-width:420px;
 }
@@ -187,9 +185,7 @@ display:block;
 margin-bottom:4px;
 }
 
-.element:active{
-transform:scale(0.95);
-}
+.element:active{transform:scale(0.95);}
 
 .dragging{
 opacity:0.5;
@@ -197,7 +193,7 @@ transform:scale(1.1);
 }
 
 /* =========================
-FOOTER (MERGED FIX)
+FOOTER
 ========================= */
 .footer{
 position:fixed;
@@ -208,72 +204,37 @@ display:flex;
 gap:6px;
 padding:8px;
 padding-bottom:calc(8px + env(safe-area-inset-bottom));
-background:rgba(2,6,23,0.75);
+background:rgba(0,0,0,0.35);
 backdrop-filter:blur(14px);
 z-index:10;
 }
 
 /* =========================
-BUTTONS (COMPACT PRO)
+BUTTONS (UPGRADE)
 ========================= */
 button{
 flex:1;
 padding:10px 8px;
-border:none;
-border-radius:10px;
+border-radius:999px;
 font-weight:600;
 font-size:12px;
-min-height:38px;
-cursor:pointer;
-transition:0.2s;
-}
-
-button:active{
-transform:scale(0.96);
-}
-
-.fusionBtn{
-background:#22c55e;
-}
-
-.resetBtn{
-background:#ef4444;
-}
-
-.hintBtn{
-background:#3b82f6;
+color:#fff;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.15);
 }
 
 /* =========================
 LANDSCAPE
 ========================= */
 @media (orientation:landscape){
-
-.play{
-flex-direction:row;
-align-items:flex-start;
-justify-content:center;
-gap:20px;
-padding-bottom:80px;
-}
-
-.elements{
-grid-template-columns:repeat(5,1fr);
-}
-
-.core{
-width:120px;
-height:120px;
-}
-
+.play{flex-direction:row;}
+.elements{grid-template-columns:repeat(5,1fr);}
 }
 
 /* =========================
 SCROLLBAR HIDE
 ========================= */
-.play::-webkit-scrollbar{
-display:none;
-}
+.play::-webkit-scrollbar{display:none;}
 
 </style>
 </head>
@@ -282,7 +243,6 @@ display:none;
 
 <canvas id="bg"></canvas>
 
-<!-- INTRO -->
 <div id="introScreen">
 <h1>☀️ Yıldız Oluştur</h1>
 <p>Hidrojen + Helyum kullanarak yıldız oluştur</p>
@@ -324,9 +284,9 @@ display:none;
 </div>
 
 <div class="footer">
-  <button class="fusionBtn">Füzyon</button>
-  <button class="resetBtn">Temizle</button>
-  <button class="hintBtn">İpucu</button>
+<button class="fusionBtn" onclick="fusion()">Füzyon</button>
+<button class="resetBtn" onclick="resetGame()">Temizle</button>
+<button class="hintBtn" onclick="useHint()">İpucu</button>
 </div>
 
 </div>
@@ -338,15 +298,16 @@ function startGame(){
 document.getElementById("introScreen").style.display="none";
 }
 
-/* CANVAS BG */
+/* BG */
 const c=document.getElementById("bg");
 const ctx=c.getContext("2d");
 c.width=innerWidth;c.height=innerHeight;
-let stars = Array.from({length:250},()=>({
+
+let stars=Array.from({length:250},()=>({
 x:Math.random()*c.width,
 y:Math.random()*c.height,
-r:Math.random()*1.2,
-speed:Math.random()*0.3
+r:Math.random()*1.5,
+speed:Math.random()*0.4
 }));
 
 function draw(){
@@ -354,10 +315,10 @@ ctx.fillStyle="#020617";
 ctx.fillRect(0,0,c.width,c.height);
 
 stars.forEach(s=>{
-s.y += s.speed;
-if(s.y > c.height) s.y = 0;
+s.y+=s.speed;
+if(s.y>c.height)s.y=0;
 
-ctx.globalAlpha = 0.8;
+ctx.globalAlpha=0.5+Math.random()*0.5;
 ctx.beginPath();
 ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
 ctx.fillStyle="#fff";
@@ -366,10 +327,10 @@ ctx.fill();
 
 requestAnimationFrame(draw);
 }
+draw();
 
 /* STATE */
 let selected=new Set();
-let score=0;
 let hintUsed=false;
 let dragItem=null;
 
@@ -383,62 +344,47 @@ o.start();
 setTimeout(()=>o.stop(),100);
 }
 
-/* DRAG */
+/* DRAG FIX */
 document.querySelectorAll(".element").forEach(el=>{
-el.addEventListener("touchstart",()=>{
-dragItem=el.dataset;
-el.classList.add("dragging");
-});
-el.addEventListener("mousedown",()=>{
-dragItem=el.dataset;
-el.classList.add("dragging");
-});
+el.addEventListener("touchstart",()=>{dragItem=el.getAttribute("data");});
+el.addEventListener("mousedown",()=>{dragItem=el.getAttribute("data");});
 });
 
-document.getElementById("core").addEventListener("touchend",drop);
-document.getElementById("core").addEventListener("mouseup",drop);
+document.addEventListener("touchend",handleDrop);
+document.addEventListener("mouseup",handleDrop);
 
-function drop(){
+function handleDrop(e){
 if(!dragItem)return;
+
+let core=document.getElementById("core");
+let rect=core.getBoundingClientRect();
+
+let x=e.changedTouches?e.changedTouches[0].clientX:e.clientX;
+let y=e.changedTouches?e.changedTouches[0].clientY:e.clientY;
+
+if(x>rect.left && x<rect.right && y>rect.top && y<rect.bottom){
 selected.add(dragItem);
-updateBars();
 sound(500);
-document.querySelectorAll(".dragging").forEach(e=>e.classList.remove("dragging"));
-dragItem=null;
 }
 
-/* BARS */
-function updateBars(){
-let p=selected.size*15;
-let t=selected.has("H")?70:20;
-document.getElementById("pressure").style.width=p+"%";
-document.getElementById("temp").style.width=t+"%";
+dragItem=null;
 }
 
 /* FUSION */
 function fusion(){
 let core=document.getElementById("core");
-
-if(selected.has("H")&&selected.has("He")&&selected.size<=4){
+if(selected.has("H")&&selected.has("He")){
 core.classList.add("fusion");
 core.innerHTML="☀️ Yıldız!";
-score+=10;
-document.getElementById("score").innerText=score;
-sound(800);
 }else{
-core.classList.remove("fusion");
 core.innerHTML="💥 Çöküş";
-sound(200);
 }
 }
 
 /* RESET */
 function resetGame(){
 selected.clear();
-document.getElementById("core").classList.remove("fusion");
 document.getElementById("core").innerHTML="Çekirdek";
-updateBars();
-sound(200);
 }
 
 /* HINT */
