@@ -419,7 +419,7 @@ STATE
 ========================= */
 let selected = new Set();
 let hintUsed = false;
-let dragItem = null;
+
 
 /* =========================
 SOUND (FIX: memory leak yok)
@@ -442,14 +442,20 @@ DRAG FIX (MOBİL + DESKTOP TEK SİSTEM)
 ========================= */
 document.querySelectorAll(".element").forEach(el=>{
 
-  el.addEventListener("pointerdown", ()=>{
-    dragItem = el.getAttribute("data");
+  el.addEventListener("pointerdown",(e)=>{
+    e.preventDefault();
+
+    const val = el.getAttribute("data");
+
+    selected.add(val);
+    sound(500);
+
+    // küçük feedback
+    el.style.transform="scale(0.9)";
+    setTimeout(()=>el.style.transform="",120);
   });
 
 });
-
-/* DROP */
-document.addEventListener("pointerup", handleDrop);
 
 function handleDrop(e){
   if(!dragItem) return;
