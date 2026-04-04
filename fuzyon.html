@@ -63,6 +63,11 @@ font-weight:600;
 font-size:14px;
 }
 
+.startBtn{
+letter-spacing:1px;
+text-transform:uppercase;
+}
+
 /* =========================
 LAYOUT
 ========================= */
@@ -236,6 +241,59 @@ SCROLLBAR HIDE
 ========================= */
 .play::-webkit-scrollbar{display:none;}
 
+/* =========================
+FUTURISTIC START BUTTON
+========================= */
+.startBtn{
+width:120px;
+height:120px;
+border-radius:50%;
+background:radial-gradient(circle at 30% 30%,#22c55e,#15803d);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
+font-weight:700;
+color:#fff;
+margin-top:30px;
+
+/* glow */
+box-shadow:
+0 0 20px rgba(34,197,94,0.6),
+0 0 60px rgba(34,197,94,0.4),
+inset 0 0 20px rgba(255,255,255,0.2);
+
+/* animasyon */
+animation:pulseGlow 2s infinite ease-in-out;
+transition:0.3s;
+}
+
+.startBtn:active{
+transform:scale(0.9);
+}
+
+/* dış halka efekti */
+.startBtn::before{
+content:"";
+position:absolute;
+width:160px;
+height:160px;
+border-radius:50%;
+border:2px solid rgba(34,197,94,0.3);
+animation:rotateRing 6s linear infinite;
+}
+
+@keyframes pulseGlow{
+0%{box-shadow:0 0 10px rgba(34,197,94,0.4);}
+50%{box-shadow:0 0 40px rgba(34,197,94,0.9);}
+100%{box-shadow:0 0 10px rgba(34,197,94,0.4);}
+}
+
+@keyframes rotateRing{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
 </style>
 </head>
 
@@ -252,7 +310,7 @@ SCROLLBAR HIDE
 <div class="game">
 
 <div class="header">
-<div onclick="history.back()">← Geri</div>
+<div onclick="goBack()">← Geri</div>
 <div>PRO</div>
 </div>
 
@@ -393,6 +451,16 @@ if(hintUsed)return alert("İpucu bitti");
 hintUsed=true;
 alert("Hidrojen + Helyum");
 }
+
+function goBack(){
+if(history.length > 1){
+history.back();
+}else{
+window.location.href = "online-oyunlar.html"; // fallback
+}
+}
+
+
 
 </script>
 
