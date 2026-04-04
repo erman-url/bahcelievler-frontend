@@ -7,18 +7,10 @@
 
 <title>2048 Oyna | Bahçelievler Forum</title>
 
-<meta name="description" content="2048 oyununu mobilde premium deneyimle oyna. Hızlı, akıcı ve ücretsiz.">
+<meta name="description" content="Mobil uyumlu 2048 oyunu">
 <meta name="robots" content="index, follow">
 
-<!-- OPEN GRAPH -->
-<meta property="og:title" content="2048 Oyna">
-<meta property="og:description" content="Mobil uyumlu 2048 oyunu">
-<meta property="og:type" content="website">
-
-<!-- TWITTER -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="2048 Oyna">
-<meta name="twitter:description" content="Mobil uyumlu premium 2048 oyunu">
 
 <style>
 
@@ -29,7 +21,6 @@ ROOT
 --bg:#0f172a;
 --card:rgba(255,255,255,0.06);
 --primary:#2563eb;
---radius:18px;
 }
 
 /* =========================
@@ -42,23 +33,42 @@ margin:0;
 font-family:-apple-system,system-ui;
 background:linear-gradient(180deg,#0f172a,#020617);
 color:white;
+
+/* 🔥 TAM ORTALAMA */
+display:flex;
+justify-content:center;
+align-items:center;
+
 height:100vh;
+overflow:hidden;
+}
+
+/* =========================
+APP WRAPPER (KRİTİK)
+========================= */
+.app{
+width:100%;
+max-width:420px;
+
+/* 🔥 responsive height */
+height:100vh;
+max-height:820px;
+
 display:flex;
 flex-direction:column;
 }
 
 /* =========================
-HEADER (APP STYLE)
+HEADER
 ========================= */
 .header{
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:14px;
-padding-top:calc(14px + env(safe-area-inset-top));
+padding:12px;
+padding-top:calc(12px + env(safe-area-inset-top));
 background:rgba(255,255,255,0.05);
 backdrop-filter:blur(12px);
-font-weight:700;
 }
 
 .back{
@@ -70,62 +80,59 @@ border-radius:10px;
 }
 
 /* =========================
-CONTAINER
+CONTENT
 ========================= */
 .container{
 flex:1;
 display:flex;
 flex-direction:column;
-max-width:420px;
-width:100%;
-margin:auto;
-padding:14px;
+padding:12px;
+gap:10px;
 }
 
 /* =========================
 SCORE
 ========================= */
-.score-box{
-display:flex;
-justify-content:space-between;
-margin-bottom:12px;
-}
-
 .score{
 background:var(--card);
-padding:10px 14px;
+padding:10px;
 border-radius:12px;
-font-weight:700;
-backdrop-filter:blur(10px);
+text-align:center;
 }
 
 /* =========================
-GRID
+GRID (EN KRİTİK FIX)
 ========================= */
 .grid{
-flex:1;
+width:100%;
+
+/* 🔥 TAM ORAN KORUMA */
+aspect-ratio:1;
+
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:10px;
-padding:10px;
+gap:8px;
+padding:8px;
+
 background:var(--card);
-border-radius:20px;
-backdrop-filter:blur(12px);
+border-radius:16px;
 }
 
 /* =========================
-TILE
+TILE (responsive font)
 ========================= */
 .tile{
-aspect-ratio:1;
 display:flex;
 align-items:center;
 justify-content:center;
+
 font-weight:800;
-font-size:22px;
-border-radius:14px;
+
+/* 🔥 FONT OTOMATİK */
+font-size:clamp(16px,4vw,22px);
+
+border-radius:10px;
 background:rgba(255,255,255,0.08);
-transition:.2s;
 }
 
 /* COLORS */
@@ -145,10 +152,9 @@ transition:.2s;
 BUTTON
 ========================= */
 .btn{
-margin-top:12px;
-padding:14px;
+padding:12px;
 border:none;
-border-radius:14px;
+border-radius:12px;
 background:linear-gradient(135deg,#2563eb,#1d4ed8);
 color:white;
 font-weight:700;
@@ -168,9 +174,8 @@ justify-content:center;
 
 .box{
 background:#020617;
-padding:24px;
-border-radius:20px;
-text-align:center;
+padding:20px;
+border-radius:16px;
 }
 
 </style>
@@ -178,7 +183,8 @@ text-align:center;
 
 <body>
 
-<!-- HEADER -->
+<div class="app">
+
 <div class="header">
 <button class="back" onclick="goBack()">←</button>
 <div>2048</div>
@@ -187,13 +193,13 @@ text-align:center;
 
 <div class="container">
 
-<div class="score-box">
 <div class="score" id="score">0</div>
-</div>
 
 <div class="grid" id="grid"></div>
 
 <button class="btn" onclick="init()">Yeniden Başlat</button>
+
+</div>
 
 </div>
 
@@ -207,39 +213,29 @@ text-align:center;
 
 <script>
 
-/* =========================
-STATE
-========================= */
-let grid = [];
-let score = 0;
+let grid=[],score=0;
 
-/* =========================
-INIT
-========================= */
+/* INIT */
 function init(){
-grid = Array(4).fill().map(()=>Array(4).fill(0));
-score = 0;
-spawn(); spawn();
+grid=Array(4).fill().map(()=>Array(4).fill(0));
+score=0;
+spawn();spawn();
 draw();
 document.getElementById("over").style.display="none";
 }
 
-/* =========================
-SPAWN
-========================= */
+/* SPAWN */
 function spawn(){
 let empty=[];
-grid.forEach((r,i)=>r.forEach((c,j)=>{if(!c) empty.push([i,j])}));
+grid.forEach((r,i)=>r.forEach((c,j)=>{if(!c)empty.push([i,j])}));
 
-if(empty.length===0){gameOver();return;}
+if(!empty.length){gameOver();return;}
 
 let [i,j]=empty[Math.floor(Math.random()*empty.length)];
 grid[i][j]=Math.random()<0.9?2:4;
 }
 
-/* =========================
-DRAW
-========================= */
+/* DRAW */
 function draw(){
 const g=document.getElementById("grid");
 g.innerHTML="";
@@ -256,9 +252,7 @@ g.appendChild(d);
 document.getElementById("score").innerText=score;
 }
 
-/* =========================
-MOVE
-========================= */
+/* MOVE */
 function move(dir){
 
 let moved=false;
@@ -275,7 +269,7 @@ arr[i+1]=0;
 }
 
 arr=arr.filter(v=>v);
-while(arr.length<4) arr.push(0);
+while(arr.length<4)arr.push(0);
 return arr;
 }
 
@@ -283,48 +277,41 @@ function rotate(){
 grid=grid[0].map((_,i)=>grid.map(r=>r[i]).reverse());
 }
 
-if(dir==="up"){rotate();}
+if(dir==="up")rotate();
 if(dir==="right"){rotate();rotate();}
 if(dir==="down"){rotate();rotate();rotate();}
 
 for(let i=0;i<4;i++){
 let newRow=slide(grid[i]);
-if(JSON.stringify(grid[i])!==JSON.stringify(newRow)) moved=true;
+if(JSON.stringify(grid[i])!==JSON.stringify(newRow))moved=true;
 grid[i]=newRow;
 }
 
 if(dir==="up"){rotate();rotate();rotate();}
 if(dir==="right"){rotate();rotate();}
-if(dir==="down"){rotate();}
+if(dir==="down")rotate();
 
 if(moved){
 spawn();
 draw();
 }
-
 }
 
-/* =========================
-GAME OVER
-========================= */
+/* GAME OVER */
 function gameOver(){
 document.getElementById("final").innerText="Skor: "+score;
 document.getElementById("over").style.display="flex";
 }
 
-/* =========================
-INPUT
-========================= */
+/* INPUT */
 document.addEventListener("keydown",e=>{
-if(e.key==="ArrowUp") move("up");
-if(e.key==="ArrowDown") move("down");
-if(e.key==="ArrowLeft") move("left");
-if(e.key==="ArrowRight") move("right");
+if(e.key==="ArrowUp")move("up");
+if(e.key==="ArrowDown")move("down");
+if(e.key==="ArrowLeft")move("left");
+if(e.key==="ArrowRight")move("right");
 });
 
-/* =========================
-TOUCH (OPTIMIZED)
-========================= */
+/* TOUCH (OPTİMUM) */
 let sx=0,sy=0;
 
 document.addEventListener("touchstart",e=>{
@@ -336,27 +323,22 @@ document.addEventListener("touchend",e=>{
 let dx=e.changedTouches[0].clientX-sx;
 let dy=e.changedTouches[0].clientY-sy;
 
-let threshold=40;
+let t=40;
 
 if(Math.abs(dx)>Math.abs(dy)){
-if(dx>threshold) move("right");
-if(dx<-threshold) move("left");
+if(dx>t)move("right");
+if(dx<-t)move("left");
 }else{
-if(dy>threshold) move("down");
-if(dy<-threshold) move("up");
+if(dy>t)move("down");
+if(dy<-t)move("up");
 }
 });
 
-/* =========================
-BACK
-========================= */
+/* BACK */
 function goBack(){
-if(confirm("Çıkmak istiyor musun?")){
-history.back();
-}
+if(confirm("Çıkmak istiyor musun?"))history.back();
 }
 
-/* START */
 init();
 
 </script>
