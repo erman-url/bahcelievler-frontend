@@ -5,19 +5,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<title>Bubble Pop Oyunu | Bahçelievler Forum</title>
+<title>Bubble Pop Pro | Bahçelievler Forum</title>
 
-<meta name="description" content="Bubble Pop oyununu hemen oyna. Baloncukları patlat, süreye karşı yarış ve skor yap. Bahçelievler Forum ücretsiz mobil oyun.">
-<meta name="keywords" content="bubble pop oyunu, balon patlatma oyunu, mobil oyun, online oyun, bahçelievler oyun">
-
-<link rel="canonical" href="https://bahcelievlerforum.com/bubble-pop.html">
-
-<meta property="og:title" content="Bubble Pop Oyunu">
-<meta property="og:description" content="Baloncukları patlat, süreye karşı yarış!">
-<meta property="og:image" content="https://bahcelievlerforum.com/assets/images/oyunlar-cover.jpg">
-<meta property="og:type" content="game">
-
-<meta name="robots" content="index,follow">
 <meta name="theme-color" content="#1abc9c">
 
 <style>
@@ -29,7 +18,6 @@ height:100%;
 overflow:hidden;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 background:#1abc9c;
-padding-top:env(safe-area-inset-top);
 }
 
 /* CANVAS */
@@ -37,10 +25,9 @@ canvas{
 position:absolute;
 top:0;
 left:0;
-z-index:1;
 }
 
-/* TOP UI */
+/* UI */
 #ui{
 position:fixed;
 top:0;
@@ -52,7 +39,7 @@ justify-content:space-between;
 align-items:center;
 padding:0 15px;
 color:#fff;
-background:linear-gradient(to bottom,rgba(0,0,0,0.35),transparent);
+background:linear-gradient(to bottom,rgba(0,0,0,0.4),transparent);
 z-index:10;
 font-weight:600;
 }
@@ -60,17 +47,13 @@ font-weight:600;
 /* OVERLAY */
 .overlay{
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+inset:0;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
 background:linear-gradient(#1abc9c,#16a085);
 z-index:9999;
-text-align:center;
 }
 
 /* TITLE */
@@ -78,35 +61,22 @@ text-align:center;
 font-size:48px;
 font-weight:900;
 color:#fff;
-letter-spacing:2px;
-text-shadow:
-0 5px 15px rgba(0,0,0,0.3),
-0 0 10px rgba(255,255,255,0.6);
+text-shadow:0 5px 20px rgba(0,0,0,.3);
 margin-bottom:10px;
 }
 
 /* BUTTON */
 .btn{
 padding:14px 30px;
-font-size:18px;
 border:none;
 border-radius:30px;
 background:#fff;
 color:#16a085;
 font-weight:bold;
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
 cursor:pointer;
-transition:0.2s;
 }
-.btn:active{transform:scale(0.95);}
 
 #gameOver{display:none;}
-
-.stat{
-color:#fff;
-font-size:20px;
-margin:10px 0;
-}
 </style>
 </head>
 
@@ -116,261 +86,228 @@ margin:10px 0;
 <div onclick="goBack()">←</div>
 <div id="score">0</div>
 <div id="lives">❤️❤️❤️❤️❤️</div>
-<div id="time">300s</div>
+<div id="time">120s</div>
 </div>
 
 <div id="startScreen" class="overlay">
 <div class="title">Bubble Pop</div>
-<div style="color:white;opacity:.8;margin-bottom:20px">
-Bahçelievler Forum
-</div>
 <button class="btn" onclick="startGame()">OYNA</button>
 </div>
 
 <div id="gameOver" class="overlay">
-<div class="title" id="endTitle">Bitti!</div>
-<div class="stat" id="finalScore"></div>
-<button class="btn" onclick="restartGame()">Tekrar Oyna</button>
+<div class="title" id="endTitle">Bitti</div>
+<div id="finalScore"></div>
+<button class="btn" onclick="startGame()">Tekrar</button>
 </div>
 
 <canvas id="game"></canvas>
 
-
 <script>
 
+/* =========================
+AUDIO
+========================= */
+const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
 
-function startGame(){
-  let start=document.getElementById("startScreen");
-  let over=document.getElementById("gameOver");
-
-  if(start) start.style.display="none";
-  if(over) over.style.display="none";
-
-  score=0;
-  lives=5;
-  time=300;
-  balloons=[];
-  running=true;
-
-  updateUI();
-  startTimer();
-  loop();
+function beep(freq){
+const o=ctxAudio.createOscillator();
+const g=ctxAudio.createGain();
+o.connect(g); g.connect(ctxAudio.destination);
+o.frequency.value=freq;
+g.gain.value=0.1;
+o.start();
+o.stop(ctxAudio.currentTime+0.1);
 }
+
+/* =========================
+CANVAS
+========================= */
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let W,H;
+function resize(){
+W=canvas.width=innerWidth;
+H=canvas.height=innerHeight;
+}
+resize();
+addEventListener("resize",resize);
 
 /* =========================
 STATE
 ========================= */
-
-const size = 7;
-const grid = document.getElementById("grid");
-
-let path = [];
-let isDrawing = false;
-let currentNumber = 1;
-let score = 0;
-let combo = 0;
-
-/* NODE MAP (DAHA ZOR LAYOUT) */
-const nodes = {
-  1:[0,0],
-  2:[6,6],
-  3:[0,6],
-  4:[6,0],
-  5:[3,3],
-  6:[2,4],
-  7:[4,2],
-  8:[1,5],
-  9:[5,1],
-  10:[3,5]
-};
+let balloons=[];
+let score=0;
+let lives=5;
+let time=120;
+let running=false;
+let speed=1;
+let combo=0;
 
 /* =========================
-SOUND SYSTEM (ULTRA LIGHT)
+BALLOON
 ========================= */
-
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioCtx();
-
-function play(freq, duration=0.1){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.frequency.value = freq;
-  osc.type = "sine";
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
+class Balloon{
+constructor(x,y,r,s,type=1){
+this.x=x; this.y=y;
+this.r=r; this.s=s;
+this.type=type;
+}
+draw(){
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+ctx.fillStyle=this.type==1?"#fff":"#ff7675";
+ctx.fill();
+}
+update(){
+this.y+=this.s*speed;
+}
 }
 
 /* =========================
-INIT
+SPAWN
 ========================= */
+function spawn(){
+if(balloons.length>6) return;
 
-function init(){
-  grid.innerHTML="";
-  path=[];
-  currentNumber=1;
-  score=0;
-  combo=0;
+let r=25;
+let x=Math.random()*(W-2*r)+r;
+let s=1.5+Math.random();
 
-  for(let y=0;y<size;y++){
-    for(let x=0;x<size;x++){
-
-      const cell=document.createElement("div");
-      cell.className="cell";
-      cell.dataset.x=x;
-      cell.dataset.y=y;
-
-      for(let key in nodes){
-        let [ny,nx]=nodes[key];
-        if(ny==y && nx==x){
-          const n=document.createElement("div");
-          n.className="node";
-          n.innerText=key;
-          cell.appendChild(n);
-        }
-      }
-
-      grid.appendChild(cell);
-    }
-  }
-}
-
-init();
-
-/* =========================
-TOUCH SYSTEM (IMPROVED)
-========================= */
-
-grid.addEventListener("pointerdown",start);
-grid.addEventListener("pointermove",move);
-document.addEventListener("pointerup",()=>isDrawing=false);
-
-function start(e){
-
-  const cell=e.target.closest(".cell");
-  if(!cell) return;
-
-  const x=+cell.dataset.x;
-  const y=+cell.dataset.y;
-
-  if(nodes[1][0]!==y || nodes[1][1]!==x) return;
-
-  navigator.vibrate?.(15);
-  play(200);
-
-  isDrawing=true;
-  path=[];
-  currentNumber=1;
-  combo=0;
-
-  fill(cell,x,y);
-}
-
-function move(e){
-
-  if(!isDrawing) return;
-
-  const el=document.elementFromPoint(e.clientX,e.clientY);
-  const cell=el?.closest(".cell");
-  if(!cell) return;
-
-  const x=+cell.dataset.x;
-  const y=+cell.dataset.y;
-
-  if(path.some(p=>p.x===x && p.y===y)) return;
-
-  if(path.length>0){
-    const last=path[path.length-1];
-    if(Math.abs(last.x-x)+Math.abs(last.y-y)!==1) return;
-  }
-
-  let next=currentNumber+1;
-
-  /* DOĞRU HAMLE */
-  if(nodes[next]){
-    let [ny,nx]=nodes[next];
-
-    if(ny===y && nx===x){
-      currentNumber++;
-      combo++;
-
-      navigator.vibrate?.(10);
-      play(300 + combo*40);
-
-      score += 10 * combo;
-    }
-  }
-
-  /* YANLIŞ NODE */
-  for(let key in nodes){
-    let [ny,nx]=nodes[key];
-    if(ny===y && nx===x && key!=next){
-      play(120);
-      navigator.vibrate?.(50);
-      return;
-    }
-  }
-
-  fill(cell,x,y);
-
-  /* WIN */
-  if(currentNumber===Object.keys(nodes).length && path.length===size*size){
-
-    play(800,0.3);
-    navigator.vibrate?.([50,50,50]);
-
-    setTimeout(()=>{
-      alert("🎉 Süper! Skor: "+score);
-    },150);
-  }
+balloons.push(new Balloon(x,-r,r,s,1));
 }
 
 /* =========================
-FILL (VISUAL BOOST)
+HIT
 ========================= */
+function hit(x,y){
+for(let i=balloons.length-1;i>=0;i--){
+let b=balloons[i];
+let dx=x-b.x, dy=y-b.y;
 
-function fill(cell,x,y){
-  cell.classList.add("filled");
+if(Math.sqrt(dx*dx+dy*dy)<b.r){
 
-  /* glow effect */
-  cell.style.boxShadow="0 0 12px rgba(99,102,241,0.6)";
+beep(300+combo*50);
+navigator.vibrate?.(10);
 
-  path.push({x,y});
+if(b.type==1){
+balloons.push(new Balloon(b.x,b.y,15,2,2));
+score+=2;
+}else{
+score+=1;
+}
+
+combo++;
+balloons.splice(i,1);
+updateUI();
+return;
+}
+}
+combo=0;
+}
+
+/* INPUT */
+canvas.addEventListener("touchstart",(e)=>{
+if(!running)return;
+let rect=canvas.getBoundingClientRect();
+hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
+});
+
+canvas.addEventListener("mousedown",(e)=>{
+if(!running)return;
+let rect=canvas.getBoundingClientRect();
+hit(e.clientX-rect.left,e.clientY-rect.top);
+});
+
+/* =========================
+LOOP
+========================= */
+function loop(){
+if(!running)return;
+
+ctx.clearRect(0,0,W,H);
+
+for(let i=balloons.length-1;i>=0;i--){
+let b=balloons[i];
+b.update();
+b.draw();
+
+if(b.y>H){
+balloons.splice(i,1);
+lives--;
+updateUI();
+
+if(lives<=0) endGame("Can bitti");
+}
+}
+
+spawn();
+requestAnimationFrame(loop);
 }
 
 /* =========================
-RESET
+TIMER
 ========================= */
+let tInt;
+function startTimer(){
+clearInterval(tInt);
+tInt=setInterval(()=>{
+time--;
+updateUI();
 
-function resetGame(){
-  document.querySelectorAll(".cell").forEach(c=>{
-    c.classList.remove("filled");
-    c.style.boxShadow="none";
-  });
+if(time==60) speed=1.5;
+if(time==30) speed=2;
 
-  path=[];
-  currentNumber=1;
-  score=0;
-  combo=0;
+if(time<=0) endGame("Süre doldu");
+},1000);
 }
 
 /* =========================
-NAV
+UI
 ========================= */
+function updateUI(){
+scoreEl.innerText=score;
+livesEl.innerText="❤️".repeat(lives);
+timeEl.innerText=time+"s";
+}
 
+const scoreEl=document.getElementById("score");
+const livesEl=document.getElementById("lives");
+const timeEl=document.getElementById("time");
+
+/* =========================
+START
+========================= */
+function startGame(){
+document.getElementById("startScreen").style.display="none";
+document.getElementById("gameOver").style.display="none";
+
+score=0; lives=5; time=120;
+balloons=[]; running=true; speed=1; combo=0;
+
+updateUI();
+startTimer();
+loop();
+}
+
+/* =========================
+END
+========================= */
+function endGame(txt){
+running=false;
+clearInterval(tInt);
+
+document.getElementById("gameOver").style.display="flex";
+document.getElementById("endTitle").innerText=txt;
+document.getElementById("finalScore").innerText="Skor: "+score;
+}
+
+/* NAV */
 function goBack(){
-  window.history.back();
+location.href="online-oyunlar.html";
 }
 
 </script>
-
 
 </body>
 </html>
