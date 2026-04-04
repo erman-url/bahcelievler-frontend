@@ -54,8 +54,6 @@ padding:20px;
 }
 
 
-
-
 /* =========================
 LAYOUT
 ========================= */
@@ -228,59 +226,81 @@ LANDSCAPE
 SCROLLBAR HIDE
 ========================= */
 .play::-webkit-scrollbar{display:none;}
-
 /* =========================
-FUTURISTIC START BUTTON
+START BUTTON (SUN FIX)
 ========================= */
 .startBtn{
-width:120px;
-height:120px;
-border-radius:50%;
-background:radial-gradient(circle at 30% 30%,#22c55e,#15803d);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:14px;
-font-weight:700;
-color:#fff;
-margin-top:30px;
+  width:120px;
+  height:120px;
 
-/* glow */
-box-shadow:
-0 0 20px rgba(34,197,94,0.6),
-0 0 60px rgba(34,197,94,0.4),
-inset 0 0 20px rgba(255,255,255,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-/* animasyon */
-animation:pulseGlow 2s infinite ease-in-out;
-transition:0.3s;
+  border-radius:50%;
+  position:relative;
+  overflow:hidden;
+
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:#5c4500;
+
+  /* GÜNEŞ MERKEZİ */
+  background:radial-gradient(circle at center,
+    #fff7b0 0%,
+    #f9e27d 30%,
+    #f4c430 60%,
+    #d4af37 100%
+  );
+
+  /* GÜNEŞ IŞIĞI */
+  box-shadow:
+    0 0 30px rgba(255,215,0,.7),
+    0 0 70px rgba(255,215,0,.45),
+    0 0 120px rgba(255,215,0,.25);
+
+  border:none;
+  cursor:pointer;
+
+  transition:transform .2s ease;
 }
 
+/* PULSE (güneş nefesi) */
+.startBtn{
+  animation:sunPulse 2.5s ease-in-out infinite;
+}
+
+/* CLICK */
 .startBtn:active{
-transform:scale(0.9);
+  transform:scale(.92);
 }
 
-/* dış halka efekti */
+/* IŞIK DALGASI */
 .startBtn::before{
-content:"";
-position:absolute;
-width:160px;
-height:160px;
-border-radius:50%;
-border:2px solid rgba(34,197,94,0.3);
-animation:rotateRing 6s linear infinite;
+  content:"";
+  position:absolute;
+  inset:-25px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(255,215,0,.35),
+    transparent 70%
+  );
+  animation:sunWave 3s linear infinite;
 }
 
-@keyframes pulseGlow{
-0%{box-shadow:0 0 10px rgba(34,197,94,0.4);}
-50%{box-shadow:0 0 40px rgba(34,197,94,0.9);}
-100%{box-shadow:0 0 10px rgba(34,197,94,0.4);}
+/* KEYFRAMES */
+@keyframes sunPulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.06);}
+  100%{transform:scale(1);}
 }
 
-@keyframes rotateRing{
-from{transform:rotate(0deg);}
-to{transform:rotate(360deg);}
+@keyframes sunWave{
+  0%{transform:scale(1);opacity:.6;}
+  100%{transform:scale(1.6);opacity:0;}
 }
+
 
 </style>
 </head>
