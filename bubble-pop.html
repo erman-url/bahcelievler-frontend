@@ -168,7 +168,7 @@ this.y+=this.s*speed;
 SPAWN
 ========================= */
 function spawn(){
-if(balloons.length>6) return;
+if(balloons.length>4) return;
 
 let r=25;
 let x=Math.random()*(W-2*r)+r;
@@ -255,8 +255,8 @@ tInt=setInterval(()=>{
 time--;
 updateUI();
 
-if(time==60) speed=1.5;
-if(time==30) speed=2;
+if(time==60) speed=1.2;
+if(time==30) speed=1.5;
 
 if(time<=0) endGame("Süre doldu");
 },1000);
