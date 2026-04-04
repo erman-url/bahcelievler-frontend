@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow Puzzle </title>
+
+<style>
+:root{
+  --bg:#f0f2f5;
+  --panel:#b9c8e8;
+  --cell:#e3ebfb;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);
+  font-family:Arial,Helvetica,sans-serif;
+  display:flex;justify-content:center;
+}
+.app{width:95vw;max-width:430px}
+
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 10px;font-weight:700
+}
+.badge{background:#fff;padding:6px 10px;border-radius:14px}
+
+.wrapper{
+  background:var(--panel);padding:12px;border-radius:28px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08) inset;
+}
+.grid{display:grid;gap:5px}
+.cell{
+  aspect-ratio:1;background:var(--cell);
+  border-radius:12px;position:relative;overflow:hidden;
+  touch-action:none;
+}
+
+/* PATH BASE (smooth-ish) */
+.cell.filled::before{
+  content:"";position:absolute;inset:0;border-radius:12px;
+  background-size:300% 300%;
+  animation:flow 1.8s linear infinite;
+  opacity:.95;
+}
+
+/* COLORS */
+.cell[data-color="1"]::before{background:linear-gradient(270deg,#ff5f6d,#ffc371,#ff5f6d)}
+.cell[data-color="2"]::before{background:linear-gradient(270deg,#36d1dc,#5b86e5,#36d1dc)}
+.cell[data-color="3"]::before{background:linear-gradient(270deg,#c471f5,#fa71cd,#c471f5)}
+.cell[data-color="4"]::before{background:linear-gradient(270deg,#11998e,#38ef7d,#11998e)}
+.cell[data-color="5"]::before{background:linear-gradient(270deg,#f7971e,#ffd200,#f7971e)}
+.cell[data-color="6"]::before{background:linear-gradient(270deg,#00c6ff,#0072ff,#00c6ff)}
+.cell[data-color="7"]::before{background:linear-gradient(270deg,#ff9966,#ff5e62,#ff9966)}
+.cell[data-color="8"]::before{background:linear-gradient(270deg,#7f7fd5,#86a8e7,#7f7fd5)}
+
+.node{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:68%;height:68%;
+  background:#000;color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;z-index:2;
+}
+
+.controls{display:flex;gap:10px;margin-top:14px}
+button{
+  flex:1;padding:14px;border:0;border-radius:22px;
+  background:#e1e1e1;font-weight:600
+}
+
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;z-index:10
+}
+.modal-box{
+  background:#fff;padding:24px;border-radius:18px;text-align:center;
+  width:85%;max-width:320px
+}
+.hidden{display:none}
+
+@keyframes flow{0%{background-position:0%}100%{background-position:100%}}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <div class="header">
+    <div>LEVEL <span id="lv">1</span></div>
+    <div class="badge">⏱ <span id="time">90</span>s</div>
+  </div>
+
+  <div class="wrapper">
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="resetBoard()">Sıfırla</button>
+    <button onclick="alert('İpucu: Önce uzun hatları çöz')">İpucu</button>
+  </div>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <h2 id="modalText"></h2>
+    <p id="scoreText"></p>
+    <button onclick="nextLevel()">Devam</button>
+  </div>
+</div>
+
+<script>
+/* ===== CORE STATE ===== */
+let levelIndex=0, gridSize, nodes;
+let gridEl=document.getElementById("grid");
+let cells=[]; // 2D array [y][x] => element
+let colorMap=[]; // 2D array color int or 0
+let pathMap={}; // color -> [{x,y},...]
+let endpoints={}; // color -> [{x,y},{x,y}]
+let activeColor=null, isDrawing=false;
+
+/* TIMER */
+let tInt, timeLeft=90;
+
+/* ===== LEVELS (zor eğri) ===== */
+const levels=[
+{size:6,nodes:[
+ {x:0,y:0,c:1},{x:5,y:5,c:1},
+ {x:0,y:5,c:2},{x:5,y:0,c:2},
+ {x:2,y:2,c:3},{x:3,y:3,c:3}
+]},
+{size:7,nodes:[
+ {x:0,y:0,c:1},{x:6,y:6,c:1},
+ {x:0,y:6,c:2},{x:6,y:0,c:2},
+ {x:3,y:0,c:3},{x:3,y:6,c:3},
+ {x:1,y:3,c:4},{x:5,y:3,c:4}
+]},
+{size:7,nodes:[
+ {x:0,y:0,c:1},{x:6,y:6,c:1},
+ {x:0,y:6,c:2},{x:6,y:0,c:2},
+ {x:2,y:1,c:3},{x:4,y:5,c:3},
+ {x:1,y:5,c:4},{x:5,y:1,c:4},
+ {x:3,y:3,c:5},{x:6,y:3,c:5}
+]},
+{size:8,nodes:[
+ {x:0,y:0,c:1},{x:7,y:7,c:1},
+ {x:0,y:7,c:2},{x:7,y:0,c:2},
+ {x:3,y:3,c:3},{x:4,y:4,c:3},
+ {x:2,y:5,c:4},{x:5,y:2,c:4},
+ {x:1,y:3,c:5},{x:6,y:3,c:5},
+ {x:2,y:1,c:6},{x:5,y:6,c:6}
+]},
+{size:9,nodes:[
+ {x:0,y:0,c:1},{x:8,y:8,c:1},
+ {x:0,y:8,c:2},{x:8,y:0,c:2},
+ {x:4,y:0,c:3},{x:4,y:8,c:3},
+ {x:0,y:4,c:4},{x:8,y:4,c:4},
+ {x:2,y:2,c:5},{x:6,y:6,c:5},
+ {x:2,y:6,c:6},{x:6,y:2,c:6},
+ {x:1,y:7,c:7},{x:7,y:1,c:7},
+ {x:3,y:4,c:8},{x:5,y:4,c:8}
+]}
+];
+
+/* ===== INIT ===== */
+function loadLevel(){
+  clearInterval(tInt);
+  timeLeft = Math.max(60, 90 - levelIndex*8);
+  tick();
+
+  const L = levels[levelIndex];
+  gridSize=L.size; nodes=L.nodes;
+
+  document.getElementById("lv").innerText=levelIndex+1;
+  gridEl.innerHTML="";
+  gridEl.style.gridTemplateColumns=`repeat(${gridSize},1fr)`;
+
+  // init arrays
+  cells = Array.from({length:gridSize},()=>Array(gridSize));
+  colorMap = Array.from({length:gridSize},()=>Array(gridSize).fill(0));
+  pathMap = {};
+  endpoints = {};
+
+  // map endpoints
+  for(const n of nodes){
+    if(!endpoints[n.c]) endpoints[n.c]=[];
+    endpoints[n.c].push({x:n.x,y:n.y});
+  }
+
+  // build grid
+  for(let y=0;y<gridSize;y++){
+    for(let x=0;x<gridSize;x++){
+      const el=document.createElement("div");
+      el.className="cell";
+      el.dataset.x=x; el.dataset.y=y;
+
+      const node = nodes.find(n=>n.x===x && n.y===y);
+      if(node){
+        const d=document.createElement("div");
+        d.className="node"; d.innerText=node.c;
+        el.appendChild(d);
+        el.dataset.endpoint=node.c;
+      }
+
+      el.addEventListener("pointerdown",onDown);
+      el.addEventListener("pointerenter",onEnter);
+
+      gridEl.appendChild(el);
+      cells[y][x]=el;
+    }
+  }
+}
+document.addEventListener("pointerup",()=>isDrawing=false);
+
+/* ===== TIMER ===== */
+function tick(){
+  document.getElementById("time").innerText=timeLeft;
+  tInt=setInterval(()=>{
+    timeLeft--;
+    document.getElementById("time").innerText=timeLeft;
+    if(timeLeft<=0){
+      clearInterval(tInt);
+      showModal("Süre doldu ❌","0 ⭐");
+    }
+  },1000);
+}
+
+/* ===== DRAW LOGIC ===== */
+function onDown(e){
+  const el=e.currentTarget;
+  const x=+el.dataset.x, y=+el.dataset.y;
+
+  // start only on endpoint
+  if(!el.dataset.endpoint) return;
+
+  activeColor = +el.dataset.endpoint;
+  isDrawing = true;
+
+  // clear previous path of this color
+  clearColor(activeColor);
+
+  // start path
+  addCell(x,y,activeColor);
+}
+
+function onEnter(e){
+  if(!isDrawing) return;
+  const el=e.currentTarget;
+  const x=+el.dataset.x, y=+el.dataset.y;
+
+  // adjacency
+  const path = pathMap[activeColor];
+  const last = path[path.length-1];
+  if(Math.abs(last.x-x)+Math.abs(last.y-y)!==1) return;
+
+  const existing = colorMap[y][x];
+
+  // backtrack (undo by drag back)
+  if(path.length>=2){
+    const prev = path[path.length-2];
+    if(prev.x===x && prev.y===y){
+      removeLast(activeColor);
+      return;
+    }
+  }
+
+  // override: if other color, clear that color path
+  if(existing && existing!==activeColor){
+    clearColor(existing);
+  }
+
+  // if same color but not last (loop), ignore
+  if(existing===activeColor){
+    return;
+  }
+
+  addCell(x,y,activeColor);
+
+  // if reached other endpoint, lock path (stop drawing)
+  if(isEndpoint(x,y,activeColor) && pathMap[activeColor].length>1){
+    isDrawing=false;
+  }
+
+  checkWin();
+}
+
+function addCell(x,y,c){
+  colorMap[y][x]=c;
+  if(!pathMap[c]) pathMap[c]=[];
+  pathMap[c].push({x,y});
+
+  const el=cells[y][x];
+  el.classList.add("filled");
+  el.setAttribute("data-color",c);
+}
+
+function removeLast(c){
+  const path=pathMap[c];
+  const last=path.pop();
+  const {x,y}=last;
+
+  // if it's endpoint keep it colored
+  if(isEndpoint(x,y,c)) return;
+
+  colorMap[y][x]=0;
+  const el=cells[y][x];
+  el.classList.remove("filled");
+  el.removeAttribute("data-color");
+}
+
+function clearColor(c){
+  const path=pathMap[c];
+  if(!path) return;
+
+  for(const {x,y} of path){
+    // keep endpoints
+    if(isEndpoint(x,y,c)) continue;
+    colorMap[y][x]=0;
+    const el=cells[y][x];
+    el.classList.remove("filled");
+    el.removeAttribute("data-color");
+  }
+  // reset path to only endpoints if starting from one
+  pathMap[c]=[];
+}
+
+/* ===== HELPERS ===== */
+function isEndpoint(x,y,c){
+  const eps=endpoints[c]||[];
+  return eps.some(p=>p.x===x && p.y===y);
+}
+
+/* ===== WIN CHECK ===== */
+function checkWin(){
+  // all cells filled?
+  for(let y=0;y<gridSize;y++){
+    for(let x=0;x<gridSize;x++){
+      if(colorMap[y][x]===0) return;
+    }
+  }
+  // all colors connected (endpoints reachable in same path)
+  for(const c in endpoints){
+    const path=pathMap[c];
+    if(!path || path.length===0) return;
+
+    const [a,b]=endpoints[c];
+    const hasA = path.some(p=>p.x===a.x && p.y===a.y);
+    const hasB = path.some(p=>p.x===b.x && p.y===b.y);
+    if(!(hasA && hasB)) return;
+  }
+
+  clearInterval(tInt);
+
+  // simple star score
+  const t=timeLeft;
+  const star = t>50?3:(t>25?2:1);
+  showModal(
+    levelIndex===levels.length-1 ? "🎉 Tüm bölümler tamam!" : "✔ Bölüm tamamlandı",
+    `${star} ⭐  (kalan süre: ${t}s)`
+  );
+}
+
+/* ===== UI ===== */
+function resetBoard(){
+  // clear all non-endpoint cells
+  for(let y=0;y<gridSize;y++){
+    for(let x=0;x<gridSize;x++){
+      if(!cells[y][x].dataset.endpoint){
+        cells[y][x].classList.remove("filled");
+        cells[y][x].removeAttribute("data-color");
+        colorMap[y][x]=0;
+      }else{
+        const c=+cells[y][x].dataset.endpoint;
+        colorMap[y][x]=c;
+      }
+    }
+  }
+  pathMap={};
+}
+
+function showModal(text,score){
+  document.getElementById("modalText").innerText=text;
+  document.getElementById("scoreText").innerText=score||"";
+  document.getElementById("modal").classList.remove("hidden");
+}
+function nextLevel(){
+  document.getElementById("modal").classList.add("hidden");
+  if(levelIndex<levels.length-1){
+    levelIndex++;
+    loadLevel();
+  }
+}
+
+/* START */
+loadLevel();
+</script>
+</body>
+</html>
