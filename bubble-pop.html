@@ -138,6 +138,25 @@ Bahçelievler Forum
 
 <script>
 
+
+function startGame(){
+  let start=document.getElementById("startScreen");
+  let over=document.getElementById("gameOver");
+
+  if(start) start.style.display="none";
+  if(over) over.style.display="none";
+
+  score=0;
+  lives=5;
+  time=300;
+  balloons=[];
+  running=true;
+
+  updateUI();
+  startTimer();
+  loop();
+}
+
 /* =========================
 STATE
 ========================= */
