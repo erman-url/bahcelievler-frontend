@@ -385,6 +385,7 @@ function openDealSelector(){
 function selectDealType(type){
   const modal = document.getElementById("dealTypeModal")
   if(modal) modal.classList.remove("active")
+  window.selectedType = type
   openDealForm(type)
 }
 
@@ -396,12 +397,27 @@ function sanitize(text){
   return text.replace(/[<>]/g,"").trim()
 }
 
+function safe(text){
+  return (text || "").replace(/[<>]/g,"")
+}
+
+function safeUrl(url){
+  try{
+    const u = new URL(url)
+    return (u.protocol === "http:" || u.protocol === "https:") ? url : "#"
+  }catch{
+    return "#"
+  }
+}
+
 /* =========================
 DEAL MODAL
 ========================= */
 window.openDealForm = function(type){
 
   console.log("openDealForm:", type)
+
+  window.selectedType = type
 
   const modal = document.getElementById("dealModal")
   if(!modal){
@@ -461,19 +477,13 @@ window.submitDeal = async function(){
   const content = sanitize(document.getElementById("dealContent")?.value)
   const district = document.getElementById("district")?.value || ""
 
-  const linkBox = document.getElementById("linkBox")
-  const isOnline = linkBox && window.getComputedStyle(linkBox).display !== "none"
+  const type = window.selectedType || "online"
 
-  const type = isOnline ? "online" : "store"
-
-  // 🔥 backend için title üret
   const title = store || "Fırsat"
 
   console.log("SUBMIT DATA:", {nickname,title,content,store,link,district,type})
 
-  /* =========================
-  VALIDATION
-  ========================= */
+  /* VALIDATION */
 
   if(!nickname || nickname.length < 3){
     alert("Nickname gerekli (min 3 karakter)")
@@ -495,10 +505,6 @@ window.submitDeal = async function(){
     return
   }
 
-  /* =========================
-  API REQUEST
-  ========================= */
-
   try{
 
     const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar",{
@@ -508,7 +514,7 @@ window.submitDeal = async function(){
       },
       body:JSON.stringify({
         nickname,
-        title,              // 🔥 backend uyum
+        title,
         content,
         store_name: store,
         link,
@@ -533,8 +539,6 @@ window.submitDeal = async function(){
       return
     }
 
-    console.log("API RESPONSE:", data)
-
     if(!res.ok){
       alert("HTTP Hata: " + res.status)
       return
@@ -545,17 +549,22 @@ window.submitDeal = async function(){
       return
     }
 
-    /* =========================
-    SUCCESS
-    ========================= */
+    /* SUCCESS */
 
     alert("✅ Fırsat başarıyla eklendi")
+
+    // FORM RESET
+    document.getElementById("nickname").value = ""
+    document.getElementById("storeName").value = ""
+    document.getElementById("dealLink").value = ""
+    document.getElementById("dealContent").value = ""
+    document.getElementById("district").value = ""
 
     closeDealForm()
 
     setTimeout(()=>{
       fetchDeals()
-    },500)
+    },300)
 
   }catch(e){
     alert("Sunucu hatası")
@@ -580,14 +589,14 @@ async function fetchDeals(){
 
     const text = await res.text()
 
-let data
-try{
-  data = JSON.parse(text)
-}catch{
-  console.error("JSON ERROR:", text)
-  container.innerHTML = "Veri hatalı geldi"
-  return
-}
+    let data
+    try{
+      data = JSON.parse(text)
+    }catch{
+      console.error("JSON ERROR:", text)
+      container.innerHTML = "Veri hatalı geldi"
+      return
+    }
 
     if(!data.ok){
       container.innerHTML = "Veri alınamadı"
@@ -603,9 +612,8 @@ try{
 
 }
 
-
 /* =========================
-RENDER DEALS
+RENDER DEALS (SECURE)
 ========================= */
 function renderDeals(list){
 
@@ -626,11 +634,11 @@ function renderDeals(list){
     div.dataset.type = item.type
 
     div.innerHTML = `
-      <div class="deal-title">${item.title}</div>
-      <div class="deal-content">${item.content}</div>
-      ${item.store_name ? `<div class="deal-store">${item.store_name}</div>` : ""}
-      ${item.link ? `<a href="${item.link}" target="_blank">Fırsata Git</a>` : ""}
-      ${item.district ? `<div class="deal-district">${item.district}</div>` : ""}
+      <div class="deal-title">${safe(item.title)}</div>
+      <div class="deal-content">${safe(item.content)}</div>
+      ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
+      ${item.link ? `<a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer">Fırsata Git</a>` : ""}
+      ${item.district ? `<div class="deal-district">${safe(item.district)}</div>` : ""}
     `
 
     container.appendChild(div)
@@ -638,7 +646,6 @@ function renderDeals(list){
   })
 
 }
-
 
 /* =========================
 INIT
