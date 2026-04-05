@@ -538,34 +538,76 @@ window.submitDeal = async function(){
 }
 
 /* =========================
-FAKE DATA (TEST)
+FETCH REAL DEALS
 ========================= */
-function renderFakeDeals(){
+async function fetchDeals(){
+
+  const container = document.getElementById("dealList")
+  if(!container) return
+
+  container.innerHTML = "Yükleniyor..."
+
+  try{
+
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar")
+
+    const data = await res.json()
+
+    if(!data.ok){
+      container.innerHTML = "Veri alınamadı"
+      return
+    }
+
+    renderDeals(data.data)
+
+  }catch(e){
+    console.error(e)
+    container.innerHTML = "Sunucu hatası"
+  }
+
+}
+
+
+/* =========================
+RENDER DEALS
+========================= */
+function renderDeals(list){
 
   const container = document.getElementById("dealList")
   if(!container) return
 
   container.innerHTML = ""
 
-  const data = [
-    {title:"Trendyol %50 İndirim", type:"online"},
-    {title:"A101 Haftalık Fırsat", type:"store"},
-    {title:"Gratis 1 Alana 1 Bedava", type:"store"}
-  ]
+  if(!list.length){
+    container.innerHTML = "<div class='empty-box'>Henüz fırsat yok</div>"
+    return
+  }
 
-  data.forEach(d=>{
+  list.forEach(item=>{
+
     const div = document.createElement("div")
     div.className = "deal-card"
-    div.dataset.type = d.type
-    div.innerText = d.title
+    div.dataset.type = item.type
+
+    div.innerHTML = `
+      <div class="deal-title">${item.title}</div>
+      <div class="deal-content">${item.content}</div>
+      ${item.store_name ? `<div class="deal-store">${item.store_name}</div>` : ""}
+      ${item.link ? `<a href="${item.link}" target="_blank">Fırsata Git</a>` : ""}
+      ${item.district ? `<div class="deal-district">${item.district}</div>` : ""}
+    `
+
     container.appendChild(div)
+
   })
+
 }
+
 
 /* =========================
 INIT
 ========================= */
-document.addEventListener("DOMContentLoaded", renderFakeDeals)
+document.addEventListener("DOMContentLoaded", fetchDeals)
 
 </script>
 
