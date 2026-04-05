@@ -206,7 +206,6 @@ inset 0 1px 0 rgba(255,255,255,.3);
 </style>
 
 </head>
-
 <body>
 
 <!-- GLOBAL HEADER -->
@@ -239,17 +238,9 @@ inset 0 1px 0 rgba(255,255,255,.3);
 
 <div class="deal-filters">
 
-<button class="filter-btn active" onclick="filterDeals('all')" aria-label="Tüm fırsatları göster">
-Tümü
-</button>
-
-<button class="filter-btn" onclick="filterDeals('online')" aria-label="Online fırsatları göster">
-Online
-</button>
-
-<button class="filter-btn" onclick="filterDeals('store')" aria-label="Mağaza fırsatlarını göster">
-Mağaza
-</button>
+<button class="filter-btn active" onclick="filterDeals('all')">Tümü</button>
+<button class="filter-btn" onclick="filterDeals('online')">Online</button>
+<button class="filter-btn" onclick="filterDeals('store')">Mağaza</button>
 
 </div>
 
@@ -283,7 +274,6 @@ Mağaza
 Fırsatlar yükleniyor...
 </div>
 
-<!-- 🔥 EKSTRA UX -->
 <div class="skeleton-card"></div>
 <div class="skeleton-card"></div>
 
@@ -293,11 +283,11 @@ Fırsatlar yükleniyor...
 
 <!-- FLOATING ADD BUTTON -->
 
-<button class="deal-add-btn" onclick="openDealSelector()" aria-label="Fırsat ekle">
+<button class="deal-add-btn" onclick="openDealSelector()">
 <i class="fa-solid fa-plus"></i>
 </button>
 
-<!-- 🔥 TYPE MODAL -->
+<!-- TYPE MODAL -->
 
 <div class="deal-type-modal" id="dealTypeModal">
   <div class="deal-type-box">
@@ -313,39 +303,38 @@ Fırsatlar yükleniyor...
   </div>
 </div>
 
-<!-- ADD DEAL MODAL (AYNI) -->
+<!-- ADD DEAL MODAL -->
 
 <div class="modal" id="dealModal">
 <div class="modal-box">
 
-<button class="modal-close" onclick="closeDealForm()" aria-label="Kapat">
+<button class="modal-close" onclick="closeDealForm()">
 <i class="fa-solid fa-xmark"></i>
 </button>
 
 <h3 id="dealFormTitle">Fırsat Paylaş</h3>
 
+<!-- NICK -->
 <div class="form-group">
-<label>Nickname</label>
+<label>Nickname *</label>
 <input type="text" id="nickname" maxlength="10" placeholder="örn: firsatsever">
 </div>
 
-<div class="form-group">
-<label>Başlık</label>
-<input type="text" id="dealTitle" maxlength="80">
-</div>
-
+<!-- STORE -->
 <div class="form-group" id="storeBox">
-<label>Mağaza / Site</label>
-<input type="text" id="storeName">
+<label>Site / Mağaza *</label>
+<input type="text" id="storeName" placeholder="örn: Trendyol">
 </div>
 
+<!-- LINK -->
 <div class="form-group" id="linkBox">
-<label>Ürün Linki</label>
-<input type="url" id="dealLink">
+<label>Ürün Linki *</label>
+<input type="url" id="dealLink" placeholder="https://...">
 </div>
 
+<!-- DISTRICT (SADECE MAĞAZA) -->
 <div class="form-group" id="districtBox">
-<label>Mahalle</label>
+<label>Mahalle *</label>
 <select id="district">
 <option value="">Seçiniz</option>
 <option>Zafer Mahallesi</option>
@@ -353,13 +342,15 @@ Fırsatlar yükleniyor...
 </select>
 </div>
 
+<!-- CONTENT -->
 <div class="form-group">
-<label>Açıklama</label>
-<textarea id="dealContent" maxlength="500"></textarea>
+<label>Açıklama (opsiyonel)</label>
+<textarea id="dealContent" maxlength="300"></textarea>
 </div>
 
+<!-- IMAGE -->
 <div class="form-group">
-<label>Fotoğraf</label>
+<label>Fotoğraf (opsiyonel)</label>
 <input type="file" id="dealImage">
 </div>
 
@@ -367,6 +358,8 @@ Fırsatlar yükleniyor...
 
 </div>
 </div>
+
+
 
 
 <script>
@@ -463,16 +456,18 @@ SUBMIT DEAL (FULL FIX)
 window.submitDeal = async function(){
 
   const nickname = sanitize(document.getElementById("nickname")?.value)
-  const title = sanitize(document.getElementById("dealTitle")?.value)
-  const content = sanitize(document.getElementById("dealContent")?.value)
   const store = sanitize(document.getElementById("storeName")?.value)
   const link = sanitize(document.getElementById("dealLink")?.value)
+  const content = sanitize(document.getElementById("dealContent")?.value)
   const district = document.getElementById("district")?.value || ""
 
   const linkBox = document.getElementById("linkBox")
   const isOnline = linkBox && window.getComputedStyle(linkBox).display !== "none"
 
   const type = isOnline ? "online" : "store"
+
+  // 🔥 backend için title üret
+  const title = store || "Fırsat"
 
   console.log("SUBMIT DATA:", {nickname,title,content,store,link,district,type})
 
@@ -485,28 +480,23 @@ window.submitDeal = async function(){
     return
   }
 
-  if(!title || title.length < 4){
-    alert("Başlık çok kısa")
+  if(!store || store.length < 2){
+    alert("Site / Mağaza zorunlu")
     return
   }
 
-  if(!content || content.length < 10){
-    alert("Açıklama çok kısa")
-    return
-  }
-
-  if(type === "online" && !link){
-    alert("Online fırsat için link gerekli")
+  if(type === "online" && (!link || link.length < 5)){
+    alert("Link zorunlu")
     return
   }
 
   if(type === "store" && !district){
-    alert("Mağaza için mahalle seçiniz")
+    alert("Mahalle seçiniz")
     return
   }
 
   /* =========================
-  API REQUEST (FIXED)
+  API REQUEST
   ========================= */
 
   try{
@@ -518,7 +508,7 @@ window.submitDeal = async function(){
       },
       body:JSON.stringify({
         nickname,
-        title,
+        title,              // 🔥 backend uyum
         content,
         store_name: store,
         link,
@@ -571,6 +561,7 @@ window.submitDeal = async function(){
     alert("Sunucu hatası")
     console.error("FETCH ERROR:", e)
   }
+
 }
 
 /* =========================
@@ -587,7 +578,16 @@ async function fetchDeals(){
 
     const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar")
 
-    const data = await res.json()
+    const text = await res.text()
+
+let data
+try{
+  data = JSON.parse(text)
+}catch{
+  console.error("JSON ERROR:", text)
+  container.innerHTML = "Veri hatalı geldi"
+  return
+}
 
     if(!data.ok){
       container.innerHTML = "Veri alınamadı"
