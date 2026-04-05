@@ -340,9 +340,9 @@ Fırsatlar yükleniyor...
 FILTER
 ========================= */
 function filterDeals(type){
-  const cards=document.querySelectorAll(".deal-card")
+  const cards = document.querySelectorAll(".deal-card")
   cards.forEach(card=>{
-    card.style.display=(type==="all"||card.dataset.type===type)?"block":"none"
+    card.style.display = (type==="all" || card.dataset.type===type) ? "block" : "none"
   })
 }
 
@@ -350,11 +350,13 @@ function filterDeals(type){
 TYPE MODAL
 ========================= */
 function openDealSelector(){
-  document.getElementById("dealTypeModal").classList.add("active")
+  const modal = document.getElementById("dealTypeModal")
+  if(modal) modal.classList.add("active")
 }
 
 function selectDealType(type){
-  document.getElementById("dealTypeModal").classList.remove("active")
+  const modal = document.getElementById("dealTypeModal")
+  if(modal) modal.classList.remove("active")
   openDealForm(type)
 }
 
@@ -363,7 +365,7 @@ SECURITY
 ========================= */
 function sanitize(text){
   if(!text) return ""
-  return text.replace(/[<>]/g,"")
+  return text.replace(/[<>]/g,"").trim()
 }
 
 /* =========================
@@ -374,7 +376,6 @@ window.openDealForm = function(type){
   console.log("openDealForm:", type)
 
   const modal = document.getElementById("dealModal")
-
   if(!modal){
     console.warn("dealModal yok")
     return
@@ -386,47 +387,64 @@ window.openDealForm = function(type){
   const districtBox = document.getElementById("districtBox")
 
   if(type === "online"){
-    linkBox.style.display = "block"
-    districtBox.style.display = "none"
+    if(linkBox) linkBox.style.display = "block"
+    if(districtBox) districtBox.style.display = "none"
   }else{
-    linkBox.style.display = "none"
-    districtBox.style.display = "block"
+    if(linkBox) linkBox.style.display = "none"
+    if(districtBox) districtBox.style.display = "block"
   }
 
 }
 
-/* 🔥 EKLENDİ */
+/* =========================
+CLOSE MODAL
+========================= */
 window.closeDealForm = function(){
-  document.getElementById("dealModal").classList.remove("active")
+  const modal = document.getElementById("dealModal")
+  if(modal) modal.classList.remove("active")
 }
 
+/* =========================
+OUTSIDE CLICK CLOSE
+========================= */
 document.addEventListener("click", function(e){
 
   const typeModal = document.getElementById("dealTypeModal")
   const dealModal = document.getElementById("dealModal")
 
-  if(e.target === typeModal){
+  if(typeModal && e.target === typeModal){
     typeModal.classList.remove("active")
   }
 
-  if(e.target === dealModal){
+  if(dealModal && e.target === dealModal){
     closeDealForm()
   }
 
 })
 
+/* =========================
+SUBMIT DEAL (FULL FIX)
+========================= */
 window.submitDeal = async function(){
 
-  const nickname = sanitize(document.getElementById("nickname").value)
-  const title = sanitize(document.getElementById("dealTitle").value)
-  const content = sanitize(document.getElementById("dealContent").value)
-  const store = sanitize(document.getElementById("storeName").value)
-  const link = sanitize(document.getElementById("dealLink").value)
-  const district = document.getElementById("district").value
+  const nickname = sanitize(document.getElementById("nickname")?.value)
+  const title = sanitize(document.getElementById("dealTitle")?.value)
+  const content = sanitize(document.getElementById("dealContent")?.value)
+  const store = sanitize(document.getElementById("storeName")?.value)
+  const link = sanitize(document.getElementById("dealLink")?.value)
+  const district = document.getElementById("district")?.value || ""
 
-  const isOnline = document.getElementById("linkBox").style.display !== "none"
+  // 🔥 FIX: gerçek display kontrolü
+  const linkBox = document.getElementById("linkBox")
+  const isOnline = linkBox && window.getComputedStyle(linkBox).display !== "none"
 
   const type = isOnline ? "online" : "store"
+
+  console.log("SUBMIT DATA:", {nickname,title,content,store,link,district,type})
+
+  /* =========================
+  VALIDATION
+  ========================= */
 
   if(!nickname || nickname.length < 3){
     alert("Nickname gerekli (min 3 karakter)")
@@ -442,6 +460,20 @@ window.submitDeal = async function(){
     alert("Açıklama çok kısa")
     return
   }
+
+  if(type === "online" && !link){
+    alert("Online fırsat için link gerekli")
+    return
+  }
+
+  if(type === "store" && !district){
+    alert("Mağaza için mahalle seçiniz")
+    return
+  }
+
+  /* =========================
+  API REQUEST
+  ========================= */
 
   try{
 
@@ -461,32 +493,54 @@ window.submitDeal = async function(){
       })
     })
 
-    const data = await res.json()
+    const text = await res.text()
 
-    if(!data.ok){
-      alert(data.error || "Hata oluştu")
+    let data
+    try{
+      data = JSON.parse(text)
+    }catch{
+      console.error("JSON PARSE ERROR:", text)
+      alert("Sunucu hatalı cevap verdi")
       return
     }
+
+    console.log("API RESPONSE:", data)
+
+    if(!res.ok){
+      alert("HTTP Hata: " + res.status)
+      return
+    }
+
+    if(!data.ok){
+      alert(data.error || "Backend hata verdi")
+      return
+    }
+
+    /* =========================
+    SUCCESS
+    ========================= */
 
     alert("✅ Fırsat başarıyla eklendi")
 
     closeDealForm()
 
-    location.reload()
+    // reload yerine optimize (ANAKOD)
+    setTimeout(()=>{
+      location.reload()
+    },500)
 
   }catch(e){
     alert("Sunucu hatası")
-    console.error(e)
+    console.error("FETCH ERROR:", e)
   }
 }
 
 /* =========================
-FAKE DATA (TEST İÇİN)
+FAKE DATA (TEST)
 ========================= */
 function renderFakeDeals(){
 
   const container = document.getElementById("dealList")
-
   if(!container) return
 
   container.innerHTML = ""
@@ -502,7 +556,6 @@ function renderFakeDeals(){
     div.className = "deal-card"
     div.dataset.type = d.type
     div.innerText = d.title
-
     container.appendChild(div)
   })
 }
