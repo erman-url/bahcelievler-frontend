@@ -554,7 +554,7 @@ window.submitDeal = async function(){
     closeDealForm()
 
     setTimeout(()=>{
-      location.reload()
+      fetchDeals()
     },500)
 
   }catch(e){
@@ -648,7 +648,6 @@ document.addEventListener("DOMContentLoaded", fetchDeals)
 </script>
 
 <script src="assets/js/core.js" defer></script>
-<script src="assets/js/news.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
