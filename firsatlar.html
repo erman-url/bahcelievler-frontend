@@ -333,7 +333,6 @@ Fırsatlar yükleniyor...
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/countdown.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
-
 <script>
 
 /* =========================
@@ -434,7 +433,6 @@ window.submitDeal = async function(){
   const link = sanitize(document.getElementById("dealLink")?.value)
   const district = document.getElementById("district")?.value || ""
 
-  // 🔥 FIX: gerçek display kontrolü
   const linkBox = document.getElementById("linkBox")
   const isOnline = linkBox && window.getComputedStyle(linkBox).display !== "none"
 
@@ -472,12 +470,12 @@ window.submitDeal = async function(){
   }
 
   /* =========================
-  API REQUEST
+  API REQUEST (FIXED)
   ========================= */
 
   try{
 
-    const res = await fetch("/api/firsatlar",{
+    const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar",{
       method:"POST",
       headers:{
         "Content-Type":"application/json"
@@ -494,6 +492,11 @@ window.submitDeal = async function(){
     })
 
     const text = await res.text()
+
+    if(!text){
+      alert("Sunucu boş cevap verdi")
+      return
+    }
 
     let data
     try{
@@ -524,7 +527,6 @@ window.submitDeal = async function(){
 
     closeDealForm()
 
-    // reload yerine optimize (ANAKOD)
     setTimeout(()=>{
       location.reload()
     },500)
