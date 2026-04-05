@@ -1,11 +1,18 @@
+(function(){
+
 let sliderIndex = 0;
-let sliderInterval;
+let sliderInterval = null;
 let startX = 0;
+let initialized = false;
 
 function initNewsSlider(){
 
   const track = document.getElementById("newsTrack");
   if(!track) return;
+
+  // ⚠️ tekrar init engelle (kritik)
+  if(initialized) return;
+  initialized = true;
 
   const cards = track.children;
   const total = cards.length;
@@ -30,29 +37,40 @@ function initNewsSlider(){
   // TOUCH (MOBILE SWIPE)
   // =========================
 
-  track.addEventListener("touchstart", e=>{
-    startX = e.touches[0].clientX;
+  track.addEventListener("touchstart", handleTouchStart, { passive:true });
+  track.addEventListener("touchend", handleTouchEnd, { passive:true });
 
-    // swipe sırasında auto stop
+}
+
+function handleTouchStart(e){
+  startX = e.touches[0].clientX;
+
+  // swipe sırasında auto stop
+  if(sliderInterval){
     clearInterval(sliderInterval);
-  });
+  }
+}
 
-  track.addEventListener("touchend", e=>{
-    let endX = e.changedTouches[0].clientX;
-    let diff = startX - endX;
+function handleTouchEnd(e){
 
-    if(diff > 50){
-      goToSlide(sliderIndex + 1, total, track);
-    }else if(diff < -50){
-      goToSlide(sliderIndex - 1, total, track);
-    }
+  const track = document.getElementById("newsTrack");
+  if(!track) return;
 
-    // tekrar başlat
-    sliderInterval = setInterval(() => {
-      goToSlide(sliderIndex + 1, total, track);
-    }, 4000);
-  });
+  const total = track.children.length;
 
+  let endX = e.changedTouches[0].clientX;
+  let diff = startX - endX;
+
+  if(diff > 50){
+    goToSlide(sliderIndex + 1, total, track);
+  }else if(diff < -50){
+    goToSlide(sliderIndex - 1, total, track);
+  }
+
+  // tekrar başlat
+  sliderInterval = setInterval(() => {
+    goToSlide(sliderIndex + 1, total, track);
+  }, 4000);
 }
 
 // =========================
@@ -70,7 +88,9 @@ function goToSlide(index, total, track){
 }
 
 // =========================
-// INIT (GLOBAL)
+// GLOBAL EXPORT
 // =========================
 
 window.initNewsSlider = initNewsSlider;
+
+})();
