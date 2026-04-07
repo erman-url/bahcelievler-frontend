@@ -203,6 +203,111 @@ inset 0 1px 0 rgba(255,255,255,.3);
   cursor:pointer;
 }
 
+
+/* ===============================
+PREMIUM DEAL CARD V2
+=============================== */
+
+.deal-card{
+  position:relative;
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(18px);
+  border-radius:20px;
+  padding:16px;
+  margin:14px 16px;
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  transition:.25s ease;
+  overflow:hidden;
+}
+
+.deal-card:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* HEADER */
+.deal-top{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* IMAGE */
+.deal-img{
+  width:64px;
+  height:64px;
+  border-radius:14px;
+  object-fit:cover;
+  flex-shrink:0;
+  background:#eee;
+}
+
+/* TEXT AREA */
+.deal-info{
+  flex:1;
+}
+
+.deal-title{
+  font-weight:800;
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+.deal-store{
+  font-size:13px;
+  opacity:.7;
+}
+
+/* BADGE */
+.deal-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:8px;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  color:#fff;
+  font-weight:700;
+}
+
+/* CONTENT */
+.deal-content{
+  font-size:13px;
+  margin-top:10px;
+  line-height:1.4;
+  opacity:.85;
+}
+
+/* FOOTER */
+.deal-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:12px;
+}
+
+/* DISTRICT */
+.deal-district{
+  font-size:12px;
+  opacity:.6;
+}
+
+/* BUTTON */
+.deal-btn{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;
+  padding:6px 12px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
 </style>
 
 </head>
@@ -627,12 +732,40 @@ function renderDeals(list){
     div.className = "deal-card"
     div.dataset.type = item.type
 
+    /* 🔥 IMAGE (VARSA) */
+    let imageHTML = ""
+    if(item.image){
+      imageHTML = `<img src="${safe(item.image)}" class="deal-img" loading="lazy">`
+    }else{
+      imageHTML = `<div class="deal-img"></div>`
+    }
+
+    /* TYPE BADGE */
+    const badge = item.type === "online" ? "ONLINE" : "MAĞAZA"
+
     div.innerHTML = `
-      <div class="deal-title">${safe(item.title)}</div>
-      <div class="deal-content">${safe(item.content)}</div>
-      ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
-      ${item.link ? `<a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer">İncele</a>` : ""}
-      ${item.district ? `<div class="deal-district">${safe(item.district)}</div>` : ""}
+      
+      <div class="deal-badge">${badge}</div>
+
+      <div class="deal-top">
+        ${imageHTML}
+        <div class="deal-info">
+          <div class="deal-title">${safe(item.title)}</div>
+          ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
+        </div>
+      </div>
+
+      ${item.content ? `<div class="deal-content">${safe(item.content)}</div>` : ""}
+
+      <div class="deal-footer">
+        ${item.district ? `<div class="deal-district">📍 ${safe(item.district)}</div>` : `<div></div>`}
+
+        ${item.link ? `
+          <a href="${safeUrl(item.link)}" target="_blank" class="deal-btn">
+            İncele →
+          </a>
+        ` : ""}
+      </div>
     `
 
     container.appendChild(div)
