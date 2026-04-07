@@ -782,55 +782,46 @@ function createParticle(core){
   ],{duration:800});
 
   setTimeout(()=>p.remove(),800);
-}/* =========================
+}
+
+
+/* =========================
 FUSION (FULL FIX PRO)
 ========================= */
 function fusion(){
 
-// 🔒 oyun aktif değilse çalışmaz
-if(!gameActive) return;
+  if(!gameActive) return;
 
-let core = document.getElementById("core");
+  let core = document.getElementById("core");
 
-// önce görsel state temizliği
-core.classList.remove("fusion");
+  core.classList.remove("fusion");
 
-if(pressureVal >= 100 && tempVal >= 100){
+  if(pressureVal >= 100 && tempVal >= 100){
 
-```
-// ⭐ BAŞARILI FUSION
-core.classList.add("fusion");
-core.innerHTML = "☀️ Yıldız!";
+    core.classList.add("fusion");
+    core.innerHTML = "☀️ Yıldız!";
 
-sound(1200);
-addScore(20);
+    sound(1200);
+    addScore(20);
 
-for(let i=0;i<40;i++){
-  createParticle(core);
+    for(let i=0;i<40;i++){
+      createParticle(core);
+    }
+
+    pressureVal = 0;
+    tempVal = 0;
+    selected.clear();
+    updateBars();
+
+  }else{
+
+    core.innerHTML = "⚠️ Yetersiz enerji";
+    sound(200);
+
+    core.style.boxShadow = "0 0 40px red";
+    setTimeout(()=> core.style.boxShadow="",200);
+  }
 }
-
-// sistem reset (yeni tur)
-pressureVal = 0;
-tempVal = 0;
-selected.clear();
-updateBars();
-```
-
-}else{
-
-```
-// ❌ BAŞARISIZ
-core.innerHTML = "⚠️ Yetersiz enerji";
-sound(200);
-
-// küçük negatif feedback
-core.style.boxShadow = "0 0 40px red";
-setTimeout(()=> core.style.boxShadow="",200);
-```
-
-}
-}
-
 
 
 /* =========================
@@ -937,6 +928,8 @@ function endGame(){
   // inputları kilitle
   dragItem = null;
 }
+
+updateTimerUI();
 
 </script>
 
