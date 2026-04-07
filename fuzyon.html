@@ -366,14 +366,25 @@ canvas{
 <script>
 
 /* =========================
-INTRO + AUDIO FIX
+INTRO + AUDIO INIT
 ========================= */
+let bgMusic;
+
 function startGame(){
   document.getElementById("introScreen").style.display = "none";
 
-  // mobile audio unlock
+  // AUDIO CONTEXT RESUME
   if(audioCtx){
     audioCtx.resume();
+  }
+
+  // BACKGROUND MUSIC
+  if(!bgMusic){
+    bgMusic = new Audio("assets/audio/space-music.mp3");
+    bgMusic.loop = true;
+    bgMusic.volume = 0.4;
+
+    bgMusic.play().catch(()=>{});
   }
 }
 
@@ -425,6 +436,17 @@ let dragItem = null;
 let activePointerId = null;
 let score = 0;
 
+let pressureVal = 0;
+let tempVal = 0;
+
+/* =========================
+UI UPDATE
+========================= */
+function updateBars(){
+  document.getElementById("pressure").style.width = pressureVal + "%";
+  document.getElementById("temp").style.width = tempVal + "%";
+}
+
 /* =========================
 SCORE
 ========================= */
@@ -457,7 +479,47 @@ function sound(f){
 }
 
 /* =========================
-DRAG SYSTEM (PRO)
+ELEMENT EFFECTS (OYUNUN KALBİ)
+========================= */
+function applyElementEffect(el){
+
+  switch(el){
+
+    case "H":
+      pressureVal += 15;
+      break;
+
+    case "He":
+      tempVal += 15;
+      break;
+
+    case "O":
+      tempVal += 5;
+      break;
+
+    case "C":
+      pressureVal += 5;
+      break;
+
+    case "Fe":
+      pressureVal -= 10;
+      tempVal -= 5;
+      break;
+
+    default:
+      tempVal -= 3;
+      pressureVal -= 3;
+  }
+
+  // clamp
+  pressureVal = Math.max(0, Math.min(100, pressureVal));
+  tempVal = Math.max(0, Math.min(100, tempVal));
+
+  updateBars();
+}
+
+/* =========================
+DRAG SYSTEM
 ========================= */
 document.querySelectorAll(".element").forEach(el=>{
 
@@ -491,7 +553,7 @@ document.querySelectorAll(".element").forEach(el=>{
 });
 
 /* =========================
-GLOBAL POINTER FIX (CRITICAL)
+GLOBAL POINTER FIX
 ========================= */
 document.addEventListener("pointerup", ()=>{
   dragItem = null;
@@ -507,7 +569,7 @@ document.addEventListener("pointerup", ()=>{
 });
 
 /* =========================
-DROP LOGIC
+DROP
 ========================= */
 function handleDrop(e, el){
   if(!dragItem) return;
@@ -526,13 +588,14 @@ function handleDrop(e, el){
   ){
     selected.add(dragItem);
 
+    applyElementEffect(dragItem);
+
     core.style.boxShadow = "0 0 40px #22c55e";
     setTimeout(()=> core.style.boxShadow="",200);
 
     sound(700);
   }
 
-  // smooth return
   el.style.transition = "0.2s";
 
   el.classList.remove("dragging");
@@ -557,7 +620,6 @@ function createParticle(core){
   p.style.height = "6px";
   p.style.background = "orange";
   p.style.borderRadius = "50%";
-  p.style.pointerEvents = "none";
 
   const rect = core.getBoundingClientRect();
 
@@ -566,8 +628,8 @@ function createParticle(core){
 
   document.body.appendChild(p);
 
-  const angle = Math.random() * Math.PI * 2;
-  const dist = 80 + Math.random()*120;
+  const angle = Math.random()*Math.PI*2;
+  const dist = 100 + Math.random()*100;
 
   const x = Math.cos(angle)*dist;
   const y = Math.sin(angle)*dist;
@@ -575,62 +637,40 @@ function createParticle(core){
   p.animate([
     {transform:"translate(0,0)", opacity:1},
     {transform:`translate(${x}px,${y}px)`, opacity:0}
-  ],{
-    duration:800,
-    easing:"ease-out"
-  });
+  ],{duration:800});
 
   setTimeout(()=>p.remove(),800);
 }
 
 /* =========================
-FUSION (GAME LOGIC FIX)
+FUSION (ARTIK GERÇEK)
 ========================= */
 function fusion(){
   let core = document.getElementById("core");
 
-  core.classList.remove("fusion");
-
-  if(selected.has("H") && selected.has("He")){
+  if(pressureVal >= 100 && tempVal >= 100){
 
     core.classList.add("fusion");
     core.innerHTML = "☀️ Yıldız!";
 
     sound(1200);
-    addScore(10);
+    addScore(20);
 
-    for(let i=0;i<30;i++){
+    for(let i=0;i<40;i++){
       createParticle(core);
     }
 
-    core.style.boxShadow = `
-      0 0 60px #ffcc00,
-      0 0 120px #ff6600,
-      0 0 180px #ff3300
-    `;
-
-    setTimeout(()=>{
-      core.style.boxShadow = "";
-    },400);
+    // reset for next round
+    pressureVal = 0;
+    tempVal = 0;
+    selected.clear();
+    updateBars();
 
   }else{
 
-    core.innerHTML = "💥 Çöküş";
-    sound(180);
-
-    for(let i=0;i<12;i++){
-      createParticle(core);
-    }
-
-    core.style.boxShadow = "0 0 40px red";
-
-    setTimeout(()=>{
-      core.style.boxShadow = "";
-    },250);
+    core.innerHTML = "⚠️ Yetersiz enerji";
+    sound(200);
   }
-
-  // 🔥 KRİTİK: state reset
-  selected.clear();
 }
 
 /* =========================
@@ -639,6 +679,11 @@ RESET
 function resetGame(){
   selected.clear();
   score = 0;
+  pressureVal = 0;
+  tempVal = 0;
+
+  updateBars();
+
   document.getElementById("score").innerText = score;
 
   let core = document.getElementById("core");
@@ -652,7 +697,7 @@ HINT
 function useHint(){
   if(hintUsed) return alert("İpucu bitti");
   hintUsed = true;
-  alert("Hidrojen + Helyum");
+  alert("Hidrojen = Basınç | Helyum = Sıcaklık");
 }
 
 /* =========================
@@ -667,6 +712,7 @@ function goBack(){
 }
 
 </script>
+
 
 
 
