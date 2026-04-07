@@ -310,6 +310,19 @@ PREMIUM DEAL CARD V2
   box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
 
+/* PLACEHOLDER IMAGE */
+.deal-img-placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  color:#fff;
+  font-size:18px;
+
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.3);
+}
+
 </style>
 
 </head>
@@ -769,17 +782,25 @@ function renderDeals(list){
     div.className = "deal-card"
     div.dataset.type = item.type
 
-    /* ================= IMAGE ================= */
-    let imageHTML = ""
+ /* ================= IMAGE ================= */
+let imageHTML = ""
 
-    if(
-      item.image &&
-      typeof item.image === "string" &&
-      item.image.startsWith("data:image")
-    ){
-      imageHTML = `<img src="${item.image}" class="deal-img" loading="lazy">`
-    }
-
+/* gerçek görsel varsa */
+if(
+  item.image &&
+  typeof item.image === "string" &&
+  item.image.startsWith("data:image")
+){
+  imageHTML = `<img src="${item.image}" class="deal-img" loading="lazy">`
+}
+else{
+  /* 🔥 PREMIUM PLACEHOLDER */
+  imageHTML = `
+    <div class="deal-img deal-img-placeholder">
+      <i class="fa-solid fa-bolt"></i>
+    </div>
+  `
+}
     /* ================= TYPE ================= */
     const badge = item.type === "online" ? "ONLINE" : "MAĞAZA"
 
