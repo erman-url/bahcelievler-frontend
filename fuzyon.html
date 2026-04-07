@@ -363,7 +363,6 @@ canvas{
 </div>
 
 </div>
-
 <script>
 
 /* =========================
@@ -374,12 +373,11 @@ function startGame(){
 }
 
 /* =========================
-BG
+BG (DOKUNMA - DOĞRU)
 ========================= */
 const c = document.getElementById("bg");
 const ctx = c.getContext("2d");
 
-/* RESIZE FIX */
 function resizeCanvas(){
   c.width = innerWidth;
   c.height = innerHeight;
@@ -387,7 +385,6 @@ function resizeCanvas(){
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-/* STAR SYSTEM */
 let stars = Array.from({length:250}, () => ({
   x: Math.random()*c.width,
   y: Math.random()*c.height,
@@ -419,10 +416,10 @@ STATE
 ========================= */
 let selected = new Set();
 let hintUsed = false;
-
+let dragItem = null;
 
 /* =========================
-SOUND (FIX: memory leak yok)
+SOUND
 ========================= */
 let audioCtx;
 
@@ -438,26 +435,36 @@ function sound(f){
 }
 
 /* =========================
-DRAG FIX (MOBİL + DESKTOP TEK SİSTEM)
+DRAG SYSTEM (TEK VE TEMİZ)
 ========================= */
 document.querySelectorAll(".element").forEach(el=>{
 
   el.addEventListener("pointerdown",(e)=>{
-    e.preventDefault();
+    dragItem = el.getAttribute("data");
 
-    const val = el.getAttribute("data");
+    el.classList.add("dragging");
+    el.setPointerCapture(e.pointerId);
+  });
 
-    selected.add(val);
-    sound(500);
+  el.addEventListener("pointermove",(e)=>{
+    if(!dragItem) return;
 
-    // küçük feedback
-    el.style.transform="scale(0.9)";
-    setTimeout(()=>el.style.transform="",120);
+    el.style.position = "fixed";
+    el.style.left = (e.clientX - 30) + "px";
+    el.style.top = (e.clientY - 30) + "px";
+    el.style.zIndex = 999;
+  });
+
+  el.addEventListener("pointerup",(e)=>{
+    handleDrop(e, el);
   });
 
 });
 
-function handleDrop(e){
+/* =========================
+DROP LOGIC
+========================= */
+function handleDrop(e, el){
   if(!dragItem) return;
 
   let core = document.getElementById("core");
@@ -473,24 +480,104 @@ function handleDrop(e){
     y < rect.bottom
   ){
     selected.add(dragItem);
-    sound(500);
+
+    // görsel feedback
+    core.style.boxShadow = "0 0 40px #22c55e";
+    setTimeout(()=> core.style.boxShadow="",200);
+
+    sound(700);
   }
+
+  // element reset (kritik)
+  el.classList.remove("dragging");
+  el.style.position = "";
+  el.style.left = "";
+  el.style.top = "";
+  el.style.zIndex = "";
 
   dragItem = null;
 }
 
 /* =========================
-FUSION
+PARTICLE SYSTEM
+========================= */
+function createParticle(core){
+  const p = document.createElement("div");
+
+  p.style.position = "fixed";
+  p.style.width = "6px";
+  p.style.height = "6px";
+  p.style.background = "orange";
+  p.style.borderRadius = "50%";
+  p.style.pointerEvents = "none";
+
+  const rect = core.getBoundingClientRect();
+
+  p.style.left = rect.left + rect.width/2 + "px";
+  p.style.top = rect.top + rect.height/2 + "px";
+
+  document.body.appendChild(p);
+
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 80 + Math.random()*120;
+
+  const x = Math.cos(angle)*dist;
+  const y = Math.sin(angle)*dist;
+
+  p.animate([
+    {transform:"translate(0,0)", opacity:1},
+    {transform:`translate(${x}px,${y}px)`, opacity:0}
+  ],{
+    duration:800,
+    easing:"ease-out"
+  });
+
+  setTimeout(()=>p.remove(),800);
+}
+
+/* =========================
+FUSION (PRO)
 ========================= */
 function fusion(){
   let core = document.getElementById("core");
 
+  core.classList.remove("fusion");
+
   if(selected.has("H") && selected.has("He")){
+
     core.classList.add("fusion");
     core.innerHTML = "☀️ Yıldız!";
+
+    sound(1200);
+
+    for(let i=0;i<30;i++){
+      createParticle(core);
+    }
+
+    core.style.boxShadow = `
+      0 0 60px #ffcc00,
+      0 0 120px #ff6600,
+      0 0 180px #ff3300
+    `;
+
+    setTimeout(()=>{
+      core.style.boxShadow = "";
+    },400);
+
   }else{
-    core.classList.remove("fusion");
+
     core.innerHTML = "💥 Çöküş";
+    sound(180);
+
+    for(let i=0;i<12;i++){
+      createParticle(core);
+    }
+
+    core.style.boxShadow = "0 0 40px red";
+
+    setTimeout(()=>{
+      core.style.boxShadow = "";
+    },250);
   }
 }
 
@@ -525,6 +612,7 @@ function goBack(){
 }
 
 </script>
+
 
 </body>
 </html>
