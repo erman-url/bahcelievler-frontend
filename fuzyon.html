@@ -782,39 +782,55 @@ function createParticle(core){
 
   setTimeout(()=>p.remove(),800);
 }
-
 /* =========================
-FUSION (ARTIK GERÇEK)
+FUSION (FULL FIX PRO)
 ========================= */
-if(!gameActive) return;
 function fusion(){
-  if(!gameActive) return; 
-  let core = document.getElementById("core");
 
-  if(pressureVal >= 100 && tempVal >= 100){
+// 🔒 oyun aktif değilse çalışmaz
+if(!gameActive) return;
 
-    core.classList.add("fusion");
-    core.innerHTML = "☀️ Yıldız!";
+let core = document.getElementById("core");
 
-    sound(1200);
-    addScore(20);
+// önce görsel state temizliği
+core.classList.remove("fusion");
 
-    for(let i=0;i<40;i++){
-      createParticle(core);
-    }
+if(pressureVal >= 100 && tempVal >= 100){
 
-    // reset for next round
-    pressureVal = 0;
-    tempVal = 0;
-    selected.clear();
-    updateBars();
+```
+// ⭐ BAŞARILI FUSION
+core.classList.add("fusion");
+core.innerHTML = "☀️ Yıldız!";
 
-  }else{
+sound(1200);
+addScore(20);
 
-    core.innerHTML = "⚠️ Yetersiz enerji";
-    sound(200);
-  }
+for(let i=0;i<40;i++){
+  createParticle(core);
 }
+
+// sistem reset (yeni tur)
+pressureVal = 0;
+tempVal = 0;
+selected.clear();
+updateBars();
+```
+
+}else{
+
+```
+// ❌ BAŞARISIZ
+core.innerHTML = "⚠️ Yetersiz enerji";
+sound(200);
+
+// küçük negatif feedback (opsiyonel ama pro his)
+core.style.boxShadow = "0 0 40px red";
+setTimeout(()=> core.style.boxShadow="",200);
+```
+
+}
+}
+
 
 /* =========================
 RESET (FULL FIX)
