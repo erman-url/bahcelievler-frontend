@@ -748,6 +748,9 @@ async function fetchDeals(){
 /* =========================
 RENDER
 ========================= */
+/* =========================
+RENDER (FULL FIX PRO)
+========================= */
 function renderDeals(list){
 
   const container = document.getElementById("dealList")
@@ -765,50 +768,66 @@ function renderDeals(list){
     const div = document.createElement("div")
     div.className = "deal-card"
     div.dataset.type = item.type
-/* 🔥 IMAGE (VARSA) */
-let imageHTML = ""
 
-/* güvenli image kontrol */
-if(
-  item.image &&
-  typeof item.image === "string" &&
-  item.image.startsWith("data:image")
-){
-  imageHTML = `<img src="${item.image}" class="deal-img" loading="lazy">`
-}else{
-  imageHTML = `<div class="deal-img"></div>`
-}
+    /* ================= IMAGE ================= */
+    let imageHTML = ""
 
-/* TYPE BADGE */
-const badge = item.type === "online" ? "ONLINE" : "MAĞAZA"
+    if(
+      item.image &&
+      typeof item.image === "string" &&
+      item.image.startsWith("data:image")
+    ){
+      imageHTML = `<img src="${item.image}" class="deal-img" loading="lazy">`
+    }
 
-div.innerHTML = `
-  
-  <div class="deal-badge">${badge}</div>
+    /* ================= TYPE ================= */
+    const badge = item.type === "online" ? "ONLINE" : "MAĞAZA"
 
-  <div class="deal-top">
-    ${imageHTML}
-    <div class="deal-info">
-      <div class="deal-title">${safe(item.title)}</div>
-      ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
-    </div>
-  </div>
+    /* ================= CONTENT ================= */
+    const contentHTML = (
+      item.content &&
+      typeof item.content === "string" &&
+      item.content.trim().length > 10
+    )
+      ? `<div class="deal-content">${safe(item.content)}</div>`
+      : ""
 
-  ${item.content ? `<div class="deal-content">${safe(item.content)}</div>` : ""}
+    /* ================= DISTRICT ================= */
+    const districtHTML = item.district
+      ? `<div class="deal-district">📍 ${safe(item.district)}</div>`
+      : ""
 
-  <div class="deal-footer">
-    ${item.district ? `<div class="deal-district">📍 ${safe(item.district)}</div>` : `<div></div>`}
+    /* ================= LINK ================= */
+    const linkHTML = item.link
+      ? `<a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer" class="deal-btn">İncele →</a>`
+      : ""
 
-    ${item.link ? `
-      <a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer" class="deal-btn">
-        İncele →
-      </a>
-    ` : ""}
-  </div>
-`
+    /* ================= TEMPLATE ================= */
+    div.innerHTML = `
+      
+      <div class="deal-badge">${badge}</div>
 
-container.appendChild(div)
-})
+      <div class="deal-top">
+        ${imageHTML || ""}
+        <div class="deal-info">
+          <div class="deal-title">${safe(item.title)}</div>
+          ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
+        </div>
+      </div>
+
+      ${contentHTML}
+
+      ${(districtHTML || linkHTML) ? `
+        <div class="deal-footer">
+          ${districtHTML}
+          ${linkHTML}
+        </div>
+      ` : ""}
+
+    `
+
+    container.appendChild(div)
+  })
 }
 
 /* INIT */
