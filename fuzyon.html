@@ -438,6 +438,7 @@ HOW TO PLAY GLOW
 </div>
 
 <div class="score">Skor: <span id="score">0</span></div>
+<div class="timer">Süre: <span id="time">03:00</span></div>
 
 <div class="play">
 
@@ -856,6 +857,55 @@ function openHowTo(){
 
 function closeHowTo(){
   document.getElementById("howToModal").style.display = "none";
+}
+
+/**********************
+TIMER SYSTEM
+**********************/
+let totalTime = 180; // 3 dakika (saniye)
+let timerInterval = null;
+let gameActive = false;
+
+function startTimer(){
+  totalTime = 180;
+  gameActive = true;
+
+  updateTimerUI();
+
+  timerInterval = setInterval(()=>{
+    totalTime--;
+
+    updateTimerUI();
+
+    if(totalTime <= 0){
+      endGame();
+    }
+
+  },1000);
+}
+
+function updateTimerUI(){
+  let min = Math.floor(totalTime / 60);
+  let sec = totalTime % 60;
+
+  document.getElementById("time").innerText =
+    String(min).padStart(2,'0') + ":" +
+    String(sec).padStart(2,'0');
+}
+
+function endGame(){
+  clearInterval(timerInterval);
+  gameActive = false;
+
+  let core = document.getElementById("core");
+
+  core.classList.remove("fusion");
+  core.innerHTML = "⛔ Oyun Bitti";
+
+  sound(150);
+
+  // inputları kilitle
+  dragItem = null;
 }
 
 </script>
