@@ -361,7 +361,6 @@ Fırsatlar yükleniyor...
 
 
 
-
 <script>
 
 /* =========================
@@ -415,15 +414,10 @@ DEAL MODAL
 ========================= */
 window.openDealForm = function(type){
 
-  console.log("openDealForm:", type)
-
   window.selectedType = type
 
   const modal = document.getElementById("dealModal")
-  if(!modal){
-    console.warn("dealModal yok")
-    return
-  }
+  if(!modal) return
 
   modal.classList.add("active")
 
@@ -437,7 +431,6 @@ window.openDealForm = function(type){
     if(linkBox) linkBox.style.display = "none"
     if(districtBox) districtBox.style.display = "block"
   }
-
 }
 
 /* =========================
@@ -452,7 +445,6 @@ window.closeDealForm = function(){
 OUTSIDE CLICK CLOSE
 ========================= */
 document.addEventListener("click", function(e){
-
   const typeModal = document.getElementById("dealTypeModal")
   const dealModal = document.getElementById("dealModal")
 
@@ -463,7 +455,6 @@ document.addEventListener("click", function(e){
   if(dealModal && e.target === dealModal){
     closeDealForm()
   }
-
 })
 
 /* =========================
@@ -473,15 +464,12 @@ window.submitDeal = async function(){
 
   const nickname = sanitize(document.getElementById("nickname")?.value)
   const store = sanitize(document.getElementById("storeName")?.value)
-  const link = sanitize(document.getElementById("dealLink")?.value)
+  let link = sanitize(document.getElementById("dealLink")?.value)
   const content = sanitize(document.getElementById("dealContent")?.value)
   const district = document.getElementById("district")?.value || ""
 
   const type = window.selectedType || "online"
-
   const title = store || "Fırsat"
-
-  console.log("SUBMIT DATA:", {nickname,title,content,store,link,district,type})
 
   /* VALIDATION */
 
@@ -495,9 +483,26 @@ window.submitDeal = async function(){
     return
   }
 
-  if(type === "online" && (!link || link.length < 5)){
-    alert("Link zorunlu")
-    return
+  /* 🔥 LINK FIX + VALIDATION */
+  if(type === "online"){
+
+    if(!link){
+      alert("Link zorunlu")
+      return
+    }
+
+    // otomatik https ekle
+    if(!link.startsWith("http")){
+      link = "https://" + link
+    }
+
+    try{
+      new URL(link)
+    }catch{
+      alert("Geçerli link giriniz")
+      return
+    }
+
   }
 
   if(type === "store" && !district){
@@ -549,11 +554,8 @@ window.submitDeal = async function(){
       return
     }
 
-    /* SUCCESS */
-
     alert("✅ Fırsat başarıyla eklendi")
 
-    // FORM RESET
     document.getElementById("nickname").value = ""
     document.getElementById("storeName").value = ""
     document.getElementById("dealLink").value = ""
@@ -561,20 +563,16 @@ window.submitDeal = async function(){
     document.getElementById("district").value = ""
 
     closeDealForm()
-
-    setTimeout(()=>{
-      fetchDeals()
-    },300)
+    setTimeout(fetchDeals,300)
 
   }catch(e){
     alert("Sunucu hatası")
     console.error("FETCH ERROR:", e)
   }
-
 }
 
 /* =========================
-FETCH REAL DEALS
+FETCH DEALS
 ========================= */
 async function fetchDeals(){
 
@@ -586,15 +584,13 @@ async function fetchDeals(){
   try{
 
     const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/firsatlar")
-
     const text = await res.text()
 
     let data
     try{
       data = JSON.parse(text)
     }catch{
-      console.error("JSON ERROR:", text)
-      container.innerHTML = "Veri hatalı geldi"
+      container.innerHTML = "Veri hatalı"
       return
     }
 
@@ -605,15 +601,13 @@ async function fetchDeals(){
 
     renderDeals(data.data)
 
-  }catch(e){
-    console.error(e)
+  }catch{
     container.innerHTML = "Sunucu hatası"
   }
-
 }
 
 /* =========================
-RENDER DEALS (SECURE)
+RENDER
 ========================= */
 function renderDeals(list){
 
@@ -637,19 +631,15 @@ function renderDeals(list){
       <div class="deal-title">${safe(item.title)}</div>
       <div class="deal-content">${safe(item.content)}</div>
       ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
-      ${item.link ? `<a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer">Fırsata Git</a>` : ""}
+      ${item.link ? `<a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer">İncele</a>` : ""}
       ${item.district ? `<div class="deal-district">${safe(item.district)}</div>` : ""}
     `
 
     container.appendChild(div)
-
   })
-
 }
 
-/* =========================
-INIT
-========================= */
+/* INIT */
 document.addEventListener("DOMContentLoaded", fetchDeals)
 
 </script>
