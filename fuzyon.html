@@ -366,14 +366,19 @@ canvas{
 <script>
 
 /* =========================
-INTRO
+INTRO + AUDIO FIX
 ========================= */
 function startGame(){
   document.getElementById("introScreen").style.display = "none";
+
+  // mobile audio unlock
+  if(audioCtx){
+    audioCtx.resume();
+  }
 }
 
 /* =========================
-BG (DOKUNMA - DOĞRU)
+BG
 ========================= */
 const c = document.getElementById("bg");
 const ctx = c.getContext("2d");
@@ -417,6 +422,16 @@ STATE
 let selected = new Set();
 let hintUsed = false;
 let dragItem = null;
+let activePointerId = null;
+let score = 0;
+
+/* =========================
+SCORE
+========================= */
+function addScore(v){
+  score += v;
+  document.getElementById("score").innerText = score;
+}
 
 /* =========================
 SOUND
@@ -427,19 +442,29 @@ function sound(f){
   if(!audioCtx){
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
+
   let o = audioCtx.createOscillator();
+  let g = audioCtx.createGain();
+
   o.frequency.value = f;
-  o.connect(audioCtx.destination);
+  g.gain.value = 0.05;
+
+  o.connect(g);
+  g.connect(audioCtx.destination);
+
   o.start();
   setTimeout(()=>o.stop(),100);
 }
 
 /* =========================
-DRAG SYSTEM (TEK VE TEMİZ)
+DRAG SYSTEM (PRO)
 ========================= */
 document.querySelectorAll(".element").forEach(el=>{
 
   el.addEventListener("pointerdown",(e)=>{
+    if(activePointerId !== null) return;
+
+    activePointerId = e.pointerId;
     dragItem = el.getAttribute("data");
 
     el.classList.add("dragging");
@@ -447,6 +472,7 @@ document.querySelectorAll(".element").forEach(el=>{
   });
 
   el.addEventListener("pointermove",(e)=>{
+    if(e.pointerId !== activePointerId) return;
     if(!dragItem) return;
 
     el.style.position = "fixed";
@@ -456,9 +482,28 @@ document.querySelectorAll(".element").forEach(el=>{
   });
 
   el.addEventListener("pointerup",(e)=>{
+    if(e.pointerId !== activePointerId) return;
+
     handleDrop(e, el);
+    activePointerId = null;
   });
 
+});
+
+/* =========================
+GLOBAL POINTER FIX (CRITICAL)
+========================= */
+document.addEventListener("pointerup", ()=>{
+  dragItem = null;
+  activePointerId = null;
+
+  document.querySelectorAll(".element").forEach(el=>{
+    el.classList.remove("dragging");
+    el.style.position = "";
+    el.style.left = "";
+    el.style.top = "";
+    el.style.zIndex = "";
+  });
 });
 
 /* =========================
@@ -481,25 +526,28 @@ function handleDrop(e, el){
   ){
     selected.add(dragItem);
 
-    // görsel feedback
     core.style.boxShadow = "0 0 40px #22c55e";
     setTimeout(()=> core.style.boxShadow="",200);
 
     sound(700);
   }
 
-  // element reset (kritik)
+  // smooth return
+  el.style.transition = "0.2s";
+
   el.classList.remove("dragging");
   el.style.position = "";
   el.style.left = "";
   el.style.top = "";
   el.style.zIndex = "";
 
+  setTimeout(()=> el.style.transition="",200);
+
   dragItem = null;
 }
 
 /* =========================
-PARTICLE SYSTEM
+PARTICLES
 ========================= */
 function createParticle(core){
   const p = document.createElement("div");
@@ -536,7 +584,7 @@ function createParticle(core){
 }
 
 /* =========================
-FUSION (PRO)
+FUSION (GAME LOGIC FIX)
 ========================= */
 function fusion(){
   let core = document.getElementById("core");
@@ -549,6 +597,7 @@ function fusion(){
     core.innerHTML = "☀️ Yıldız!";
 
     sound(1200);
+    addScore(10);
 
     for(let i=0;i<30;i++){
       createParticle(core);
@@ -579,6 +628,9 @@ function fusion(){
       core.style.boxShadow = "";
     },250);
   }
+
+  // 🔥 KRİTİK: state reset
+  selected.clear();
 }
 
 /* =========================
@@ -586,6 +638,9 @@ RESET
 ========================= */
 function resetGame(){
   selected.clear();
+  score = 0;
+  document.getElementById("score").innerText = score;
+
   let core = document.getElementById("core");
   core.classList.remove("fusion");
   core.innerHTML = "Çekirdek";
@@ -612,6 +667,7 @@ function goBack(){
 }
 
 </script>
+
 
 
 </body>
