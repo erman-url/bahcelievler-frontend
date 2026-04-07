@@ -713,6 +713,7 @@ document.addEventListener("pointerup", ()=>{
 DROP
 ========================= */
 function handleDrop(e, el){
+   if(!gameActive) return;
   if(!dragItem) return;
 
   let core = document.getElementById("core");
@@ -781,8 +782,7 @@ function createParticle(core){
   ],{duration:800});
 
   setTimeout(()=>p.remove(),800);
-}
-/* =========================
+}/* =========================
 FUSION (FULL FIX PRO)
 ========================= */
 function fusion(){
@@ -823,13 +823,14 @@ updateBars();
 core.innerHTML = "⚠️ Yetersiz enerji";
 sound(200);
 
-// küçük negatif feedback (opsiyonel ama pro his)
+// küçük negatif feedback
 core.style.boxShadow = "0 0 40px red";
 setTimeout(()=> core.style.boxShadow="",200);
 ```
 
 }
 }
+
 
 
 /* =========================
