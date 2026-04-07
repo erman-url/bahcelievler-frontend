@@ -783,7 +783,11 @@ function renderDeals(list){
     div.dataset.type = item.type
 
  /* ================= IMAGE ================= */
-let imageHTML = ""
+imageHTML = `
+  <div class="deal-img deal-img-placeholder">
+    <span style="font-size:10px;font-weight:700;">Fırsat</span>
+  </div>
+`
 
 /* gerçek görsel varsa */
 if(
