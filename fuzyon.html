@@ -713,7 +713,6 @@ document.addEventListener("pointerup", ()=>{
 DROP
 ========================= */
 function handleDrop(e, el){
-  if(!gameActive) return; // 
   if(!dragItem) return;
 
   let core = document.getElementById("core");
@@ -789,6 +788,7 @@ FUSION (ARTIK GERÇEK)
 ========================= */
 if(!gameActive) return;
 function fusion(){
+  if(!gameActive) return; 
   let core = document.getElementById("core");
 
   if(pressureVal >= 100 && tempVal >= 100){
