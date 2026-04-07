@@ -309,6 +309,50 @@ canvas{
   pointer-events:none;
 }
 
+/* =========================
+MODAL
+========================= */
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.modalContent{
+  width:90%;
+  max-width:400px;
+  background:#0f172a;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 0 40px rgba(0,0,0,0.8);
+}
+
+.modalHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.closeBtn{
+  cursor:pointer;
+  font-size:18px;
+}
+
+.modalBody{
+  font-size:13px;
+  opacity:0.9;
+  line-height:1.5;
+}
+
 </style>
 </head>
 
@@ -326,7 +370,9 @@ canvas{
 
 <div class="header">
 <div onclick="goBack()">← Geri</div>
+<div onclick="openHowTo()">Nasıl Oynanır</div>
 <div>PRO</div>
+
 </div>
 
 <div class="score">Skor: <span id="score">0</span></div>
@@ -362,7 +408,38 @@ canvas{
 <button class="hintBtn" onclick="useHint()">İpucu</button>
 </div>
 
+<div id="howToModal" class="modal">
+  <div class="modalContent">
+
+    <div class="modalHeader">
+      <span>Nasıl Oynanır</span>
+      <span class="closeBtn" onclick="closeHowTo()">✕</span>
+    </div>
+
+    <div class="modalBody">
+      <p><b>Amaç:</b> Doğru elementleri kullanarak yıldız oluşturmak.</p>
+
+      <p>
+      Hidrojen basıncı artırır, Helyum sıcaklığı yükseltir.<br>
+      Elementleri çekirdeğe sürükleyerek enerji biriktir.
+      </p>
+
+      <p>
+      Basınç ve sıcaklık dolduğunda <b>Füzyon</b> butonuna bas.<br>
+      Başarılı olursan yıldız oluşur.
+      </p>
+
+      <p>
+      Yanlış elementler sistemi bozabilir.
+      </p>
+    </div>
+
+  </div>
 </div>
+
+</div>
+
+
 <script>
 
 /* =========================
@@ -709,6 +786,14 @@ function goBack(){
   }else{
     window.location.href = "online-oyunlar.html";
   }
+}
+
+function openHowTo(){
+  document.getElementById("howToModal").style.display = "flex";
+}
+
+function closeHowTo(){
+  document.getElementById("howToModal").style.display = "none";
 }
 
 </script>
