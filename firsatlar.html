@@ -571,6 +571,7 @@ window.submitDeal = async function(){
   const store = sanitize(document.getElementById("storeName")?.value)
   let link = sanitize(document.getElementById("dealLink")?.value)
   const content = sanitize(document.getElementById("dealContent")?.value)
+  const imageFile = document.getElementById("dealImage")?.files[0]
   const district = document.getElementById("district")?.value || ""
 
   const type = window.selectedType || "online"
