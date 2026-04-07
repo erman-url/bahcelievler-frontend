@@ -563,7 +563,7 @@ document.addEventListener("click", function(e){
 })
 
 /* =========================
-SUBMIT DEAL (FULL FIX)
+SUBMIT DEAL (FULL FIX PRO)
 ========================= */
 window.submitDeal = async function(){
 
@@ -577,7 +577,7 @@ window.submitDeal = async function(){
   const type = window.selectedType || "online"
   const title = store || "Fırsat"
 
-  /* VALIDATION */
+  /* ================= VALIDATION ================= */
 
   if(!nickname || nickname.length < 3){
     alert("Nickname gerekli (min 3 karakter)")
@@ -589,7 +589,6 @@ window.submitDeal = async function(){
     return
   }
 
-  /* 🔥 LINK FIX + VALIDATION */
   if(type === "online"){
 
     if(!link){
@@ -597,7 +596,6 @@ window.submitDeal = async function(){
       return
     }
 
-    // otomatik https ekle
     if(!link.startsWith("http")){
       link = "https://" + link
     }
@@ -608,13 +606,52 @@ window.submitDeal = async function(){
       alert("Geçerli link giriniz")
       return
     }
-
   }
 
   if(type === "store" && !district){
     alert("Mahalle seçiniz")
     return
   }
+
+  /* ================= IMAGE (BASE64 SAFE) ================= */
+
+  let imageBase64 = ""
+
+  if(imageFile){
+
+    // 🔥 LIMIT (2MB - proje kuralı)
+    if(imageFile.size > 2 * 1024 * 1024){
+      alert("Görsel max 2MB olmalı")
+      return
+    }
+
+    try{
+      imageBase64 = await new Promise((resolve, reject)=>{
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(imageFile)
+      })
+    }catch{
+      alert("Görsel okunamadı")
+      return
+    }
+  }
+
+  /* ================= REQUEST BODY ================= */
+
+  const payload = {
+    nickname,
+    title,
+    content,
+    store_name: store,
+    link,
+    district,
+    type,
+    image: imageBase64 || null
+  }
+
+  /* ================= API ================= */
 
   try{
 
@@ -623,15 +660,7 @@ window.submitDeal = async function(){
       headers:{
         "Content-Type":"application/json"
       },
-      body:JSON.stringify({
-        nickname,
-        title,
-        content,
-        store_name: store,
-        link,
-        district,
-        type
-      })
+      body:JSON.stringify(payload)
     })
 
     const text = await res.text()
@@ -660,6 +689,8 @@ window.submitDeal = async function(){
       return
     }
 
+    /* ================= SUCCESS ================= */
+
     alert("✅ Fırsat başarıyla eklendi")
 
     document.getElementById("nickname").value = ""
@@ -667,6 +698,7 @@ window.submitDeal = async function(){
     document.getElementById("dealLink").value = ""
     document.getElementById("dealContent").value = ""
     document.getElementById("district").value = ""
+    document.getElementById("dealImage").value = ""
 
     closeDealForm()
     setTimeout(fetchDeals,300)
@@ -676,7 +708,6 @@ window.submitDeal = async function(){
     console.error("FETCH ERROR:", e)
   }
 }
-
 /* =========================
 FETCH DEALS
 ========================= */
@@ -732,45 +763,50 @@ function renderDeals(list){
     const div = document.createElement("div")
     div.className = "deal-card"
     div.dataset.type = item.type
+/* 🔥 IMAGE (VARSA) */
+let imageHTML = ""
 
-    /* 🔥 IMAGE (VARSA) */
-    let imageHTML = ""
-    if(item.image){
-      imageHTML = `<img src="${safe(item.image)}" class="deal-img" loading="lazy">`
-    }else{
-      imageHTML = `<div class="deal-img"></div>`
-    }
+/* güvenli image kontrol */
+if(
+  item.image &&
+  typeof item.image === "string" &&
+  item.image.startsWith("data:image")
+){
+  imageHTML = `<img src="${item.image}" class="deal-img" loading="lazy">`
+}else{
+  imageHTML = `<div class="deal-img"></div>`
+}
 
-    /* TYPE BADGE */
-    const badge = item.type === "online" ? "ONLINE" : "MAĞAZA"
+/* TYPE BADGE */
+const badge = item.type === "online" ? "ONLINE" : "MAĞAZA"
 
-    div.innerHTML = `
-      
-      <div class="deal-badge">${badge}</div>
+div.innerHTML = `
+  
+  <div class="deal-badge">${badge}</div>
 
-      <div class="deal-top">
-        ${imageHTML}
-        <div class="deal-info">
-          <div class="deal-title">${safe(item.title)}</div>
-          ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
-        </div>
-      </div>
+  <div class="deal-top">
+    ${imageHTML}
+    <div class="deal-info">
+      <div class="deal-title">${safe(item.title)}</div>
+      ${item.store_name ? `<div class="deal-store">${safe(item.store_name)}</div>` : ""}
+    </div>
+  </div>
 
-      ${item.content ? `<div class="deal-content">${safe(item.content)}</div>` : ""}
+  ${item.content ? `<div class="deal-content">${safe(item.content)}</div>` : ""}
 
-      <div class="deal-footer">
-        ${item.district ? `<div class="deal-district">📍 ${safe(item.district)}</div>` : `<div></div>`}
+  <div class="deal-footer">
+    ${item.district ? `<div class="deal-district">📍 ${safe(item.district)}</div>` : `<div></div>`}
 
-        ${item.link ? `
-          <a href="${safeUrl(item.link)}" target="_blank" class="deal-btn">
-            İncele →
-          </a>
-        ` : ""}
-      </div>
-    `
+    ${item.link ? `
+      <a href="${safeUrl(item.link)}" target="_blank" rel="noopener noreferrer" class="deal-btn">
+        İncele →
+      </a>
+    ` : ""}
+  </div>
+`
 
-    container.appendChild(div)
-  })
+container.appendChild(div)
+})
 }
 
 /* INIT */
