@@ -526,6 +526,7 @@ function startGame(){
 
     bgMusic.play().catch(()=>{});
   }
+  startTimer();
 }
 
 /* =========================
@@ -712,6 +713,7 @@ document.addEventListener("pointerup", ()=>{
 DROP
 ========================= */
 function handleDrop(e, el){
+  if(!gameActive) return; // 
   if(!dragItem) return;
 
   let core = document.getElementById("core");
@@ -785,6 +787,7 @@ function createParticle(core){
 /* =========================
 FUSION (ARTIK GERÇEK)
 ========================= */
+if(!gameActive) return;
 function fusion(){
   let core = document.getElementById("core");
 
@@ -814,21 +817,30 @@ function fusion(){
 }
 
 /* =========================
-RESET
+RESET (FULL FIX)
 ========================= */
 function resetGame(){
-  selected.clear();
-  score = 0;
-  pressureVal = 0;
-  tempVal = 0;
 
-  updateBars();
+// 🔥 TIMER RESET (KRİTİK)
+clearInterval(timerInterval);
+gameActive = false;
 
-  document.getElementById("score").innerText = score;
+// STATE RESET
+selected.clear();
+score = 0;
+pressureVal = 0;
+tempVal = 0;
 
-  let core = document.getElementById("core");
-  core.classList.remove("fusion");
-  core.innerHTML = "Çekirdek";
+// UI RESET
+updateBars();
+updateTimerUI();
+
+document.getElementById("score").innerText = score;
+
+let core = document.getElementById("core");
+core.classList.remove("fusion");
+core.innerHTML = "Çekirdek";
+
 }
 
 /* =========================
@@ -867,6 +879,7 @@ let timerInterval = null;
 let gameActive = false;
 
 function startTimer(){
+  clearInterval(timerInterval);
   totalTime = 180;
   gameActive = true;
 
