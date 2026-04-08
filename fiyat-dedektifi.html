@@ -328,6 +328,46 @@ box-shadow:
 inset 0 1px 0 rgba(255,255,255,.3);
 }
 
+/* 🔥 FULL FIX MODAL CENTER */
+.fd-modal{
+position:fixed;
+inset:0;
+display:none;
+justify-content:center;
+align-items:center;
+background:rgba(0,0,0,.45);
+z-index:9999;
+padding:16px;
+}
+
+.fd-modal-content{
+width:100%;
+max-width:500px;
+max-height:90vh;
+overflow-y:auto;
+border-radius:18px;
+background:#fff;
+padding:20px;
+padding-bottom:100px;
+}
+
+/* 📱 MOBİL FIX */
+@media(max-width:768px){
+.fd-modal{
+align-items:flex-end;
+}
+
+.fd-modal-content{
+border-radius:18px 18px 0 0;
+max-height:92vh;
+}
+}
+
+.fd-camera input{
+width:100%;
+padding:10px;
+}
+
 </style>
 
 </head>
@@ -412,7 +452,12 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 id="imageInput"
 type="file"
 accept="image/*"
-capture="environment"
+<input
+id="imageInput"
+type="file"
+accept="image/*"
+onchange="handleImageUpload(this.files)"
+>
 onchange="if(this.files.length && typeof runOCR==='function'){runOCR(this.files[0])}"
 >
 
@@ -802,6 +847,75 @@ document.addEventListener("visibilitychange", ()=>{
     refreshPrices();
   }
 });
+
+/* ===============================
+IMAGE HANDLE + OCR
+=============================== */
+window.handleImageUpload = async function(files){
+
+  if(!files || !files[0]) return;
+
+  const file = files[0];
+
+  // preview (opsiyonel)
+  console.log("image selected:", file.name);
+
+  // OCR
+  try{
+
+    if(typeof Tesseract === "undefined"){
+      console.warn("OCR yok");
+      return;
+    }
+
+    const result = await Tesseract.recognize(file, "tur+eng");
+
+    const text = result.data.text;
+
+    console.log("OCR TEXT:", text);
+
+    parseOCRText(text);
+
+  }catch(e){
+    console.error("OCR hata:", e);
+  }
+
+};
+
+/* ===============================
+OCR PARSER (SMART)
+=============================== */
+function parseOCRText(text){
+
+  if(!text) return;
+
+  // fiyat bul (17.45 / 17,45)
+  const priceMatch = text.match(/\d+[.,]\d{2}/);
+
+  if(priceMatch){
+    document.getElementById("priceInput").value =
+      priceMatch[0].replace(",",".");
+  }
+
+  // barkod (8-14 haneli)
+  const barcodeMatch = text.match(/\b\d{8,14}\b/);
+
+  if(barcodeMatch){
+    document.getElementById("barcodeInput").value =
+      barcodeMatch[0];
+  }
+
+  // ürün adı (basit heuristik)
+  const lines = text.split("\n").filter(l=>l.trim().length>3);
+
+  if(lines.length){
+    document.getElementById("urunInput").value =
+      lines[0].substring(0,40);
+  }
+
+  if(navigator.vibrate) navigator.vibrate(50);
+
+}
 
 </script>
 
