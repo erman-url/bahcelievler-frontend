@@ -3,63 +3,19 @@
 <head>
 
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>2048 Oyna (Ücretsiz) | Bahçelievler Forum</title>
+<title>2048 PRO Oyna | Mobil Uyumlu</title>
 
-<meta name="description" content="2048 oyununu ücretsiz ve reklamsız oyna. Mobil uyumlu, hızlı ve premium deneyim. Bahçelievler Forum oyun platformu.">
-<meta name="keywords" content="2048 oyna, 2048 oyunu, ücretsiz oyun, mobil oyun, puzzle oyun">
+<meta name="description" content="2048 oyununu mobilde akıcı ve hızlı şekilde oyna. Seviye sistemi, animasyon ve premium deneyim.">
 <meta name="robots" content="index, follow">
 
-<link rel="canonical" href="https://www.bahcelievlerforum.com.tr/2048">
-
-<!-- THEME -->
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<!-- OPEN GRAPH -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="2048 Oyna (Ücretsiz)">
-<meta property="og:description" content="Mobil uyumlu hızlı 2048 oyunu. Hemen oyna.">
-<meta property="og:url" content="https://www.bahcelievlerforum.com.tr/2048">
-<meta property="og:image" content="https://www.bahcelievlerforum.com.tr/assets/images/2048-cover.jpg">
-
-
-<!-- STRUCTURED DATA -->
-<script type="application/ld+json">
-{
- "@context": "https://schema.org",
- "@type": "Game",
- "name": "2048 Oyunu",
- "url": "https://www.bahcelievlerforum.com.tr/2048",
- "applicationCategory": "Game",
- "operatingSystem": "Web",
- "description": "Mobil uyumlu 2048 oyunu",
- "publisher": {
-   "@type": "Organization",
-   "name": "Bahçelievler Forum"
- }
-}
-</script>
-
-
-
 <style>
-
-/* =========================
-ROOT
-========================= */
 :root{
 --bg:#0f172a;
 --card:rgba(255,255,255,0.06);
---primary:#2563eb;
 }
 
-/* =========================
-BASE
-========================= */
 *{box-sizing:border-box;}
 
 body{
@@ -67,55 +23,30 @@ margin:0;
 font-family:-apple-system,system-ui;
 background:linear-gradient(180deg,#0f172a,#020617);
 color:white;
-
-/* 🔥 TAM ORTALAMA */
 display:flex;
 justify-content:center;
 align-items:center;
-
 height:100vh;
 overflow:hidden;
+touch-action:none;
 }
 
-/* =========================
-APP WRAPPER (KRİTİK)
-========================= */
 .app{
 width:100%;
 max-width:420px;
-
-/* 🔥 responsive height */
 height:100vh;
 max-height:820px;
-
 display:flex;
 flex-direction:column;
 }
 
-/* =========================
-HEADER
-========================= */
 .header{
 display:flex;
-align-items:center;
 justify-content:space-between;
 padding:12px;
-padding-top:calc(12px + env(safe-area-inset-top));
 background:rgba(255,255,255,0.05);
-backdrop-filter:blur(12px);
 }
 
-.back{
-background:var(--card);
-border:none;
-color:white;
-padding:8px 12px;
-border-radius:10px;
-}
-
-/* =========================
-CONTENT
-========================= */
 .container{
 flex:1;
 display:flex;
@@ -124,9 +55,6 @@ padding:12px;
 gap:10px;
 }
 
-/* =========================
-SCORE
-========================= */
 .score{
 background:var(--card);
 padding:10px;
@@ -134,42 +62,31 @@ border-radius:12px;
 text-align:center;
 }
 
-/* =========================
-GRID (EN KRİTİK FIX)
-========================= */
 .grid{
-width:100%;
-
-/* 🔥 TAM ORAN KORUMA */
 aspect-ratio:1;
-
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:8px;
 padding:8px;
-
 background:var(--card);
 border-radius:16px;
+position:relative;
+overflow:hidden;
 }
 
-/* =========================
-TILE (responsive font)
-========================= */
 .tile{
 display:flex;
 align-items:center;
 justify-content:center;
-
 font-weight:800;
-
-/* 🔥 FONT OTOMATİK */
 font-size:clamp(16px,4vw,22px);
-
 border-radius:10px;
 background:rgba(255,255,255,0.08);
+
+/* 🔥 ANİMASYON */
+transition:transform .15s ease, opacity .15s ease;
 }
 
-/* COLORS */
 .t2{background:#fef3c7;color:#000;}
 .t4{background:#fde68a;}
 .t8{background:#fbbf24;}
@@ -182,9 +99,6 @@ background:rgba(255,255,255,0.08);
 .t1024{background:#1d4ed8;}
 .t2048{background:#000;}
 
-/* =========================
-BUTTON
-========================= */
 .btn{
 padding:12px;
 border:none;
@@ -194,9 +108,6 @@ color:white;
 font-weight:700;
 }
 
-/* =========================
-OVERLAY
-========================= */
 .overlay{
 position:fixed;
 inset:0;
@@ -205,24 +116,20 @@ background:rgba(0,0,0,.7);
 align-items:center;
 justify-content:center;
 }
-
-.box{
-background:#020617;
-padding:20px;
-border-radius:16px;
-}
-
 </style>
 </head>
 
 <body>
 
+<!-- 🎧 AUDIO -->
+<audio id="bgm" src="assets/audio/touch-clouds.mp3" loop></audio>
+
 <div class="app">
 
 <div class="header">
-<button class="back" onclick="goBack()">←</button>
-<div>2048</div>
-<div></div>
+<button onclick="goBack()">←</button>
+<div id="level">Seviye 1</div>
+<button onclick="undo()">↩️</button>
 </div>
 
 <div class="container">
@@ -238,24 +145,65 @@ border-radius:16px;
 </div>
 
 <div class="overlay" id="over">
-<div class="box">
+<div>
 <h3>Oyun Bitti</h3>
 <p id="final"></p>
-<button class="btn" onclick="init()">Tekrar</button>
+<button onclick="init()">Tekrar</button>
 </div>
 </div>
 
 <script>
 
-let grid=[],score=0;
+let grid=[],score=0,level=1;
+let historyStack=[];
+
+/* AUDIO START (MOBILE FIX) */
+let audioStarted=false;
+function startAudio(){
+if(!audioStarted){
+let a=document.getElementById("bgm");
+a.volume=0.25;
+a.play().catch(()=>{});
+audioStarted=true;
+}
+}
+document.addEventListener("touchstart",startAudio,{once:true});
 
 /* INIT */
 function init(){
 grid=Array(4).fill().map(()=>Array(4).fill(0));
 score=0;
+level=1;
+historyStack=[];
 spawn();spawn();
 draw();
 document.getElementById("over").style.display="none";
+}
+
+/* SAVE STATE */
+function saveState(){
+historyStack.push({
+grid: JSON.parse(JSON.stringify(grid)),
+score: score
+});
+if(historyStack.length>20) historyStack.shift();
+}
+
+/* UNDO */
+function undo(){
+if(!historyStack.length) return;
+
+let prev = historyStack.pop();
+grid = prev.grid;
+score = prev.score;
+draw();
+}
+
+/* LEVEL */
+function updateLevel(){
+if(score>500 && level===1) level=2;
+if(score>1500 && level===2) level=3;
+document.getElementById("level").innerText="Seviye "+level;
 }
 
 /* SPAWN */
@@ -266,7 +214,14 @@ grid.forEach((r,i)=>r.forEach((c,j)=>{if(!c)empty.push([i,j])}));
 if(!empty.length){gameOver();return;}
 
 let [i,j]=empty[Math.floor(Math.random()*empty.length)];
+
+if(level===2){
+grid[i][j]=Math.random()<0.7?2:4;
+}else if(level===3){
+grid[i][j]=Math.random()<0.5?2:4;
+}else{
 grid[i][j]=Math.random()<0.9?2:4;
+}
 }
 
 /* DRAW */
@@ -274,20 +229,28 @@ function draw(){
 const g=document.getElementById("grid");
 g.innerHTML="";
 
-grid.forEach(r=>{
-r.forEach(c=>{
+grid.forEach((r,i)=>{
+r.forEach((c,j)=>{
 let d=document.createElement("div");
 d.className="tile "+(c?"t"+c:"");
 d.textContent=c||"";
+
+/* 🔥 ANİMASYON EFFECT */
+d.style.transform="scale(1.05)";
+setTimeout(()=>d.style.transform="scale(1)",100);
+
 g.appendChild(d);
 });
 });
 
 document.getElementById("score").innerText=score;
+updateLevel();
 }
 
 /* MOVE */
 function move(dir){
+
+saveState();
 
 let moved=false;
 
@@ -297,7 +260,11 @@ let arr=row.filter(v=>v);
 for(let i=0;i<arr.length-1;i++){
 if(arr[i]===arr[i+1]){
 arr[i]*=2;
-score+=arr[i];
+
+let gain = arr[i];
+if(level===3) gain*=1.2;
+
+score+=Math.floor(gain);
 arr[i+1]=0;
 }
 }
@@ -326,6 +293,7 @@ if(dir==="right"){rotate();rotate();}
 if(dir==="down")rotate();
 
 if(moved){
+navigator.vibrate?.(10);
 spawn();
 draw();
 }
@@ -337,35 +305,39 @@ document.getElementById("final").innerText="Skor: "+score;
 document.getElementById("over").style.display="flex";
 }
 
-/* INPUT */
+/* TOUCH */
+let sx=0,sy=0,locked=false;
+
+document.addEventListener("touchstart",e=>{
+sx=e.touches[0].clientX;
+sy=e.touches[0].clientY;
+},{passive:true});
+
+document.addEventListener("touchmove",e=>{
+if(locked) return;
+
+let dx=e.touches[0].clientX-sx;
+let dy=e.touches[0].clientY-sy;
+
+let t=30;
+
+if(Math.abs(dx)>Math.abs(dy)){
+if(dx>t){move("right");locked=true;}
+if(dx<-t){move("left");locked=true;}
+}else{
+if(dy>t){move("down");locked=true;}
+if(dy<-t){move("up");locked=true;}
+}
+},{passive:true});
+
+document.addEventListener("touchend",()=>locked=false);
+
+/* KEYBOARD */
 document.addEventListener("keydown",e=>{
 if(e.key==="ArrowUp")move("up");
 if(e.key==="ArrowDown")move("down");
 if(e.key==="ArrowLeft")move("left");
 if(e.key==="ArrowRight")move("right");
-});
-
-/* TOUCH (OPTİMUM) */
-let sx=0,sy=0;
-
-document.addEventListener("touchstart",e=>{
-sx=e.touches[0].clientX;
-sy=e.touches[0].clientY;
-});
-
-document.addEventListener("touchend",e=>{
-let dx=e.changedTouches[0].clientX-sx;
-let dy=e.changedTouches[0].clientY-sy;
-
-let t=40;
-
-if(Math.abs(dx)>Math.abs(dy)){
-if(dx>t)move("right");
-if(dx<-t)move("left");
-}else{
-if(dy>t)move("down");
-if(dy<-t)move("up");
-}
 });
 
 /* BACK */
