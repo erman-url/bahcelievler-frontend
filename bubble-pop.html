@@ -3,9 +3,16 @@
 <head>
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Bubble Pop Pro | Bahçelievler Forum</title>
+<title>Bubble Pop Pro+ | Mobil Oyun</title>
+
+<meta name="description" content="Gerçekçi balon efektleri ve akıcı oynanış ile Bubble Pop oyununu mobilde ücretsiz oyna.">
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="Bubble Pop Pro+">
+<meta property="og:description" content="Gerçekçi balon patlatma oyunu">
+<meta property="og:type" content="website">
 
 <meta name="theme-color" content="#1abc9c">
 
@@ -16,18 +23,16 @@ html,body{
 width:100%;
 height:100%;
 overflow:hidden;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+font-family:-apple-system,system-ui;
 background:#1abc9c;
 }
 
-/* CANVAS */
 canvas{
 position:absolute;
 top:0;
 left:0;
 }
 
-/* UI */
 #ui{
 position:fixed;
 top:0;
@@ -39,12 +44,12 @@ justify-content:space-between;
 align-items:center;
 padding:0 15px;
 color:#fff;
-background:linear-gradient(to bottom,rgba(0,0,0,0.4),transparent);
+background:linear-gradient(to bottom,rgba(0,0,0,0.5),transparent);
 z-index:10;
-font-weight:600;
+font-weight:700;
+backdrop-filter:blur(10px);
 }
 
-/* OVERLAY */
 .overlay{
 position:fixed;
 inset:0;
@@ -56,16 +61,14 @@ background:linear-gradient(#1abc9c,#16a085);
 z-index:9999;
 }
 
-/* TITLE */
 .title{
 font-size:48px;
 font-weight:900;
 color:#fff;
-text-shadow:0 5px 20px rgba(0,0,0,.3);
+text-shadow:0 10px 30px rgba(0,0,0,.4);
 margin-bottom:10px;
 }
 
-/* BUTTON */
 .btn{
 padding:14px 30px;
 border:none;
@@ -73,7 +76,6 @@ border-radius:30px;
 background:#fff;
 color:#16a085;
 font-weight:bold;
-cursor:pointer;
 }
 
 #gameOver{display:none;}
@@ -104,24 +106,19 @@ cursor:pointer;
 
 <script>
 
-/* =========================
-AUDIO
-========================= */
+/* AUDIO */
 const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-
-function beep(freq){
+function popSound(freq){
 const o=ctxAudio.createOscillator();
 const g=ctxAudio.createGain();
 o.connect(g); g.connect(ctxAudio.destination);
 o.frequency.value=freq;
-g.gain.value=0.1;
+g.gain.value=0.08;
 o.start();
-o.stop(ctxAudio.currentTime+0.1);
+o.stop(ctxAudio.currentTime+0.08);
 }
 
-/* =========================
-CANVAS
-========================= */
+/* CANVAS */
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
@@ -133,71 +130,87 @@ H=canvas.height=innerHeight;
 resize();
 addEventListener("resize",resize);
 
-/* =========================
-STATE
-========================= */
-let balloons=[];
-let score=0;
-let lives=5;
-let time=120;
-let running=false;
-let speed=1;
-let combo=0;
+/* STATE */
+let balloons=[],particles=[];
+let score=0,lives=5,time=120;
+let running=false,speed=1,combo=0;
 
-/* =========================
-BALLOON
-========================= */
+/* BALLOON (PRO) */
 class Balloon{
-constructor(x,y,r,s,type=1){
+constructor(x,y,r,s){
 this.x=x; this.y=y;
 this.r=r; this.s=s;
-this.type=type;
+this.offset=Math.random()*100;
 }
 draw(){
+
+let grad=ctx.createRadialGradient(
+this.x-this.r/3,
+this.y-this.r/3,
+this.r*0.2,
+this.x,this.y,this.r
+);
+
+grad.addColorStop(0,"rgba(255,255,255,0.9)");
+grad.addColorStop(0.3,"#74b9ff");
+grad.addColorStop(1,"#0984e3");
+
+ctx.fillStyle=grad;
+
 ctx.beginPath();
 ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-ctx.fillStyle=this.type==1?"#fff":"#ff7675";
+ctx.fill();
+
+/* highlight */
+ctx.beginPath();
+ctx.arc(this.x-this.r/3,this.y-this.r/3,this.r/5,0,Math.PI*2);
+ctx.fillStyle="rgba(255,255,255,0.6)";
 ctx.fill();
 }
+
 update(){
 this.y+=this.s*speed;
+this.x+=Math.sin((this.y+this.offset)*0.02)*0.5; // sway
 }
 }
 
-/* =========================
-SPAWN
-========================= */
+/* PARTICLE */
+function explode(x,y){
+for(let i=0;i<10;i++){
+particles.push({
+x,y,
+vx:(Math.random()-0.5)*4,
+vy:(Math.random()-0.5)*4,
+life:20
+});
+}
+}
+
+/* SPAWN */
 function spawn(){
-if(balloons.length>4) return;
-
-let r=25;
+if(balloons.length>6) return;
+let r=20+Math.random()*10;
 let x=Math.random()*(W-2*r)+r;
-let s=1.5+Math.random();
-
-balloons.push(new Balloon(x,-r,r,s,1));
+let s=1.2+Math.random()*1.2;
+balloons.push(new Balloon(x,-r,r,s));
 }
 
-/* =========================
-HIT
-========================= */
+/* HIT */
 function hit(x,y){
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
 let dx=x-b.x, dy=y-b.y;
 
-if(Math.sqrt(dx*dx+dy*dy)<b.r){
+if(dx*dx+dy*dy<b.r*b.r){
 
-beep(300+combo*50);
+popSound(300+combo*30);
 navigator.vibrate?.(10);
 
-if(b.type==1){
-balloons.push(new Balloon(b.x,b.y,15,2,2));
-score+=2;
-}else{
-score+=1;
-}
+explode(b.x,b.y);
 
+score+=1+Math.floor(combo*0.2);
 combo++;
+
 balloons.splice(i,1);
 updateUI();
 return;
@@ -206,59 +219,44 @@ return;
 combo=0;
 }
 
-/* INPUT */
-canvas.addEventListener("touchstart",(e)=>{
-if(!running)return;
-let rect=canvas.getBoundingClientRect();
-hit(e.touches[0].clientX-rect.left,e.touches[0].clientY-rect.top);
-});
-
-canvas.addEventListener("mousedown",(e)=>{
-if(!running)return;
-let rect=canvas.getBoundingClientRect();
-hit(e.clientX-rect.left,e.clientY-rect.top);
-});
-
-/* =========================
-LOOP (PRO BALANCE)
-========================= */
+/* LOOP */
 function loop(){
 if(!running)return;
 
 ctx.clearRect(0,0,W,H);
 
+/* balloons */
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
 b.update();
 b.draw();
 
-if(b.y > H){
-
-  balloons.splice(i,1);
-
-  // SADECE küçük balon ceza
-  if(b.type === 2){
-    lives--;
-
-    // haptic feedback
-    navigator.vibrate?.(40);
-  }
-
-  updateUI();
-
-  if(lives <= 0){
-    endGame("Can bitti");
-  }
+if(b.y>H){
+balloons.splice(i,1);
+lives--;
+navigator.vibrate?.(30);
+updateUI();
+if(lives<=0) endGame("Can bitti");
 }
 }
+
+/* particles */
+particles.forEach((p,i)=>{
+p.x+=p.vx;
+p.y+=p.vy;
+p.life--;
+
+ctx.fillStyle="white";
+ctx.fillRect(p.x,p.y,2,2);
+
+if(p.life<=0) particles.splice(i,1);
+});
 
 spawn();
 requestAnimationFrame(loop);
 }
 
-/* =========================
-TIMER
-========================= */
+/* TIMER */
 let tInt;
 function startTimer(){
 clearInterval(tInt);
@@ -266,44 +264,39 @@ tInt=setInterval(()=>{
 time--;
 updateUI();
 
-if(time==60) speed=1.2;
-if(time==30) speed=1.5;
+if(time<60) speed=1.2;
+if(time<30) speed=1.5;
 
 if(time<=0) endGame("Süre doldu");
 },1000);
 }
 
-/* =========================
-UI
-========================= */
+/* UI */
+const scoreEl=document.getElementById("score");
+const livesEl=document.getElementById("lives");
+const timeEl=document.getElementById("time");
+
 function updateUI(){
 scoreEl.innerText=score;
 livesEl.innerText="❤️".repeat(lives);
 timeEl.innerText=time+"s";
 }
 
-const scoreEl=document.getElementById("score");
-const livesEl=document.getElementById("lives");
-const timeEl=document.getElementById("time");
-
-/* =========================
-START
-========================= */
+/* START */
 function startGame(){
 document.getElementById("startScreen").style.display="none";
 document.getElementById("gameOver").style.display="none";
 
-score=0; lives=5; time=120;
-balloons=[]; running=true; speed=1; combo=0;
+score=0;lives=5;time=120;
+balloons=[];particles=[];
+running=true;speed=1;combo=0;
 
 updateUI();
 startTimer();
 loop();
 }
 
-/* =========================
-END
-========================= */
+/* END */
 function endGame(txt){
 running=false;
 clearInterval(tInt);
@@ -313,9 +306,22 @@ document.getElementById("endTitle").innerText=txt;
 document.getElementById("finalScore").innerText="Skor: "+score;
 }
 
+/* INPUT */
+canvas.addEventListener("touchstart",e=>{
+if(!running)return;
+let r=canvas.getBoundingClientRect();
+hit(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top);
+},{passive:true});
+
+canvas.addEventListener("mousedown",e=>{
+if(!running)return;
+let r=canvas.getBoundingClientRect();
+hit(e.clientX-r.left,e.clientY-r.top);
+});
+
 /* NAV */
 function goBack(){
-location.href="online-oyunlar.html";
+history.back();
 }
 
 </script>
