@@ -15,7 +15,6 @@ color:white;
 overflow:hidden;
 }
 
-/* HUD */
 .hud{
 position:fixed;
 top:0;
@@ -30,7 +29,6 @@ z-index:10;
 font-weight:700;
 }
 
-/* CONTROLS */
 .controls{
 position:fixed;
 bottom:0;
@@ -55,7 +53,6 @@ font-weight:700;
 box-shadow:0 8px 24px rgba(0,0,0,.5);
 }
 
-/* CANVAS */
 canvas{
 display:block;
 margin:auto;
@@ -64,7 +61,6 @@ height:100vh;
 background:linear-gradient(#38bdf8,#e0f2fe);
 }
 
-/* OVERLAY */
 .overlay{
 position:fixed;
 inset:0;
@@ -112,7 +108,7 @@ box-shadow:0 30px 80px rgba(0,0,0,.7);
 const c = document.getElementById("game");
 const ctx = c.getContext("2d");
 
-/* RESPONSIVE CANVAS */
+/* RESPONSIVE */
 function resize(){
 c.width = window.innerWidth;
 c.height = window.innerHeight;
@@ -123,6 +119,12 @@ resize();
 /* STATE */
 let bird, pipes, score, lives, speed, gap, startTime, gameOver;
 let paused=false, animationId;
+
+/* WEATHER */
+let weather="clear";
+let weatherTimer=0;
+let weatherDuration=0;
+let particles=[];
 
 /* INIT */
 function init(){
@@ -139,12 +141,26 @@ startTime=Date.now();
 gameOver=false;
 paused=false;
 
+particles=[];
+setWeather();
+
 document.getElementById("over").style.display="none";
 
 spawn();
-
 cancelAnimationFrame(animationId);
 loop();
+}
+
+/* WEATHER SYSTEM */
+function setWeather(){
+
+const types=["clear","rain","snow"];
+weather = types[Math.floor(Math.random()*types.length)];
+
+weatherDuration = 5000 + Math.random()*7000;
+weatherTimer = Date.now();
+
+particles=[];
 }
 
 /* SPAWN */
@@ -156,7 +172,7 @@ passed:false
 });
 }
 
-/* 🐦 PRO BIRD */
+/* BIRD */
 function drawBird(){
 
 bird.wing += 0.2;
@@ -165,25 +181,21 @@ ctx.save();
 ctx.translate(80,bird.y);
 ctx.rotate(bird.rot);
 
-/* body */
 ctx.fillStyle="#facc15";
 ctx.beginPath();
 ctx.ellipse(0,0,14,10,0,0,Math.PI*2);
 ctx.fill();
 
-/* wing (animated) */
 ctx.fillStyle="#f59e0b";
 ctx.beginPath();
 ctx.ellipse(-4, Math.sin(bird.wing)*4, 8,4,0,0,Math.PI*2);
 ctx.fill();
 
-/* eye */
 ctx.fillStyle="#000";
 ctx.beginPath();
 ctx.arc(5,-2,2,0,Math.PI*2);
 ctx.fill();
 
-/* beak */
 ctx.fillStyle="#fb923c";
 ctx.beginPath();
 ctx.moveTo(12,0);
@@ -194,12 +206,52 @@ ctx.fill();
 ctx.restore();
 }
 
+/* WEATHER DRAW */
+function drawWeather(){
+
+if(weather==="rain"){
+ctx.strokeStyle="rgba(255,255,255,0.6)";
+particles.push({
+x:Math.random()*c.width,
+y:0,
+vy:6+Math.random()*4
+});
+}
+
+if(weather==="snow"){
+ctx.fillStyle="rgba(255,255,255,0.8)";
+particles.push({
+x:Math.random()*c.width,
+y:0,
+vy:1+Math.random()*2
+});
+}
+
+particles.forEach((p,i)=>{
+
+p.y += p.vy;
+
+if(weather==="rain"){
+ctx.beginPath();
+ctx.moveTo(p.x,p.y);
+ctx.lineTo(p.x,p.y+10);
+ctx.stroke();
+}else{
+ctx.beginPath();
+ctx.arc(p.x,p.y,2,0,Math.PI*2);
+ctx.fill();
+}
+
+if(p.y > c.height) particles.splice(i,1);
+
+});
+}
+
 /* DRAW */
 function draw(){
 
 ctx.clearRect(0,0,c.width,c.height);
 
-/* pipes */
 ctx.fillStyle="#16a34a";
 pipes.forEach(p=>{
 ctx.fillRect(p.x,0,50,p.top);
@@ -207,6 +259,7 @@ ctx.fillRect(p.x,p.top+gap,50,c.height);
 });
 
 drawBird();
+drawWeather();
 }
 
 /* UPDATE */
@@ -217,27 +270,35 @@ bird.y += bird.vy;
 
 bird.rot = Math.min(Math.max(bird.vy*0.05,-0.5),0.8);
 
-/* dynamic difficulty */
+/* SMOOTH DIFFICULTY */
 let elapsed = (Date.now()-startTime)/1000;
-speed = 1.8 + elapsed*0.04;
+
+if(elapsed < 30){
+speed = 1.8;
+}else{
+let t = elapsed - 30;
+speed = 1.8 + (1 - Math.exp(-t/20)) * 2; // smooth curve
+}
+
+/* WEATHER CHANGE */
+if(Date.now() - weatherTimer > weatherDuration){
+setWeather();
+}
 
 pipes.forEach((p,i)=>{
 
 p.x -= speed;
 
-/* collision */
 if(p.x < 120 && p.x > 60 &&
 (bird.y < p.top || bird.y > p.top+gap)){
 hit();
 }
 
-/* score */
 if(!p.passed && p.x<60){
 p.passed=true;
 score++;
 }
 
-/* recycle */
 if(p.x < -60){
 pipes.splice(i,1);
 spawn();
