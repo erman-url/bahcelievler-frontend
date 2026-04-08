@@ -5,149 +5,81 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Puzzle Pro</title>
+<title>Puzzle Pro Infinite</title>
 
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- SEO -->
-<meta name="description" content="Mobil uyumlu puzzle oyunu. Akıcı dokunmatik deneyim ve modern oyun hissi.">
-<meta name="keywords" content="puzzle, oyun, mobil oyun, web app puzzle">
+<meta name="description" content="Sonsuz seviyeli mobil puzzle oyunu.">
+<meta name="keywords" content="puzzle, mobil oyun, infinite game">
 
 <style>
 
-/* =========================
-GLOBAL RESET + MOBILE FIX
-========================= */
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+/* RESET */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
 html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#0f172a;
-  font-family:system-ui;
-
-  /* SCROLL FIX */
-  touch-action:none;
-  overscroll-behavior:none;
+  margin:0;height:100%;overflow:hidden;
+  background:#0f172a;font-family:system-ui;
+  touch-action:none;overscroll-behavior:none;
 }
 
-/* =========================
-APP LAYOUT
-========================= */
-.game{
-  position:fixed;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-}
+/* LAYOUT */
+.game{position:fixed;inset:0;display:flex;flex-direction:column;}
 
-/* =========================
-TOP BAR
-========================= */
+/* TOPBAR */
 .topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex;justify-content:space-between;align-items:center;
   padding:env(safe-area-inset-top) 16px 10px;
   background:rgba(15,23,42,0.95);
-  color:#fff;
-  font-weight:600;
-  backdrop-filter:blur(12px);
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  color:#fff;font-weight:600;
 }
 
 .back-btn{
   background:rgba(255,255,255,0.1);
-  border:none;
-  color:#fff;
-  padding:8px 14px;
-  border-radius:10px;
-  font-size:14px;
+  border:none;color:#fff;padding:8px 12px;border-radius:10px;
 }
 
-/* =========================
-GRID
-========================= */
+/* GRID */
 .grid{
-  flex:1;
-  margin:10px;
-  padding:10px;
+  flex:1;margin:10px;padding:10px;
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:4px;
-  background:#1e293b;
-  border-radius:20px;
-
-  /* PERFORMANCE */
-  will-change:transform;
+  background:#1e293b;border-radius:20px;
 }
 
-/* CELL */
 .cell{
   aspect-ratio:1;
   background:#334155;
   border-radius:10px;
   position:relative;
-  overflow:hidden;
-
-  transform:translateZ(0);
 }
 
-/* PATH */
 .cell.filled::before{
   content:"";
-  position:absolute;
-  inset:0;
+  position:absolute;inset:0;
   background:linear-gradient(270deg,#2b5ed7,#7a3fd1,#2b5ed7);
   background-size:300% 300%;
   animation:flow 2s linear infinite;
 }
 
-/* NODE */
 .node{
-  position:absolute;
-  top:50%;
-  left:50%;
+  position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:70%;
-  height:70%;
-  background:#000;
-  color:#fff;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  z-index:2;
+  width:70%;height:70%;
+  background:#000;color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
 }
 
-/* CONTROLS */
-.controls{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
-}
-
+/* BUTTON */
+.controls{padding:10px;}
 button{
-  flex:1;
-  padding:14px;
-  border:none;
-  border-radius:20px;
-  background:#1d4ed8;
-  color:#fff;
-  font-weight:600;
+  width:100%;padding:14px;border:none;
+  border-radius:20px;background:#1d4ed8;color:#fff;
 }
 
-/* ANIMATION */
+/* ANIM */
 @keyframes flow{
   0%{background-position:0%}
   100%{background-position:100%}
@@ -160,55 +92,70 @@ button{
 
 <div class="game">
 
-  <div class="topbar">
-    <button class="back-btn" onclick="goBack()">← Geri</button>
-    <div>Puzzle Pro</div>
-    <div></div>
-  </div>
+<div class="topbar">
+  <button class="back-btn" onclick="goBack()">← Geri</button>
+  <div>Puzzle Infinite</div>
+  <div></div>
+</div>
 
-  <div id="grid" class="grid"></div>
+<div id="grid" class="grid"></div>
 
-  <div class="controls">
-    <button onclick="resetGame()">Sıfırla</button>
-  </div>
+<div class="controls">
+  <button onclick="newLevel()">Yeni Level</button>
+</div>
 
 </div>
 
 <script>
 
-/* =========================
-STATE
-========================= */
-
+/* STATE */
 const size = 7;
 const grid = document.getElementById("grid");
 
-let path = [];
-let isDrawing = false;
-let currentNumber = 1;
+let nodes = {};
+let path=[];
+let isDrawing=false;
+let currentNumber=1;
 
-/* RAF THROTTLE */
-let rafPending = false;
-let lastEvent = null;
-
-/* NODE MAP */
-const nodes = {
-  1:[0,0],
-  2:[6,6],
-  3:[1,5],
-  4:[1,1],
-  5:[2,3],
-  6:[3,2],
-  7:[5,1],
-  8:[5,4],
-  9:[3,4],
-  10:[4,3]
-};
+let rafPending=false;
+let lastEvent=null;
 
 /* =========================
-INIT
+LEVEL GENERATOR
 ========================= */
 
+function generateLevel(){
+
+  nodes={};
+
+  let x=Math.floor(Math.random()*size);
+  let y=Math.floor(Math.random()*size);
+
+  let steps=10 + Math.floor(Math.random()*10);
+
+  nodes[1]=[y,x];
+
+  for(let i=2;i<=steps;i++){
+
+    let dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+    let valid=dirs.filter(d=>{
+      let nx=x+d[0], ny=y+d[1];
+      return nx>=0 && nx<size && ny>=0 && ny<size &&
+        !Object.values(nodes).some(([yy,xx])=>yy===ny && xx===nx);
+    });
+
+    if(valid.length===0) break;
+
+    let [dx,dy]=valid[Math.floor(Math.random()*valid.length)];
+
+    x+=dx; y+=dy;
+
+    nodes[i]=[y,x];
+  }
+
+}
+
+/* INIT */
 function init(){
 
   grid.innerHTML="";
@@ -238,15 +185,13 @@ function init(){
   }
 }
 
-init();
-
 /* =========================
-POINTER SYSTEM (PRO FIX)
+POINTER SYSTEM
 ========================= */
 
 grid.addEventListener("pointerdown",start,{passive:false});
-grid.addEventListener("pointermove",onMove,{passive:false});
-document.addEventListener("pointerup",end);
+grid.addEventListener("pointermove",move,{passive:false});
+document.addEventListener("pointerup",()=>isDrawing=false);
 
 function start(e){
 
@@ -266,30 +211,26 @@ function start(e){
   path=[];
   currentNumber=1;
 
-  navigator.vibrate?.(10);
-
   fill(cell,x,y);
 }
 
-function onMove(e){
+function move(e){
 
   if(!isDrawing) return;
 
-  lastEvent = e;
+  lastEvent=e;
 
   if(!rafPending){
-    rafPending = true;
+    rafPending=true;
     requestAnimationFrame(processMove);
   }
 }
 
 function processMove(){
 
-  rafPending = false;
+  rafPending=false;
 
-  if(!lastEvent) return;
-
-  const e = lastEvent;
+  const e=lastEvent;
 
   const el=document.elementFromPoint(e.clientX,e.clientY);
   const cell=el?.closest(".cell");
@@ -311,7 +252,6 @@ function processMove(){
     let [ny,nx]=nodes[next];
     if(ny===y && nx===x){
       currentNumber++;
-      navigator.vibrate?.(15);
     }
   }
 
@@ -325,22 +265,26 @@ function processMove(){
   fill(cell,x,y);
 
   if(currentNumber === Object.keys(nodes).length){
-    navigator.vibrate?.([30,50,30]);
-    setTimeout(()=>alert("🎉 Tebrikler!"),200);
+    setTimeout(()=>{
+      alert("🎉 Level Tamamlandı");
+      newLevel();
+    },200);
   }
 }
 
-function end(){
-  isDrawing=false;
-}
-
-/* =========================
-FILL
-========================= */
-
+/* FILL */
 function fill(cell,x,y){
   cell.classList.add("filled");
   path.push({x,y});
+}
+
+/* =========================
+LEVEL CONTROL
+========================= */
+
+function newLevel(){
+  generateLevel();
+  init();
 }
 
 /* =========================
@@ -348,20 +292,25 @@ RESET
 ========================= */
 
 function resetGame(){
-  document.querySelectorAll(".cell").forEach(c=>{
-    c.classList.remove("filled");
-  });
   path=[];
   currentNumber=1;
+  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("filled"));
 }
 
 /* =========================
-NAV
+BACK FIX
 ========================= */
 
 function goBack(){
-  window.history.back();
+  if(history.length > 1){
+    history.back();
+  }else{
+    location.href="/";
+  }
 }
+
+/* START */
+newLevel();
 
 </script>
 
