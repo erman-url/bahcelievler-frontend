@@ -771,9 +771,10 @@ async function loadSemtChart(){
       throw new Error("API error");
     }
 
-    const data = await res.json();
+   const json = await res.json();
+const data = json.data || [];
 
-    if(!Array.isArray(data) || data.length === 0){
+if(!Array.isArray(data) || data.length === 0){
       console.warn("grafik veri yok");
       return;
     }
