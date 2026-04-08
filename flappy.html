@@ -120,14 +120,18 @@ resize();
 let bird, pipes, score, lives, speed, gap, startTime, gameOver;
 let paused=false, animationId;
 
-/* WEATHER */
+/* WEATHER + PHYSICS */
 let weather="clear";
 let weatherTimer=0;
 let weatherDuration=0;
 let particles=[];
 
+let gravity = 0.45;
+let flapPower = -7;
+
 /* INIT */
 function init(){
+
 bird = { y:c.height/2, vy:0, rot:0, wing:0 };
 pipes = [];
 
@@ -142,7 +146,7 @@ gameOver=false;
 paused=false;
 
 particles=[];
-setWeather();
+setWeather(true);
 
 document.getElementById("over").style.display="none";
 
@@ -151,8 +155,8 @@ cancelAnimationFrame(animationId);
 loop();
 }
 
-/* WEATHER SYSTEM */
-function setWeather(){
+/* WEATHER SYSTEM + PHYSICS */
+function setWeather(initial=false){
 
 const types=["clear","rain","snow"];
 weather = types[Math.floor(Math.random()*types.length)];
@@ -161,6 +165,26 @@ weatherDuration = 5000 + Math.random()*7000;
 weatherTimer = Date.now();
 
 particles=[];
+
+/* PHYSICS APPLY */
+if(weather==="rain"){
+gravity = 0.65;     // ağır
+flapPower = -6;     // zayıf zıplama
+}
+else if(weather==="snow"){
+gravity = 0.25;     // hafif
+flapPower = -7.5;   // daha floaty
+}
+else{
+gravity = 0.45;
+flapPower = -7;
+}
+
+/* soft geçiş hissi */
+if(!initial){
+navigator.vibrate?.(30);
+}
+
 }
 
 /* SPAWN */
@@ -214,12 +238,12 @@ ctx.strokeStyle="rgba(255,255,255,0.6)";
 particles.push({
 x:Math.random()*c.width,
 y:0,
-vy:6+Math.random()*4
+vy:8+Math.random()*4
 });
 }
 
 if(weather==="snow"){
-ctx.fillStyle="rgba(255,255,255,0.8)";
+ctx.fillStyle="rgba(255,255,255,0.9)";
 particles.push({
 x:Math.random()*c.width,
 y:0,
@@ -234,7 +258,7 @@ p.y += p.vy;
 if(weather==="rain"){
 ctx.beginPath();
 ctx.moveTo(p.x,p.y);
-ctx.lineTo(p.x,p.y+10);
+ctx.lineTo(p.x,p.y+12);
 ctx.stroke();
 }else{
 ctx.beginPath();
@@ -265,19 +289,19 @@ drawWeather();
 /* UPDATE */
 function update(){
 
-bird.vy += 0.45;
+bird.vy += gravity;
 bird.y += bird.vy;
 
 bird.rot = Math.min(Math.max(bird.vy*0.05,-0.5),0.8);
 
-/* SMOOTH DIFFICULTY */
+/* DIFFICULTY */
 let elapsed = (Date.now()-startTime)/1000;
 
 if(elapsed < 30){
 speed = 1.8;
 }else{
 let t = elapsed - 30;
-speed = 1.8 + (1 - Math.exp(-t/20)) * 2; // smooth curve
+speed = 1.8 + (1 - Math.exp(-t/20)) * 2;
 }
 
 /* WEATHER CHANGE */
@@ -363,10 +387,10 @@ let now=Date.now();
 if(now-lastFlap<110) return;
 lastFlap=now;
 
-bird.vy=-7;
+bird.vy=flapPower;
 
 if(bird.y<80){
-bird.vy=-5;
+bird.vy=flapPower*0.7;
 }
 }
 
