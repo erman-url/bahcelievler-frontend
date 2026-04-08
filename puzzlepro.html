@@ -11,11 +11,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+<!-- SEO -->
+<meta name="description" content="Mobil uyumlu puzzle oyunu. Akıcı dokunmatik deneyim ve modern oyun hissi.">
+<meta name="keywords" content="puzzle, oyun, mobil oyun, web app puzzle">
+
 <style>
 
 /* =========================
-GLOBAL RESET
+GLOBAL RESET + MOBILE FIX
 ========================= */
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
 html,body{
   margin:0;
   padding:0;
@@ -24,6 +33,10 @@ html,body{
   overflow:hidden;
   background:#0f172a;
   font-family:system-ui;
+
+  /* SCROLL FIX */
+  touch-action:none;
+  overscroll-behavior:none;
 }
 
 /* =========================
@@ -43,11 +56,11 @@ TOP BAR
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:14px 16px;
+  padding:env(safe-area-inset-top) 16px 10px;
   background:rgba(15,23,42,0.95);
   color:#fff;
   font-weight:600;
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(12px);
   box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
 
@@ -69,18 +82,23 @@ GRID
   padding:10px;
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:3px;
+  gap:4px;
   background:#1e293b;
   border-radius:20px;
+
+  /* PERFORMANCE */
+  will-change:transform;
 }
 
 /* CELL */
 .cell{
   aspect-ratio:1;
   background:#334155;
-  border-radius:8px;
+  border-radius:10px;
   position:relative;
   overflow:hidden;
+
+  transform:translateZ(0);
 }
 
 /* PATH */
@@ -116,6 +134,7 @@ GRID
   display:flex;
   gap:10px;
   padding:10px;
+  padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
 }
 
 button{
@@ -168,18 +187,22 @@ let path = [];
 let isDrawing = false;
 let currentNumber = 1;
 
+/* RAF THROTTLE */
+let rafPending = false;
+let lastEvent = null;
+
 /* NODE MAP */
 const nodes = {
   1:[0,0],
   2:[6,6],
   3:[1,5],
   4:[1,1],
-  5:[2,3],   
+  5:[2,3],
   6:[3,2],
   7:[5,1],
   8:[5,4],
   9:[3,4],
-  10:[4,3]   
+  10:[4,3]
 };
 
 /* =========================
@@ -218,14 +241,16 @@ function init(){
 init();
 
 /* =========================
-TOUCH SYSTEM
+POINTER SYSTEM (PRO FIX)
 ========================= */
 
-grid.addEventListener("pointerdown",start);
-grid.addEventListener("pointermove",move);
-document.addEventListener("pointerup",()=>isDrawing=false);
+grid.addEventListener("pointerdown",start,{passive:false});
+grid.addEventListener("pointermove",onMove,{passive:false});
+document.addEventListener("pointerup",end);
 
 function start(e){
+
+  e.preventDefault();
 
   const cell=e.target.closest(".cell");
   if(!cell) return;
@@ -235,18 +260,36 @@ function start(e){
 
   if(nodes[1][0]!==y || nodes[1][1]!==x) return;
 
-  navigator.vibrate?.(10);
+  grid.setPointerCapture(e.pointerId);
 
   isDrawing=true;
   path=[];
   currentNumber=1;
 
+  navigator.vibrate?.(10);
+
   fill(cell,x,y);
 }
 
-function move(e){
+function onMove(e){
 
   if(!isDrawing) return;
+
+  lastEvent = e;
+
+  if(!rafPending){
+    rafPending = true;
+    requestAnimationFrame(processMove);
+  }
+}
+
+function processMove(){
+
+  rafPending = false;
+
+  if(!lastEvent) return;
+
+  const e = lastEvent;
 
   const el=document.elementFromPoint(e.clientX,e.clientY);
   const cell=el?.closest(".cell");
@@ -281,10 +324,14 @@ function move(e){
 
   fill(cell,x,y);
 
- if(currentNumber === Object.keys(nodes).length){
-  navigator.vibrate?.([30,50,30]);
-  setTimeout(()=>alert("🎉 Tebrikler!"),200);
+  if(currentNumber === Object.keys(nodes).length){
+    navigator.vibrate?.([30,50,30]);
+    setTimeout(()=>alert("🎉 Tebrikler!"),200);
+  }
 }
+
+function end(){
+  isDrawing=false;
 }
 
 /* =========================
