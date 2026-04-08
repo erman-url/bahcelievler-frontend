@@ -499,7 +499,6 @@ RADARA EKLE
 
 </div>
 </div>
-
 <script>
 window.runOCR = window.runOCR || function(){};
 window.getProductByBarcode = window.getProductByBarcode || function(){};
@@ -508,21 +507,29 @@ window.stopScanner = window.stopScanner || function(){};
 </script>
 
 <script src="assets/js/priceList.js"></script>
+
 <script>
 
 /* ===============================
-GLOBAL ERROR CATCH (PRO)
+GLOBAL ERROR CATCH (PRO+)
 =============================== */
-window.addEventListener("error", e => {
-  console.log("GLOBAL ERROR:", e.message);
-});
+window.addEventListener("error", e => console.log("GLOBAL ERROR:", e.message));
+window.addEventListener("unhandledrejection", e => console.log("PROMISE ERROR:", e.reason));
+
+/* ===============================
+GLOBAL STATE
+=============================== */
+window.APP = {
+  chart: null,
+  loading: false,
+  lastFetch: 0
+};
 
 /* ===============================
 INIT
 =============================== */
 document.addEventListener("DOMContentLoaded", () => {
 
-  // DEBUG GUARD
   if(!document.getElementById("globalHeader")){
     console.error("globalHeader eksik");
   }
@@ -531,26 +538,41 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("sideMenu eksik");
   }
 
-  // MODAL CLICK SAFE
+  // MODAL SAFE CLOSE
   const modalEl = document.getElementById("priceModal");
   if(modalEl){
     modalEl.addEventListener("click", function(e){
       if(e.target === this){
         closeModal();
       }
-    });
+    }, { passive:true });
   }
 
-  // DATA LOAD
-  if (typeof loadLastPrices === "function") {
-    loadLastPrices();
-  } else {
-    console.error("loadLastPrices bulunamadı");
-  }
+  // INPUT SANITIZE
+  bindInputs();
 
+  // DATA LOAD SAFE
+  safeLoadPrices();
   loadSemtChart();
 
 });
+
+/* ===============================
+INPUT FIX
+=============================== */
+function bindInputs(){
+
+  const price = document.getElementById("priceInput");
+
+  if(price){
+    price.addEventListener("input", ()=>{
+      price.value = price.value
+        .replace(",",".")
+        .replace(/[^0-9.]/g,"");
+    });
+  }
+
+}
 
 /* ===============================
 MODAL
@@ -561,6 +583,11 @@ function openModal(){
 
   modal.style.display = "flex";
   document.body.classList.add("modal-open");
+
+  setTimeout(()=>{
+    const el = document.getElementById("priceInput");
+    if(el) el.focus();
+  },200);
 }
 
 function closeModal(){
@@ -572,34 +599,128 @@ function closeModal(){
 }
 
 /* ===============================
-REFRESH
+SAFE LOAD
 =============================== */
-window.refreshPrices = function(){
-
+function safeLoadPrices(){
   if (typeof loadLastPrices === "function") {
-    loadLastPrices();
+    try{
+      loadLastPrices();
+    }catch(e){
+      console.error("loadLastPrices crash:", e);
+    }
+  } else {
+    console.error("loadLastPrices bulunamadı");
   }
-
-  if (typeof loadSemtChart === "function") {
-    loadSemtChart();
-  }
-
 }
 
 /* ===============================
-LOAD CHART (FULL SAFE)
+SUBMIT (FULL FIX)
 =============================== */
-async function loadSemtChart(){
+window.submitPrice = async function(e){
+
+  e.preventDefault();
+
+  const barcode = document.getElementById("barcodeInput").value.trim();
+  const urun = document.getElementById("urunInput").value.trim();
+  const fiyat = parseFloat(document.getElementById("priceInput").value);
+  const market = document.getElementById("marketSelect").value;
+  const mahalle = document.getElementById("districtSelect").value;
+  const captcha = document.getElementById("captchaInput").value;
+
+  // VALIDATION
+  if(!barcode || barcode.length < 6){
+    alert("Geçerli barkod gir");
+    return;
+  }
+
+  if(!urun){
+    alert("Ürün adı gerekli");
+    return;
+  }
+
+  if(!fiyat || fiyat <= 0 || fiyat > 10000){
+    alert("Fiyat hatalı");
+    return;
+  }
+
+  if(captcha != 5){
+    alert("Doğrulama hatalı");
+    return;
+  }
+
+  const payload = {
+    barcode,
+    urun_adi: urun,
+    fiyat,
+    market,
+    mahalle
+  };
 
   try{
 
-    // Chart.js check
+    const res = await fetch("/api/fiyat-ekle", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      throw new Error("API fail");
+    }
+
+    if(navigator.vibrate) navigator.vibrate(40);
+
+    closeModal();
+    refreshPrices();
+
+  }catch(err){
+    console.error(err);
+    alert("Gönderim başarısız");
+  }
+
+};
+
+/* ===============================
+REFRESH (THROTTLE FIX)
+=============================== */
+window.refreshPrices = function(){
+
+  const now = Date.now();
+
+  if(now - APP.lastFetch < 3000){
+    console.warn("refresh throttled");
+    return;
+  }
+
+  APP.lastFetch = now;
+
+  safeLoadPrices();
+  loadSemtChart();
+}
+
+/* ===============================
+LOAD CHART (FULL SAFE + OPTIMIZED)
+=============================== */
+async function loadSemtChart(){
+
+  if(APP.loading) return;
+  APP.loading = true;
+
+  try{
+
     if(typeof Chart === "undefined"){
       console.error("Chart.js yüklenmemiş");
       return;
     }
 
-    const res = await fetch("/api/semt-endeks");
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 8000);
+
+    const res = await fetch("/api/semt-endeks", {
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
 
     if(!res.ok){
       throw new Error("API error");
@@ -620,37 +741,67 @@ async function loadSemtChart(){
 
     const ctx = canvas.getContext("2d");
 
-    // destroy old chart
-    if(window.priceChartInstance && typeof window.priceChartInstance.destroy === "function"){
-      window.priceChartInstance.destroy();
+    // MEMORY FIX
+    if(APP.chart){
+      try{ APP.chart.destroy(); }catch(e){}
+      APP.chart = null;
     }
 
-    window.priceChartInstance = new Chart(ctx, {
+    const labels = data.map(i => i.gun || "");
+    const values = data.map(i => Number(i.ortalama) || 0);
+
+    APP.chart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: data.map(i => i.gun || ""),
+        labels: labels,
         datasets: [{
-          data: data.map(i => i.ortalama || 0),
-          tension: 0.3
+          data: values,
+          tension: 0.35,
+          borderWidth: 2,
+          pointRadius: 2,
+          fill: true
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio:false,
+        animation:false,
         plugins:{
           legend:{ display:false }
         },
+        interaction:{
+          mode:"index",
+          intersect:false
+        },
         scales:{
-          x:{ display:true },
-          y:{ display:true }
+          x:{ ticks:{ maxTicksLimit:6 }},
+          y:{ beginAtZero:false }
         }
       }
     });
 
   }catch(e){
-    console.error("grafik hata:", e);
+
+    if(e.name === "AbortError"){
+      console.warn("API timeout");
+    }else{
+      console.error("grafik hata:", e);
+    }
+
+  }finally{
+    APP.loading = false;
   }
 
 }
+
+/* ===============================
+VISIBILITY REFRESH
+=============================== */
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "visible"){
+    refreshPrices();
+  }
+});
 
 </script>
 
