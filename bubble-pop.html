@@ -2,17 +2,12 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Bubble Pop Pro+ | Mobil Oyun</title>
+<title>Bubble Pop Pro+</title>
 
-<meta name="description" content="Gerçekçi balon efektleri ve akıcı oynanış ile Bubble Pop oyununu mobilde ücretsiz oyna.">
+<meta name="description" content="Gerçekçi balon patlatma oyunu. Havuz sistemi ile zorlu ve akıcı mobil deneyim.">
 <meta name="robots" content="index, follow">
-
-<meta property="og:title" content="Bubble Pop Pro+">
-<meta property="og:description" content="Gerçekçi balon patlatma oyunu">
-<meta property="og:type" content="website">
 
 <meta name="theme-color" content="#1abc9c">
 
@@ -27,27 +22,40 @@ font-family:-apple-system,system-ui;
 background:#1abc9c;
 }
 
-canvas{
-position:absolute;
-top:0;
-left:0;
-}
+canvas{position:absolute;top:0;left:0;}
 
 #ui{
 position:fixed;
 top:0;
 left:0;
 width:100%;
-height:60px;
+padding:10px;
+color:#fff;
+z-index:10;
+}
+
+/* 🔥 HAVUZ BAR */
+.pool{
+height:8px;
+background:rgba(255,255,255,0.2);
+border-radius:10px;
+overflow:hidden;
+margin-bottom:8px;
+}
+
+.poolFill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#00ff9d,#ff4757);
+transition:width .2s;
+}
+
+/* HUD */
+.row{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:0 15px;
-color:#fff;
-background:linear-gradient(to bottom,rgba(0,0,0,0.5),transparent);
-z-index:10;
 font-weight:700;
-backdrop-filter:blur(10px);
 }
 
 .overlay{
@@ -65,7 +73,6 @@ z-index:9999;
 font-size:48px;
 font-weight:900;
 color:#fff;
-text-shadow:0 10px 30px rgba(0,0,0,.4);
 margin-bottom:10px;
 }
 
@@ -85,10 +92,18 @@ font-weight:bold;
 <body>
 
 <div id="ui">
+
+<div class="pool">
+<div id="poolFill" class="poolFill"></div>
+</div>
+
+<div class="row">
 <div onclick="goBack()">←</div>
 <div id="score">0</div>
 <div id="lives">❤️❤️❤️❤️❤️</div>
 <div id="time">120s</div>
+</div>
+
 </div>
 
 <div id="startScreen" class="overlay">
@@ -135,7 +150,10 @@ let balloons=[],particles=[];
 let score=0,lives=5,time=120;
 let running=false,speed=1,combo=0;
 
-/* BALLOON (PRO) */
+/* 🔥 HAVUZ STATE */
+let pool=0; // 0-100
+
+/* BALLOON */
 class Balloon{
 constructor(x,y,r,s){
 this.x=x; this.y=y;
@@ -143,34 +161,21 @@ this.r=r; this.s=s;
 this.offset=Math.random()*100;
 }
 draw(){
-
 let grad=ctx.createRadialGradient(
-this.x-this.r/3,
-this.y-this.r/3,
-this.r*0.2,
+this.x-this.r/3,this.y-this.r/3,this.r*0.2,
 this.x,this.y,this.r
 );
-
-grad.addColorStop(0,"rgba(255,255,255,0.9)");
-grad.addColorStop(0.3,"#74b9ff");
-grad.addColorStop(1,"#0984e3");
+grad.addColorStop(0,"#fff");
+grad.addColorStop(1,"#3498db");
 
 ctx.fillStyle=grad;
-
 ctx.beginPath();
 ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
 ctx.fill();
-
-/* highlight */
-ctx.beginPath();
-ctx.arc(this.x-this.r/3,this.y-this.r/3,this.r/5,0,Math.PI*2);
-ctx.fillStyle="rgba(255,255,255,0.6)";
-ctx.fill();
 }
-
 update(){
 this.y+=this.s*speed;
-this.x+=Math.sin((this.y+this.offset)*0.02)*0.5; // sway
+this.x+=Math.sin((this.y+this.offset)*0.02)*0.5;
 }
 }
 
@@ -204,8 +209,6 @@ let dx=x-b.x, dy=y-b.y;
 if(dx*dx+dy*dy<b.r*b.r){
 
 popSound(300+combo*30);
-navigator.vibrate?.(10);
-
 explode(b.x,b.y);
 
 score+=1+Math.floor(combo*0.2);
@@ -225,7 +228,6 @@ if(!running)return;
 
 ctx.clearRect(0,0,W,H);
 
-/* balloons */
 for(let i=balloons.length-1;i>=0;i--){
 let b=balloons[i];
 b.update();
@@ -233,10 +235,24 @@ b.draw();
 
 if(b.y>H){
 balloons.splice(i,1);
-lives--;
-navigator.vibrate?.(30);
+
+/* 🔥 HAVUZ ARTIŞ */
+pool+=10;
+if(pool>100) pool=100;
+
 updateUI();
-if(lives<=0) endGame("Can bitti");
+
+/* GAME OVER HAVUZ */
+if(pool>=100){
+endGame("Havuz doldu");
+return;
+}
+
+/* CAN SİSTEMİ DEVAM */
+lives--;
+if(lives<=0){
+endGame("Can bitti");
+}
 }
 }
 
@@ -245,10 +261,7 @@ particles.forEach((p,i)=>{
 p.x+=p.vx;
 p.y+=p.vy;
 p.life--;
-
-ctx.fillStyle="white";
 ctx.fillRect(p.x,p.y,2,2);
-
 if(p.life<=0) particles.splice(i,1);
 });
 
@@ -275,11 +288,13 @@ if(time<=0) endGame("Süre doldu");
 const scoreEl=document.getElementById("score");
 const livesEl=document.getElementById("lives");
 const timeEl=document.getElementById("time");
+const poolEl=document.getElementById("poolFill");
 
 function updateUI(){
 scoreEl.innerText=score;
 livesEl.innerText="❤️".repeat(lives);
 timeEl.innerText=time+"s";
+poolEl.style.width=pool+"%";
 }
 
 /* START */
@@ -290,6 +305,7 @@ document.getElementById("gameOver").style.display="none";
 score=0;lives=5;time=120;
 balloons=[];particles=[];
 running=true;speed=1;combo=0;
+pool=0;
 
 updateUI();
 startTimer();
