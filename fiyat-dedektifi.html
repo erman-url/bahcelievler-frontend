@@ -742,14 +742,14 @@ window.refreshPrices = function(){
   safeLoadPrices();
   loadSemtChart();
 }
-
-/* ===============================
-LOAD CHART (FULL SAFE + OPTIMIZED)
-=============================== */
 async function loadSemtChart(){
 
   if(APP.loading) return;
   APP.loading = true;
+
+  const API_BASE = location.hostname === "127.0.0.1"
+    ? "https://www.bahcelievlerforum.com.tr"
+    : "";
 
   try{
 
@@ -761,25 +761,33 @@ async function loadSemtChart(){
     const controller = new AbortController();
     const timeout = setTimeout(()=>controller.abort(), 8000);
 
-    const res = await fetch("/api/semt-endeks", {
+    const res = await fetch(API_BASE + "/api/semt-endeks", {
       signal: controller.signal
     });
 
     clearTimeout(timeout);
 
     if(!res.ok){
-      throw new Error("API error");
+      throw new Error("HTTP " + res.status);
     }
 
-   const json = await res.json();
-const data = json.data || [];
+    /* 🔥 API FORMAT FIX */
+    let json;
+    try{
+      json = await res.json();
+    }catch(e){
+      throw new Error("JSON parse error");
+    }
 
-if(!Array.isArray(data) || data.length === 0){
+    const data = Array.isArray(json?.data) ? json.data : [];
+
+    if(data.length === 0){
       console.warn("grafik veri yok");
       return;
     }
 
     const canvas = document.getElementById("priceChart");
+
     if(!canvas){
       console.error("priceChart bulunamadı");
       return;
@@ -787,19 +795,28 @@ if(!Array.isArray(data) || data.length === 0){
 
     const ctx = canvas.getContext("2d");
 
-    // MEMORY FIX
+    if(!ctx){
+      console.error("canvas context alınamadı");
+      return;
+    }
+
+    /* MEMORY FIX */
     if(APP.chart){
       try{ APP.chart.destroy(); }catch(e){}
       APP.chart = null;
     }
 
-    const labels = data.map(i => i.gun || "");
-    const values = data.map(i => Number(i.ortalama) || 0);
+    /* DATA SAFE */
+    const labels = data.map(i => String(i.gun || ""));
+    const values = data.map(i => {
+      const val = Number(i.ortalama);
+      return isNaN(val) ? 0 : val;
+    });
 
     APP.chart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           data: values,
           tension: 0.35,
