@@ -546,7 +546,43 @@ RADARA EKLE
 <script>
 window.runOCR = window.runOCR || function(){};
 window.getProductByBarcode = window.getProductByBarcode || function(){};
-window.startScanner = window.startScanner || function(){};
+window.startScanner = function(){
+
+  const area = document.getElementById("scannerArea");
+  area.style.display = "block";
+
+  Quagga.init({
+    inputStream: {
+      type: "LiveStream",
+      target: document.querySelector('#scanner'),
+      constraints: {
+        facingMode: "environment"
+      }
+    },
+    decoder: {
+      readers: ["ean_reader"]
+    }
+  }, function(err){
+    if(err){
+      console.error(err);
+      return;
+    }
+    Quagga.start();
+  });
+
+  Quagga.onDetected(function(result){
+
+    const code = result.codeResult.code;
+
+    document.getElementById("barcodeInput").value = code;
+
+    stopScanner();
+
+    if(navigator.vibrate) navigator.vibrate(80);
+
+  });
+
+};
 window.stopScanner = window.stopScanner || function(){};
 </script>
 
@@ -906,34 +942,82 @@ function parseOCRText(text){
 
   if(!text) return;
 
-  // fiyat bul (17.45 / 17,45)
-  const priceMatch = text.match(/\d+[.,]\d{2}/);
+  text = text.replace(/\n+/g,"\n");
 
-  if(priceMatch){
-    document.getElementById("priceInput").value =
-      priceMatch[0].replace(",",".");
-  }
-
-  // barkod (8-14 haneli)
-  const barcodeMatch = text.match(/\b\d{8,14}\b/);
+  /* =========================
+     BARKOD (ÖNCELİK)
+  ========================= */
+  const barcodeMatch = text.match(/\b869\d{10,11}\b/);
 
   if(barcodeMatch){
-    document.getElementById("barcodeInput").value =
-      barcodeMatch[0];
+    document.getElementById("barcodeInput").value = barcodeMatch[0];
   }
 
-  // ürün adı (basit heuristik)
-  const lines = text.split("\n").filter(l=>l.trim().length>3);
+  /* =========================
+     FİYAT (EN BÜYÜK OLANI AL)
+  ========================= */
+  const priceMatches = text.match(/\d+[.,]\d{2}/g);
 
-  if(lines.length){
-    document.getElementById("urunInput").value =
-      lines[0].substring(0,40);
+  if(priceMatches){
+    // en büyük olanı seç (etikette genelde büyük fiyat doğru)
+    const clean = priceMatches.map(p => parseFloat(p.replace(",",".")));
+    const maxPrice = Math.max(...clean);
+
+    document.getElementById("priceInput").value = maxPrice.toFixed(2);
+  }
+
+  /* =========================
+     ÜRÜN ADI (SMART)
+  ========================= */
+  const lines = text.split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 5);
+
+  let product = "";
+
+  for(let line of lines){
+
+    // fiyat / tarih / sayı yoğun satırları at
+    if(/\d{2,}/.test(line) && line.length < 15) continue;
+
+    // TL geçenleri at
+    if(line.toLowerCase().includes("tl")) continue;
+
+    // en mantıklı ilk satırı al
+    product = line;
+    break;
+  }
+
+  if(product){
+    document.getElementById("urunInput").value = product.substring(0,50);
   }
 
   if(navigator.vibrate) navigator.vibrate(50);
-
 }
 
+async function getProductByBarcode(){
+
+  const code = document.getElementById("barcodeInput").value;
+
+  if(!code) return;
+
+  try{
+
+    const res = await fetch("https://world.openfoodfacts.org/api/v0/product/" + code + ".json");
+    const data = await res.json();
+
+    if(data.product){
+
+      document.getElementById("urunInput").value =
+        data.product.product_name || "";
+
+    }
+
+  }catch(e){
+    console.warn("barcode lookup fail");
+  }
+
+}
 </script>
 
 <script src="assets/js/core.js" defer></script>
