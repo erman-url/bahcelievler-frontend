@@ -457,8 +457,7 @@ id="imageInput"
 type="file"
 accept="image/*"
 onchange="handleImageUpload(this.files)"
->
-onchange="if(this.files.length && typeof runOCR==='function'){runOCR(this.files[0])}"
+this.files.length && typeof runOCR==='function'){runOCR(this.files[0])}"
 >
 
 <p style="font-size:12px;color:#888">
@@ -938,7 +937,6 @@ function parseOCRText(text){
 </script>
 
 <script src="assets/js/core.js" defer></script>
-<script src="assets/js/news.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
 
 <div id="globalFooter"></div>
