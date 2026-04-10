@@ -733,7 +733,11 @@ window.submitPrice = async function(e){
 
   try{
 
-    const res = await fetch("/api/fiyat-ekle", {
+  const API_BASE = location.hostname === "127.0.0.1"
+  ? "https://www.bahcelievlerforum.com.tr"
+  : "";
+
+fetch(API_BASE + "/api/fiyat-ekle", {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body: JSON.stringify(payload)
