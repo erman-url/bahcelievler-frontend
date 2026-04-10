@@ -308,7 +308,6 @@ inset 0 1px 0 rgba(255,255,255,.3);
 </style>
 
 </head>
-
 <body>
 
 <div id="globalHeader"></div>
@@ -320,8 +319,7 @@ inset 0 1px 0 rgba(255,255,255,.3);
   <div class="header-content">
 
     <div class="header-text">
-    <div class="title">Mahalle Sosyal Ağı</div>
-
+      <div class="title">Mahalle Sosyal Ağı</div>
       <div class="sub">Bahçelievler'de konuşulan her şey burada</div>
     </div>
 
@@ -333,104 +331,74 @@ inset 0 1px 0 rgba(255,255,255,.3);
 
 </div>
 
+
+<!-- 🔥 TÜM KARTLAR AYNI GRID İÇİNDE -->
 <div class="social-grid">
 
-<div class="social-card" onclick="location.href='duyurular.html'">
+  <!-- Duyurular -->
+  <div class="social-card" onclick="location.href='duyurular.html'">
 
-<div class="social-icon">
-<i class="fa-solid fa-bullhorn"></i>
-</div>
+    <div class="social-icon">
+      <i class="fa-solid fa-bullhorn"></i>
+    </div>
 
-<div class="social-text">
+    <div class="social-text">
+      <div class="social-title">Duyurular</div>
+      <div class="social-desc">Mahalle bilgilendirmeleri</div>
+      <span class="social-badge">12 yeni</span>
+    </div>
 
-<div class="social-title">Duyurular</div>
-<div class="social-desc">Mahalle bilgilendirmeleri</div>
+    <div class="social-arrow">
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
 
-<span class="social-badge">12 yeni</span>
-
-</div>
-
-<div class="social-arrow">
-<i class="fa-solid fa-chevron-right"></i>
-</div>
-
-</div>
-
-<div class="social-card" onclick="location.href='firsatlar.html'">
-
-<div class="social-icon">
-<i class="fa-solid fa-tags"></i>
-</div>
-
-<div class="social-text">
-
-<div class="social-title">Fırsat & İndirim</div>
-<div class="social-desc">Yerel kampanyalar</div>
-
-<span class="social-badge">🔥 8 fırsat</span>
-
-</div>
-
-<div class="social-arrow">
-<i class="fa-solid fa-chevron-right"></i>
-</div>
-
-</div>
+  </div>
 
 
-</div>
+  <!-- Fırsatlar -->
+  <div class="social-card" onclick="location.href='firsatlar.html'">
 
-<div class="social-card" onclick="location.href='tavsiye-sikayet.html'">
+    <div class="social-icon">
+      <i class="fa-solid fa-tags"></i>
+    </div>
 
-<div class="social-icon">
-<i class="fa-solid fa-comments"></i>
-</div>
+    <div class="social-text">
+      <div class="social-title">Fırsat & İndirim</div>
+      <div class="social-desc">Yerel kampanyalar</div>
+      <span class="social-badge">🔥 8 fırsat</span>
+    </div>
 
-<div class="social-text">
+    <div class="social-arrow">
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
 
-<div class="social-title">Tavsiye & Şikayet</div>
-<div class="social-desc">Deneyim paylaşımı</div>
+  </div>
 
-<span class="social-badge">34 yorum</span>
 
-</div>
+  <!-- 🔥 TAVSİYE ARTIK GRID İÇİNDE -->
+  <div class="social-card" onclick="location.href='tavsiye-sikayet.html'">
 
-<div class="social-arrow">
-<i class="fa-solid fa-chevron-right"></i>
-</div>
+    <div class="social-icon">
+      <i class="fa-solid fa-comments"></i>
+    </div>
+
+    <div class="social-text">
+      <div class="social-title">Tavsiye & Şikayet</div>
+      <div class="social-desc">Deneyim paylaşımı</div>
+      <span class="social-badge">34 yorum</span>
+    </div>
+
+    <div class="social-arrow">
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+
+  </div>
 
 </div>
 
-</div>
 
-<section class="trend-section">
+</div> <!-- page-wrapper kapanış -->
 
-<div class="trend-title">
-🔥 Mahallede Konuşulanlar
-</div>
-
-<div class="trend-feed">
-
-<div class="trend-card">
-<div class="trend-user">Ahmet</div>
-Migros'ta yağ indirimi başlamış.
-</div>
-
-<div class="trend-card">
-<div class="trend-user">Zeynep</div>
-Şirinevler metro bugün çok kalabalık.
-</div>
-
-<div class="trend-card">
-<div class="trend-user">Mehmet</div>
-BİM'de süt fiyatı düşmüş.
-</div>
-
-</div>
-
-</section>
-
-</div>
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
