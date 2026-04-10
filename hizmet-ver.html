@@ -407,9 +407,8 @@ return;
 });
 }
 
-
 /* ===============================
-FORM SUBMIT
+FORM SUBMIT (FULL FIX PRO)
 =============================== */
 const form = document.getElementById("hizmetForm");
 const btn = document.querySelector(".submit-btn");
@@ -426,33 +425,84 @@ btn.innerText = "Gönderiliyor...";
 
 const formData = new FormData(this);
 
+/* =========================
+TURNSTILE TOKEN (ZORUNLU)
+========================= */
+const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+if(!token){
+alert("Doğrulama başarısız. Lütfen tekrar deneyin.");
+btn.classList.remove("loading");
+btn.innerText = "HİZMETİ YAYINLA";
+return;
+}
+
+formData.append("cf-turnstile-response", token);
+
 try{
 
-const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/hizmet-ekle", {
+/* =========================
+API REQUEST
+========================= */
+const response = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/hizmet-ekle", {
 method:"POST",
 body:formData
 });
 
-if(!res) throw new Error("Bağlantı hatası");
-
-const data = await res.json();
-
-if(!res.ok){
-throw new Error(data.error || "Sunucu hatası");
+/* =========================
+NETWORK FAIL
+========================= */
+if(!response){
+throw new Error("Sunucuya ulaşılamadı");
 }
 
+/* =========================
+JSON SAFE
+========================= */
+let data;
+
+try{
+data = await response.json();
+}catch(e){
+throw new Error("Sunucu cevabı okunamadı");
+}
+
+/* =========================
+API ERROR
+========================= */
+if(!response.ok){
+throw new Error(data?.error || "Sunucu hatası");
+}
+
+/* =========================
+SUCCESS
+========================= */
 alert("Hizmet başarıyla gönderildi ✔");
 
+/* FORM RESET */
 this.reset();
 
-if(charCount) charCount.textContent = "0 / 750";
+if(typeof charCount !== "undefined" && charCount){
+charCount.textContent = "0 / 750";
+}
 
+/* MODAL KAPAT */
+const modal = document.getElementById("hizmetModal");
+if(modal){
+modal.classList.remove("active");
+document.body.style.overflow = "";
+}
+
+/* LİSTEYİ YENİLE */
 if(typeof loadHizmetler === "function"){
 loadHizmetler();
 }
 
 }catch(err){
 
+console.error("HİZMET EKLE HATA:", err);
+
+/* HATA MESAJI */
 alert("Hata: " + (err.message || "Bilinmeyen hata"));
 
 }finally{
@@ -464,7 +514,6 @@ btn.innerText = "HİZMETİ YAYINLA";
 
 });
 }
-
 
 /* ===============================
 LOAD HİZMETLER (DETAY DATA EKLİ)
@@ -557,6 +606,7 @@ loadHizmetler();
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <div id="globalFooter"></div>
 
