@@ -276,8 +276,6 @@ DETAY MODAL (PREMIUM APP STYLE)
 <!-- GLOBAL -->
 <div id="globalFooter"></div>
 
-<!-- 🔥 TURNSTILE SCRIPT (ZORUNLU) -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <!-- 🔥 LOCAL DEV FIX -->
 <script>
@@ -295,9 +293,9 @@ if(location.hostname === "127.0.0.1" || location.hostname === "localhost"){
     form.appendChild(fake);
   }
 
-  // widget'ı gizle (UI temiz)
-  const wrapper = document.getElementById("turnstileWrapper");
-  if(wrapper) wrapper.style.display = "none";
+  // ❗ gizleme değil kaldırma
+  const widget = document.querySelector(".cf-turnstile");
+  if(widget) widget.remove();
 }
 </script>
 
