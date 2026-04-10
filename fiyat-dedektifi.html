@@ -897,7 +897,7 @@ document.addEventListener("visibilitychange", ()=>{
 });
 
 /* ===============================
-IMAGE HANDLE + OCR (BOOSTED)
+IMAGE HANDLE + OCR (FULL FIX)
 =============================== */
 window.handleImageUpload = async function(files){
 
@@ -914,7 +914,7 @@ window.handleImageUpload = async function(files){
       return;
     }
 
-    // 🔥 OCR BOOST (daha doğru sonuç)
+    // 🔥 OCR BOOST
     const result = await Tesseract.recognize(file, "eng", {
       tessedit_char_whitelist: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ., TL"
     });
@@ -922,6 +922,22 @@ window.handleImageUpload = async function(files){
     const text = result.data.text;
 
     console.log("OCR TEXT:", text);
+
+    /* =========================
+       🔴 OCR KALİTE KONTROL
+    ========================= */
+    if(!text || text.length < 20){
+      alert("Fotoğraf okunamadı. Etiket net görünmeli.");
+      return;
+    }
+
+    const letters = text.match(/[A-Z]/gi) || [];
+    const numbers = text.match(/\d/g) || [];
+
+    if(letters.length < 5 && numbers.length < 5){
+      alert("Geçersiz etiket. Lütfen daha net fotoğraf çek.");
+      return;
+    }
 
     parseOCRText(text);
 
@@ -932,7 +948,7 @@ window.handleImageUpload = async function(files){
 };
 
 /* ===============================
-OCR PARSER (FULL FIX)
+OCR PARSER (FULL FIX PRO)
 =============================== */
 function parseOCRText(text){
 
@@ -940,8 +956,12 @@ function parseOCRText(text){
 
   text = text.replace(/\n+/g,"\n");
 
+  let foundBarcode = null;
+  let foundPrice = null;
+  let foundProduct = null;
+
   /* =========================
-     BARKOD (GÜÇLÜ + TOLERANSLI)
+     BARKOD (GÜÇLÜ)
   ========================= */
   let matches = text.match(/\d{8,14}/g);
 
@@ -951,10 +971,10 @@ function parseOCRText(text){
 
     const valid = matches.find(b => b.startsWith("869"));
 
-    if(valid){
+    if(valid && valid.length >= 8){
       document.getElementById("barcodeInput").value = valid;
+      foundBarcode = valid;
 
-      // 🔥 otomatik ürün çek
       if(typeof getProductByBarcode === "function"){
         getProductByBarcode();
       }
@@ -962,7 +982,7 @@ function parseOCRText(text){
   }
 
   /* =========================
-     FİYAT (SMART SELECTION)
+     FİYAT (SMART)
   ========================= */
   const priceMatches = text.match(/\d+[.,]\d{2}/g);
 
@@ -970,68 +990,78 @@ function parseOCRText(text){
 
     const clean = priceMatches.map(p => parseFloat(p.replace(",",".")));
 
-    // 🔥 market fiyat aralığı filtresi
     const filtered = clean.filter(p => p > 0 && p < 500);
 
     let bestPrice;
 
     if(filtered.length){
-      // küçük olan genelde doğru (etiket fiyatı)
       bestPrice = Math.min(...filtered);
     }else{
       bestPrice = clean[0];
     }
 
-    document.getElementById("priceInput").value = bestPrice.toFixed(2);
+    if(bestPrice && bestPrice > 0){
+      document.getElementById("priceInput").value = bestPrice.toFixed(2);
+      foundPrice = bestPrice;
+    }
   }
 
   /* =========================
-     ÜRÜN ADI (SMART)
+     ÜRÜN ADI (SMART AI)
   ========================= */
-/* =========================
-   ÜRÜN ADI (AI-LIKE SMART)
-========================= */
-const lines = text.split("\n")
-  .map(l => l.trim())
-  .filter(l => l.length > 3);
+  const lines = text.split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 3);
 
-let product = "";
+  let product = "";
 
-// 1. ÖNCELİK: büyük harfli ürün satırı bul
-for(let line of lines){
-
-  const upperRatio = (line.match(/[A-Z]/g)||[]).length / line.length;
-
-  if(
-    upperRatio > 0.6 &&               // çoğu büyük harf
-    line.length > 8 &&                // çok kısa değil
-    !line.match(/\d{2,}\.\d{2}/) &&   // fiyat değil
-    !line.toLowerCase().includes("kdv") &&
-    !line.toLowerCase().includes("tl")
-  ){
-    product = line;
-    break;
-  }
-}
-
-// 2. fallback (ilk düzgün satır)
-if(!product){
+  // 1. büyük harf ağırlıklı satır
   for(let line of lines){
 
+    const upperRatio = (line.match(/[A-Z]/g)||[]).length / line.length;
+
     if(
+      upperRatio > 0.6 &&
+      line.length > 8 &&
       !line.match(/\d+[.,]\d{2}/) &&
-      !line.toLowerCase().includes("tl") &&
-      !line.toLowerCase().includes("kdv")
+      !line.toLowerCase().includes("kdv") &&
+      !line.toLowerCase().includes("tl")
     ){
       product = line;
       break;
     }
   }
-}
 
-if(product){
-  document.getElementById("urunInput").value = product.substring(0,50);
-}}
+  // 2. fallback
+  if(!product){
+    for(let line of lines){
+
+      if(
+        !line.match(/\d+[.,]\d{2}/) &&
+        !line.toLowerCase().includes("tl") &&
+        !line.toLowerCase().includes("kdv")
+      ){
+        product = line;
+        break;
+      }
+    }
+  }
+
+  if(product && product.length > 5){
+    document.getElementById("urunInput").value = product.substring(0,50);
+    foundProduct = product;
+  }
+
+  /* =========================
+     🔴 FAIL SAFE (KRİTİK)
+  ========================= */
+  if(!foundBarcode && !foundPrice && !foundProduct){
+    alert("Etiket okunamadı. Lütfen daha net fotoğraf çek.");
+    return;
+  }
+
+  if(navigator.vibrate) navigator.vibrate(50);
+}
 
 /* ===============================
 BARKOD → ÜRÜN GETİR
@@ -1060,6 +1090,7 @@ async function getProductByBarcode(){
 
 }
 </script>
+
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
