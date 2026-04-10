@@ -449,15 +449,10 @@ Grafik komşuların girdiği gerçek fiyatlardan hesaplanır
 <div class="fd-camera">
 
 <input
-id="imageInput"
-type="file"
-accept="image/*"
-<input
-id="imageInput"
-type="file"
-accept="image/*"
-onchange="handleImageUpload(this.files)"
-this.files.length && typeof runOCR==='function'){runOCR(this.files[0])}"
+  id="imageInput"
+  type="file"
+  accept="image/*"
+  onchange="handleImageUpload(this.files)"
 >
 
 <p style="font-size:12px;color:#888">
@@ -902,7 +897,7 @@ document.addEventListener("visibilitychange", ()=>{
 });
 
 /* ===============================
-IMAGE HANDLE + OCR
+IMAGE HANDLE + OCR (BOOSTED)
 =============================== */
 window.handleImageUpload = async function(files){
 
@@ -910,10 +905,8 @@ window.handleImageUpload = async function(files){
 
   const file = files[0];
 
-  // preview (opsiyonel)
   console.log("image selected:", file.name);
 
-  // OCR
   try{
 
     if(typeof Tesseract === "undefined"){
@@ -921,7 +914,10 @@ window.handleImageUpload = async function(files){
       return;
     }
 
-    const result = await Tesseract.recognize(file, "tur+eng");
+    // 🔥 OCR BOOST (daha doğru sonuç)
+    const result = await Tesseract.recognize(file, "eng", {
+      tessedit_char_whitelist: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ., TL"
+    });
 
     const text = result.data.text;
 
@@ -936,7 +932,7 @@ window.handleImageUpload = async function(files){
 };
 
 /* ===============================
-OCR PARSER (SMART)
+OCR PARSER (FULL FIX)
 =============================== */
 function parseOCRText(text){
 
@@ -945,25 +941,48 @@ function parseOCRText(text){
   text = text.replace(/\n+/g,"\n");
 
   /* =========================
-     BARKOD (ÖNCELİK)
+     BARKOD (GÜÇLÜ + TOLERANSLI)
   ========================= */
-  const barcodeMatch = text.match(/\b869\d{10,11}\b/);
+  let matches = text.match(/\d{8,14}/g);
 
-  if(barcodeMatch){
-    document.getElementById("barcodeInput").value = barcodeMatch[0];
+  if(matches){
+
+    matches = matches.map(m => m.replace(/\s/g,""));
+
+    const valid = matches.find(b => b.startsWith("869"));
+
+    if(valid){
+      document.getElementById("barcodeInput").value = valid;
+
+      // 🔥 otomatik ürün çek
+      if(typeof getProductByBarcode === "function"){
+        getProductByBarcode();
+      }
+    }
   }
 
   /* =========================
-     FİYAT (EN BÜYÜK OLANI AL)
+     FİYAT (SMART SELECTION)
   ========================= */
   const priceMatches = text.match(/\d+[.,]\d{2}/g);
 
   if(priceMatches){
-    // en büyük olanı seç (etikette genelde büyük fiyat doğru)
-    const clean = priceMatches.map(p => parseFloat(p.replace(",",".")));
-    const maxPrice = Math.max(...clean);
 
-    document.getElementById("priceInput").value = maxPrice.toFixed(2);
+    const clean = priceMatches.map(p => parseFloat(p.replace(",",".")));
+
+    // 🔥 market fiyat aralığı filtresi
+    const filtered = clean.filter(p => p > 0 && p < 500);
+
+    let bestPrice;
+
+    if(filtered.length){
+      // küçük olan genelde doğru (etiket fiyatı)
+      bestPrice = Math.min(...filtered);
+    }else{
+      bestPrice = clean[0];
+    }
+
+    document.getElementById("priceInput").value = bestPrice.toFixed(2);
   }
 
   /* =========================
@@ -977,13 +996,19 @@ function parseOCRText(text){
 
   for(let line of lines){
 
-    // fiyat / tarih / sayı yoğun satırları at
+    // sayı yoğun kısa satırları at
     if(/\d{2,}/.test(line) && line.length < 15) continue;
+
+    // fiyat satırı at
+    if(line.match(/\d+[.,]\d{2}/)) continue;
 
     // TL geçenleri at
     if(line.toLowerCase().includes("tl")) continue;
 
-    // en mantıklı ilk satırı al
+    // KDV / tarih vs at
+    if(line.toLowerCase().includes("kdv")) continue;
+    if(line.match(/\d{2}-\d{2}-\d{4}/)) continue;
+
     product = line;
     break;
   }
@@ -995,6 +1020,9 @@ function parseOCRText(text){
   if(navigator.vibrate) navigator.vibrate(50);
 }
 
+/* ===============================
+BARKOD → ÜRÜN GETİR
+=============================== */
 async function getProductByBarcode(){
 
   const code = document.getElementById("barcodeInput").value;
