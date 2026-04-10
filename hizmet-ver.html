@@ -196,10 +196,15 @@ required>
 Bu formu göndererek verilerinizin platformda yayınlanmasını kabul etmiş olursunuz.
 </div>
 
-<!-- TURNSTILE -->
-<div class="cf-turnstile"
-data-sitekey="0x4AAAAAACx7OGpUG9f1Sih8"
-data-theme="light">
+<!-- TURNSTILE (SMART MODE) -->
+<div id="turnstileWrapper">
+
+  <!-- PROD ortamında gerçek Turnstile -->
+  <div class="cf-turnstile"
+    data-sitekey="0x4AAAAAACx7OGpUG9f1Sih8"
+    data-theme="light">
+  </div>
+
 </div>
 
 <button type="submit" class="submit-btn">
@@ -218,13 +223,12 @@ DETAY MODAL (PREMIUM APP STYLE)
 
 <div class="modal-content detay-modal">
 
-<!-- HERO (IMAGE + OVERLAY HEADER) -->
+<!-- HERO -->
 <div class="detay-hero">
 
 <img id="detayImg" class="detay-img"
 onerror="this.src='assets/img/no-image.jpg'">
 
-<!-- OVERLAY -->
 <div class="detay-overlay">
 
 <div class="detay-top">
@@ -245,14 +249,12 @@ onerror="this.src='assets/img/no-image.jpg'">
 <div class="detay-content">
 
 <div class="detay-meta" id="detayMeta"></div>
-
 <div class="detay-text" id="detayText"></div>
-
 <div class="detay-phone" id="detayPhone"></div>
 
 </div>
 
-<!-- FIXED CTA (EN KRİTİK) -->
+<!-- CTA -->
 <div class="detay-footer">
 
 <a id="detayCall" class="call-btn">
@@ -271,6 +273,31 @@ onerror="this.src='assets/img/no-image.jpg'">
 
 <!-- GLOBAL -->
 <div id="globalFooter"></div>
+
+<!-- 🔥 TURNSTILE SCRIPT (ZORUNLU) -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<!-- 🔥 LOCAL DEV FIX -->
+<script>
+if(location.hostname === "127.0.0.1" || location.hostname === "localhost"){
+
+  console.warn("DEV MODE: Turnstile bypass aktif");
+
+  const form = document.getElementById("hizmetForm");
+
+  if(form){
+    const fake = document.createElement("input");
+    fake.type = "hidden";
+    fake.name = "cf-turnstile-response";
+    fake.value = "dev-token";
+    form.appendChild(fake);
+  }
+
+  // widget'ı gizle (UI temiz)
+  const wrapper = document.getElementById("turnstileWrapper");
+  if(wrapper) wrapper.style.display = "none";
+}
+</script>
 
 </body>
 
