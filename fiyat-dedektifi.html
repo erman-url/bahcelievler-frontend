@@ -988,37 +988,50 @@ function parseOCRText(text){
   /* =========================
      ÜRÜN ADI (SMART)
   ========================= */
-  const lines = text.split("\n")
-    .map(l => l.trim())
-    .filter(l => l.length > 5);
+/* =========================
+   ÜRÜN ADI (AI-LIKE SMART)
+========================= */
+const lines = text.split("\n")
+  .map(l => l.trim())
+  .filter(l => l.length > 3);
 
-  let product = "";
+let product = "";
 
-  for(let line of lines){
+// 1. ÖNCELİK: büyük harfli ürün satırı bul
+for(let line of lines){
 
-    // sayı yoğun kısa satırları at
-    if(/\d{2,}/.test(line) && line.length < 15) continue;
+  const upperRatio = (line.match(/[A-Z]/g)||[]).length / line.length;
 
-    // fiyat satırı at
-    if(line.match(/\d+[.,]\d{2}/)) continue;
-
-    // TL geçenleri at
-    if(line.toLowerCase().includes("tl")) continue;
-
-    // KDV / tarih vs at
-    if(line.toLowerCase().includes("kdv")) continue;
-    if(line.match(/\d{2}-\d{2}-\d{4}/)) continue;
-
+  if(
+    upperRatio > 0.6 &&               // çoğu büyük harf
+    line.length > 8 &&                // çok kısa değil
+    !line.match(/\d{2,}\.\d{2}/) &&   // fiyat değil
+    !line.toLowerCase().includes("kdv") &&
+    !line.toLowerCase().includes("tl")
+  ){
     product = line;
     break;
   }
-
-  if(product){
-    document.getElementById("urunInput").value = product.substring(0,50);
-  }
-
-  if(navigator.vibrate) navigator.vibrate(50);
 }
+
+// 2. fallback (ilk düzgün satır)
+if(!product){
+  for(let line of lines){
+
+    if(
+      !line.match(/\d+[.,]\d{2}/) &&
+      !line.toLowerCase().includes("tl") &&
+      !line.toLowerCase().includes("kdv")
+    ){
+      product = line;
+      break;
+    }
+  }
+}
+
+if(product){
+  document.getElementById("urunInput").value = product.substring(0,50);
+}}
 
 /* ===============================
 BARKOD → ÜRÜN GETİR
