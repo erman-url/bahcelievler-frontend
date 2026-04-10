@@ -758,7 +758,6 @@ fetch(API_BASE + "/api/fiyat-ekle", {
   }
 
 };
-
 /* ===============================
 REFRESH (THROTTLE FIX)
 =============================== */
@@ -776,13 +775,19 @@ window.refreshPrices = function(){
   safeLoadPrices();
   loadSemtChart();
 }
+
+
+/* ===============================
+SEMT CHART (FULL FIX)
+=============================== */
 async function loadSemtChart(){
 
   if(APP.loading) return;
   APP.loading = true;
 
+  // 🔥 CORS + REDIRECT FIX (www kaldırıldı)
   const API_BASE = location.hostname === "127.0.0.1"
-    ? "https://www.bahcelievlerforum.com.tr"
+    ? "https://bahcelievlerforum.com.tr"
     : "";
 
   try{
@@ -795,20 +800,24 @@ async function loadSemtChart(){
     const controller = new AbortController();
     const timeout = setTimeout(()=>controller.abort(), 8000);
 
-    const res = await fetch(API_BASE + "/api/semt-endeks", {
+    const response = await fetch(API_BASE + "/api/semt-endeks", {
+      method: "GET",
+      headers:{
+        "Content-Type":"application/json"
+      },
       signal: controller.signal
     });
 
     clearTimeout(timeout);
 
-    if(!res.ok){
-      throw new Error("HTTP " + res.status);
+    if(!response.ok){
+      throw new Error("HTTP " + response.status);
     }
 
-    /* 🔥 API FORMAT FIX */
+    /* JSON SAFE */
     let json;
     try{
-      json = await res.json();
+      json = await response.json();
     }catch(e){
       throw new Error("JSON parse error");
     }
@@ -847,6 +856,12 @@ async function loadSemtChart(){
       return isNaN(val) ? 0 : val;
     });
 
+    /* EMPTY CHECK */
+    if(values.every(v => v === 0)){
+      console.warn("grafik veri geçersiz");
+      return;
+    }
+
     APP.chart = new Chart(ctx, {
       type: "line",
       data: {
@@ -882,7 +897,7 @@ async function loadSemtChart(){
     if(e.name === "AbortError"){
       console.warn("API timeout");
     }else{
-      console.error("grafik hata:", e);
+      console.error("grafik hata:", e.message || e);
     }
 
   }finally{
