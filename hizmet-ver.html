@@ -455,7 +455,13 @@ const formData = new FormData(this);
 /* =========================
 TURNSTILE TOKEN (ZORUNLU)
 ========================= */
-const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
+let tokenInput = document.querySelector('[name="cf-turnstile-response"]');
+
+if(!tokenInput && (location.hostname === "127.0.0.1" || location.hostname === "localhost")){
+  tokenInput = { value: "dev-token" };
+}
+
+const token = tokenInput?.value; token = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
 if(!token){
 alert("Doğrulama başarısız. Lütfen tekrar deneyin.");
@@ -479,7 +485,8 @@ body:formData
 /* =========================
 NETWORK FAIL
 ========================= */
-if(!response){
+if(!response || !response.ok){
+  throw new Error("Sunucu hatası");
 throw new Error("Sunucuya ulaşılamadı");
 }
 
@@ -633,8 +640,6 @@ loadHizmetler();
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
-
-
 <div id="globalFooter"></div>
 
 </body>
