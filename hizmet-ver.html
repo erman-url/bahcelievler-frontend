@@ -427,7 +427,6 @@ return;
 
 });
 }
-
 /* ===============================
 FORM SUBMIT (FULL FIX PRO)
 =============================== */
@@ -444,7 +443,26 @@ if(btn.classList.contains("loading")) return;
 btn.classList.add("loading");
 btn.innerText = "Gönderiliyor...";
 
-const formData = new FormData(this);
+/* =========================
+FORM DATA (STABLE FIX)
+========================= */
+const formData = new FormData();
+
+const inputs = this.querySelectorAll("input, select, textarea");
+
+inputs.forEach(el => {
+
+  if(!el.name) return;
+
+  if(el.type === "file"){
+    if(el.files && el.files.length > 0){
+      formData.append(el.name, el.files[0]); // tek görsel garanti
+    }
+  }else{
+    formData.append(el.name, el.value);
+  }
+
+});
 
 /* =========================
 TURNSTILE TOKEN (ZORUNLU)
@@ -455,8 +473,7 @@ if(!tokenInput && (location.hostname === "127.0.0.1" || location.hostname === "l
   tokenInput = { value: "dev-token" };
 }
 
-const token = tokenInput?.value; 
-
+const token = tokenInput?.value;
 
 if(!token){
 alert("Doğrulama başarısız. Lütfen tekrar deneyin.");
@@ -478,10 +495,10 @@ body:formData
 });
 
 /* =========================
-NETWORK FAIL
+NETWORK CHECK
 ========================= */
-if(!response || !response.ok){
-  throw new Error("Sunucu hatası");
+if(!response){
+throw new Error("Sunucuya ulaşılamadı");
 }
 
 /* =========================
@@ -496,10 +513,10 @@ throw new Error("Sunucu cevabı okunamadı");
 }
 
 /* =========================
-API ERROR
+API RESULT CHECK (KRİTİK)
 ========================= */
-if(!response.ok){
-throw new Error(data?.error || "Sunucu hatası");
+if(!response.ok || !data?.ok){
+throw new Error(data?.error || "Kayıt başarısız");
 }
 
 /* =========================
@@ -529,8 +546,6 @@ loadHizmetler();
 }catch(err){
 
 console.error("HİZMET EKLE HATA:", err);
-
-/* HATA MESAJI */
 alert("Hata: " + (err.message || "Bilinmeyen hata"));
 
 }finally{
@@ -542,7 +557,6 @@ btn.innerText = "HİZMETİ YAYINLA";
 
 });
 }
-
 /* ===============================
 LOAD HİZMETLER (DETAY DATA EKLİ)
 =============================== */
