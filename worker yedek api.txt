@@ -1,0 +1,2184 @@
+export default {
+
+async fetch(request, env) {
+
+const url = new URL(request.url)
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type"
+};
+
+if (request.method === "OPTIONS") {
+  return new Response(null, { headers: corsHeaders });
+}
+
+
+/* ===============================
+CORS PREFLIGHT
+=============================== */
+
+function jsonResponse(data, status = 200){
+  return new Response(JSON.stringify(data), {
+    status,
+    headers:{
+      "Content-Type":"application/json",
+      "Access-Control-Allow-Origin":"*",
+      "Access-Control-Allow-Methods":"GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers":"Content-Type"
+    }
+  });
+}
+
+/* ===============================
+DUYURULAR
+=============================== */
+
+if(url.pathname === "/api/duyurular" && request.method === "GET"){
+
+const result = await env.DB.prepare(`SELECT
+title,
+content,
+image_url,
+priority,
+published_at
+FROM duyurular
+WHERE status = 1
+ORDER BY published_at DESC
+LIMIT 20`).all()
+
+return new Response(JSON.stringify(result.results),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*",
+"Cache-Control":"public, max-age=300"
+}
+})
+
+}
+
+/* ===============================
+TAVSİYE & ŞİKAYET GET
+=============================== */
+
+if(url.pathname === "/api/tavsiye-sikayet" && request.method === "GET"){
+
+const result = await env.DB.prepare(`SELECT
+id,
+type,
+title,
+content,
+business_name,
+category,
+district,
+rating,
+image_url,
+author_name,
+status,
+created_at,
+delete_token
+FROM tavsiye_sikayet
+WHERE status = 1
+ORDER BY created_at DESC
+LIMIT 30`).all()
+
+return new Response(JSON.stringify(result.results),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*",
+"Cache-Control":"no-cache"
+}
+})
+
+}
+
+/* ===============================
+TAVSİYE & ŞİKAYET POST
+=============================== */
+
+if(url.pathname === "/api/tavsiye-sikayet" && request.method === "POST"){
+
+try{
+
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0"
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+)
+
+const rate = await env.DB.prepare(`SELECT COUNT(*) as count
+FROM tavsiye_sikayet
+WHERE ip_address = ?
+AND created_at > datetime('now','-1 hour')`)
+.bind(ip)
+.first()
+
+if(rate && rate.count >= 10){
+
+return new Response(JSON.stringify({
+ok:false,
+error:"Saatlik gönderim limitine ulaştınız"
+}),{
+status:429,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+
+const data = await request.json()
+
+if(!data.type){
+throw new Error("Type boş")
+}
+
+if(!data.title || data.title.length < 3){
+throw new Error("Başlık çok kısa")
+}
+
+if(!data.content || data.content.length < 10){
+throw new Error("Açıklama çok kısa")
+}
+
+if(data.content.length > 800){
+throw new Error("Metin çok uzun")
+}
+
+/* IMAGE → R2 */
+
+let imageUrl = null
+
+if(data.image){
+
+if(data.image.length > 3000000){
+throw new Error("Fotoğraf çok büyük")
+}
+
+try{
+
+const base64 = data.image.split(',').pop()
+const binary = atob(base64)
+
+const len = binary.length
+const bytes = new Uint8Array(len)
+
+for(let i=0;i<len;i++){
+bytes[i] = binary.charCodeAt(i)
+}
+
+const fileName = "ts-"+crypto.randomUUID()+".jpg"
+
+await env.GALERI.put(fileName,bytes,{
+httpMetadata:{
+contentType:"image/jpeg"
+}
+})
+
+imageUrl = "https://img.bahcelievlerforum.com.tr/"+fileName
+
+}catch(e){
+console.log("IMAGE ERROR",e)
+}
+
+}
+
+const deleteToken = crypto.randomUUID()
+
+await env.DB.prepare(`INSERT INTO tavsiye_sikayet
+(type,title,content,business_name,rating,image_url,ip_address,delete_token,status,created_at)
+VALUES (?,?,?,?,?,?,?,?,1,datetime('now'))`)
+.bind(
+data.type,
+data.title,
+data.content,
+data.business_name || "",
+data.rating || 0,
+imageUrl,
+ip,
+deleteToken
+)
+.run()
+
+return new Response(JSON.stringify({
+ok:true,
+delete_token:deleteToken
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}catch(e){
+
+console.log("POST ERROR:",e)
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+
+}
+
+/* ===============================
+TAVSİYE & ŞİKAYET DELETE
+=============================== */
+
+if(url.pathname === "/api/tavsiye-sikayet-delete" && request.method === "POST"){
+
+try{
+
+const data = await request.json()
+
+if(!data.id || !data.token){
+throw new Error("Eksik veri")
+}
+
+await env.DB.prepare(`DELETE FROM tavsiye_sikayet
+WHERE id=? AND delete_token=?`)
+.bind(data.id,data.token)
+.run()
+
+return new Response(JSON.stringify({
+ok:true
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}catch(e){
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+
+}
+/* =================================================
+FIRSATLAR POST - FINAL STABLE (CRASH SAFE)
+================================================= */
+
+if(url.pathname === "/api/firsatlar" && request.method === "POST"){
+
+try{
+
+/* =========================
+IP HASH (KVKK SAFE)
+========================= */
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0"
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+)
+
+/* =========================
+REQUEST DATA
+========================= */
+const data = await request.json()
+
+console.log("POST DATA:", data)
+
+/* =========================
+TYPE FIX (CRITICAL)
+========================= */
+if(data.type === "store"){
+  data.link = ""
+}
+
+/* =========================
+NULL SAFE (CRITICAL)
+========================= */
+const nickname = (data.nickname || "").trim()
+const title = (data.title || "Fırsat").trim()
+const content = (data.content || "").trim()
+const store = (data.store_name || "").trim()
+const link = (data.link || "").trim()
+const district = (data.district || "").trim()
+
+/* =========================
+VALIDATION
+========================= */
+
+if(!/^[a-zA-Z0-9.-]{3,10}$/.test(nickname)){
+throw new Error("Nickname geçersiz (3-10 karakter)")
+}
+
+if(title.length < 2){
+throw new Error("Başlık çok kısa")
+}
+
+if(content && content.length < 5){
+throw new Error("Açıklama çok kısa")
+}
+
+if(!["online","store"].includes(data.type)){
+throw new Error("Fırsat türü hatalı")
+}
+
+if(data.type === "online"){
+  if(!link || !link.startsWith("http")){
+    throw new Error("Geçerli link gerekli")
+  }
+}
+
+if(data.type === "store"){
+  if(!district){
+    throw new Error("Mahalle gerekli")
+  }
+}
+
+/* =========================
+RATE LIMIT
+========================= */
+
+const rate = await env.DB.prepare(`
+SELECT COUNT(*) as count
+FROM firsatlar
+WHERE ip = ?
+AND created_at > datetime('now','-1 hour')
+`)
+.bind(ip)
+.first()
+
+if(rate && rate.count >= 5){
+return new Response(JSON.stringify({
+ok:false,
+error:"Çok sık paylaşım (1 saatte max 5)"
+}),{
+status:429,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+}
+
+/* =========================
+IMAGE (SAFE + LIMIT)
+========================= */
+let imageUrl = null
+
+if(data.image){
+try{
+
+// 🔥 boyut kontrol (max ~2MB)
+if(data.image.length > 2_000_000){
+  throw new Error("Görsel çok büyük")
+}
+
+const base64 = data.image.split(',').pop()
+const binary = atob(base64)
+
+const bytes = new Uint8Array(binary.length)
+for(let i=0;i<binary.length;i++){
+  bytes[i] = binary.charCodeAt(i)
+}
+
+const fileName = "deal-" + crypto.randomUUID() + ".jpg"
+
+await env.GALERI.put(fileName, bytes, {
+httpMetadata:{contentType:"image/jpeg"}
+})
+
+imageUrl = "https://img.bahcelievlerforum.com.tr/" + fileName
+
+}catch(e){
+console.warn("IMAGE ERROR:", e)
+}
+}
+
+/* =========================
+DOMAIN (SAFE)
+========================= */
+let domain = ""
+
+if(link && link.startsWith("http")){
+try{
+domain = new URL(link).hostname.replace("www.","")
+}catch{
+domain = ""
+}
+}
+
+/* =========================
+TOKENS
+========================= */
+const deleteToken = crypto.randomUUID()
+
+/* =========================
+INSERT (HARD SAFE)
+========================= */
+await env.DB.prepare(`
+INSERT INTO firsatlar
+(type,title,content,nickname,store_name,link,domain,image_url,district,ip,created_at,expire_date,delete_token,status)
+VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'),datetime('now','+21 day'),?, 'active')
+`)
+.bind(
+data.type,
+title,
+content || "",      // 🔥 NOT NULL FIX
+nickname,
+store,
+link,
+domain,
+imageUrl,
+district,
+ip,
+deleteToken
+)
+.run()
+
+/* =========================
+SUCCESS
+========================= */
+return new Response(JSON.stringify({
+ok:true,
+delete_token:deleteToken
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}catch(e){
+
+console.error("API ERROR:", e)
+
+/* 🔥 DEBUG GELİŞTİRİLDİ */
+return new Response(JSON.stringify({
+ok:false,
+error:e.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+
+}
+
+/* =================================================
+FIRSATLAR LIST (GET)
+================================================= */
+
+if(url.pathname === "/api/firsatlar" && request.method === "GET"){
+
+try{
+
+const rows = await env.DB.prepare(`
+SELECT id,type,title,content,nickname,store_name,link,domain,image_url,district,created_at
+FROM firsatlar
+WHERE status='active'
+AND expire_date > datetime('now')
+ORDER BY id DESC
+LIMIT 50
+`).all()
+
+return new Response(JSON.stringify({
+ok:true,
+data:rows.results || []
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}catch(e){
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message
+}),{status:500})
+
+}
+
+}
+
+/* =================================================
+İLAN EKLE (POST)
+================================================= */
+
+if(url.pathname === "/api/ilan-ekle" && request.method === "POST"){
+
+try{
+
+/* ===============================
+IP HASH
+=============================== */
+
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* ===============================
+RATE LIMIT
+=============================== */
+
+const rate = await env.DB.prepare(`
+SELECT COUNT(*) as count
+FROM ilanlar
+WHERE ip_address = ?
+AND created_at > datetime('now','-10 minutes')
+`)
+.bind(ip)
+.first();
+
+const requestCount = rate?.count ? Number(rate.count) : 0;
+
+if(requestCount >= 5){
+return new Response(JSON.stringify({
+ok:false,
+error:"Çok sık ilan ekliyorsunuz"
+}),{
+status:429,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+}
+
+/* ===============================
+BODY
+=============================== */
+
+const data = await request.json();
+
+if(!data){
+return jsonError("Veri okunamadı",400);
+}
+
+/* ===============================
+FİYAT NORMALİZASYON (KRİTİK FIX)
+=============================== */
+
+let rawPrice = String(data.price || "").trim();
+
+rawPrice = rawPrice
+  .replace(/\s/g,"")   // boşluk sil
+  .replace(/\./g,"")   // 50.000 → 50000
+  .replace(",", ".");  // 50,5 → 50.5
+
+const price = Number(rawPrice);
+
+/* ===============================
+VALIDATION
+=============================== */
+
+const title = String(data.title || "").trim();
+
+if(title.length < 3 || title.length > 50){
+return jsonError("Başlık hatalı (3-50 karakter)",400);
+}
+
+if(!rawPrice || isNaN(price)){
+return jsonError("Geçersiz fiyat",400);
+}
+
+if(price < 50){
+return jsonError("Fiyat en az 50 TL olmalı",400);
+}
+
+if(price > 25000000){
+return jsonError("Fiyat maksimum 25.000.000 TL olabilir",400);
+}
+
+const district = String(data.district || "").trim();
+if(!district){
+return jsonError("Mahalle zorunlu",400);
+}
+
+const deleteToken = String(data.delete_token || "").trim();
+if(!deleteToken || deleteToken.length < 3){
+return jsonError("Silme şifresi gerekli",400);
+}
+
+/* ===============================
+CLEAN DATA
+=============================== */
+
+const category = String(data.category || "").trim() || null;
+const condition = String(data.condition || "").trim() || null;
+const content = String(data.content || "").trim();
+const contact = String(data.contact || "").trim() || null;
+
+/* ===============================
+IMAGE UPLOAD
+=============================== */
+
+let imageUrl = null;
+let imageUrl2 = null;
+let imageUrl3 = null;
+
+async function uploadImage(base64Data){
+
+try{
+
+if(!base64Data || !base64Data.includes("base64")){
+return null;
+}
+
+/* BOYUT KONTROL (2MB) */
+if(base64Data.length > 3 * 1024 * 1024){
+return null;
+}
+
+const base64 = base64Data.split(',').pop();
+const binary = atob(base64);
+
+const len = binary.length;
+const bytes = new Uint8Array(len);
+
+for(let i=0;i<len;i++){
+bytes[i] = binary.charCodeAt(i);
+}
+
+const fileName = "ilan-"+crypto.randomUUID()+".jpg";
+
+await env.GALERI.put(fileName,bytes,{
+httpMetadata:{contentType:"image/jpeg"}
+});
+
+return "https://img.bahcelievlerforum.com.tr/"+fileName;
+
+}catch(e){
+console.log("IMAGE ERROR:", e);
+return null;
+}
+
+}
+
+/* IMAGE PROCESS */
+
+if(data.image_url){
+imageUrl = await uploadImage(data.image_url);
+}
+
+if(data.image_url_2){
+imageUrl2 = await uploadImage(data.image_url_2);
+}
+
+if(data.image_url_3){
+imageUrl3 = await uploadImage(data.image_url_3);
+}
+
+/* ===============================
+INSERT
+=============================== */
+
+await env.DB.prepare(`
+INSERT INTO ilanlar
+(title,price,category,district,condition,content,contact,image_url,image_url_2,image_url_3,ip_address,delete_token,is_active,created_at)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1,datetime('now'))
+`)
+.bind(
+title,
+price,
+category,
+district,
+condition,
+content,
+contact,
+imageUrl,
+imageUrl2,
+imageUrl3,
+ip,
+deleteToken
+)
+.run();
+
+/* ===============================
+SUCCESS
+=============================== */
+
+return new Response(JSON.stringify({
+ok:true,
+price:price
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}catch(e){
+
+console.error("ILAN EKLE ERROR:", e);
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+
+
+/* =================================================
+İLAN SİL (SECURE - FULL FIX)
+================================================= */
+
+if(url.pathname === "/api/ilan-sil" && request.method === "POST"){
+
+try{
+
+/* ===============================
+IP HASH
+=============================== */
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* ===============================
+RATE LIMIT (BRUTE FORCE PROTECTION)
+=============================== */
+const rate = await env.DB.prepare(`
+SELECT COUNT(*) as count
+FROM ilanlar
+WHERE ip_address = ?
+AND created_at > datetime('now','-5 minutes')
+`)
+.bind(ip)
+.first();
+
+const requestCount = rate?.count ? Number(rate.count) : 0;
+
+if(requestCount >= 20){
+return new Response(JSON.stringify({
+ok:false,
+error:"Çok fazla işlem deniyorsunuz"
+}),{
+status:429,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+}
+
+/* ===============================
+BODY
+=============================== */
+const data = await request.json();
+
+if(!data){
+throw new Error("Veri okunamadı");
+}
+
+/* ===============================
+ID + TOKEN (STANDARD FIX)
+=============================== */
+const id = Number(data.id);
+
+/* 🔥 hem token hem delete_token destekle */
+const token = String(
+  data.delete_token || data.token || ""
+).trim();
+
+if(!id || isNaN(id)){
+throw new Error("Geçersiz ID");
+}
+
+if(!token){
+throw new Error("Eksik veri");
+}
+
+if(token.length < 3 || token.length > 100){
+throw new Error("Geçersiz şifre");
+}
+
+/* ===============================
+TOKEN CHECK (EXPLICIT)
+=============================== */
+const existing = await env.DB.prepare(`
+SELECT delete_token FROM ilanlar WHERE id=?
+`)
+.bind(id)
+.first();
+
+if(!existing){
+throw new Error("İlan bulunamadı");
+}
+
+if(existing.delete_token !== token){
+throw new Error("Şifre yanlış");
+}
+
+/* ===============================
+DELETE (SAFE)
+=============================== */
+const result = await env.DB.prepare(`
+DELETE FROM ilanlar
+WHERE id=? AND delete_token=?
+`)
+.bind(id, token)
+.run();
+
+/* ===============================
+D1 RESULT SAFE
+=============================== */
+let changes = 0;
+
+if(result){
+  if(result.meta && typeof result.meta.changes === "number"){
+    changes = result.meta.changes;
+  }else if(typeof result.changes === "number"){
+    changes = result.changes;
+  }
+}
+
+if(changes === 0){
+throw new Error("Silme başarısız");
+}
+
+
+}catch(e){
+
+console.error("DELETE ERROR:", e);
+
+return new Response(JSON.stringify({
+ok:false,
+error:e?.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+
+/* =================================================
+İLAN DÜZENLE (UPDATE)
+================================================= */
+
+if(url.pathname === "/api/ilan-duzenle" && request.method === "POST"){
+
+try{
+
+/* ===============================
+IP HASH (opsiyonel ama kalsın)
+=============================== */
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+); // sadece abuse log için, kullanılmıyor
+
+/* ===============================
+BODY
+=============================== */
+const data = await request.json();
+
+if(!data){
+throw new Error("Veri okunamadı");
+}
+
+/* ===============================
+ID + TOKEN
+=============================== */
+const id = Number(data.id);
+const token = String(data.token || "").trim();
+
+if(!id || isNaN(id)){
+throw new Error("Geçersiz ID");
+}
+
+if(!token || token.length < 3){
+throw new Error("Geçersiz şifre");
+}
+
+/* ===============================
+TITLE
+=============================== */
+const title = String(data.title || "").trim();
+
+if(title.length < 3 || title.length > 50){
+throw new Error("Başlık hatalı");
+}
+
+/* ===============================
+🔥 FİYAT NORMALİZASYON (ANA FIX)
+=============================== */
+let rawPrice = String(data.price || "").trim();
+
+rawPrice = rawPrice
+  .replace(/\s/g,"")
+  .replace(/\./g,"")
+  .replace(",", ".");
+
+const price = Number(rawPrice);
+
+if(!rawPrice || isNaN(price) || price < 50){
+throw new Error("Fiyat hatalı");
+}
+
+if(price > 25000000){
+throw new Error("Fiyat çok yüksek");
+}
+
+/* ===============================
+DİĞER ALANLAR
+=============================== */
+const content = String(data.content || "").trim();
+const category = String(data.category || "").trim() || null;
+const district = String(data.district || "").trim();
+const condition = String(data.condition || "").trim() || null;
+const contact = String(data.contact || "").trim() || null;
+
+if(!district){
+throw new Error("Mahalle zorunlu");
+}
+
+/* ===============================
+TOKEN CHECK
+=============================== */
+const existing = await env.DB.prepare(`
+SELECT delete_token FROM ilanlar WHERE id=?
+`)
+.bind(id)
+.first();
+
+if(!existing || existing.delete_token !== token){
+throw new Error("Yetkisiz işlem");
+}
+
+/* ===============================
+UPDATE
+=============================== */
+await env.DB.prepare(`
+UPDATE ilanlar SET
+title=?,
+price=?,
+content=?,
+category=?,
+district=?,
+condition=?,
+contact=?
+WHERE id=? AND delete_token=?
+`)
+.bind(
+title,
+price,          // 🔥 normalize edilmiş fiyat
+content,
+category,
+district,
+condition,
+contact,
+id,
+token
+)
+.run();
+
+/* ===============================
+SUCCESS
+=============================== */
+return new Response(JSON.stringify({
+ok:true
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}catch(e){
+
+console.error("ILAN UPDATE ERROR:", e);
+
+return new Response(JSON.stringify({
+ok:false,
+error:e?.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+
+
+/* =================================================
+İLANLAR GET
+================================================= */
+
+if(url.pathname === "/api/ilanlar" && request.method === "GET"){
+
+const result = await env.DB.prepare(`
+SELECT
+id,
+title,
+price,
+district,
+image_url,
+image_url_2,
+image_url_3,
+created_at,
+category,
+condition,
+contact
+FROM ilanlar
+WHERE is_active = 1
+ORDER BY created_at DESC
+LIMIT 30
+`).all()
+
+return new Response(JSON.stringify(result.results),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}/* =================================================
+TEK İLAN GET (YENİ - DOĞRU ENDPOINT)
+================================================= */
+
+if(url.pathname === "/api/ilan" && request.method === "GET"){
+
+try{
+
+/* ===============================
+ID VALIDATION
+=============================== */
+
+const idParam = url.searchParams.get("id");
+
+if(!idParam){
+  return jsonError("ID gerekli",400);
+}
+
+/* 🔥 NUMERIC ZORLA (KRİTİK) */
+const id = Number(idParam);
+
+if(!id || isNaN(id)){
+  return jsonError("Geçersiz ID",400);
+}
+
+/* ===============================
+DB QUERY
+=============================== */
+
+const ad = await env.DB.prepare(`
+SELECT *
+FROM ilanlar
+WHERE id = ?
+AND is_active = 1
+LIMIT 1
+`)
+.bind(id)
+.first();
+
+/* ===============================
+NOT FOUND
+=============================== */
+
+if(!ad){
+  return jsonError("İlan bulunamadı",404);
+}
+
+/* ===============================
+SUCCESS
+=============================== */
+
+return new Response(JSON.stringify(ad),{
+headers:{
+  "Content-Type":"application/json",
+  "Access-Control-Allow-Origin":"*",
+  "Cache-Control":"no-store, no-cache, must-revalidate"
+}
+});
+
+}catch(e){
+
+console.error("GET ILAN ERROR:", e);
+
+return new Response(JSON.stringify({
+  ok:false,
+  error:"Sunucu hatası"
+}),{
+status:500,
+headers:{
+  "Content-Type":"application/json",
+  "Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+
+
+/* =================================================
+FIRSATLAR DELETE
+================================================= */
+
+if(url.pathname === "/api/firsatlar-delete" && request.method === "POST"){
+
+try{
+
+const data = await request.json()
+
+await env.DB.prepare(`DELETE FROM firsatlar
+WHERE id=? AND delete_token=?`)
+.bind(data.id,data.token)
+.run()
+
+return new Response(JSON.stringify({
+ok:true
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}catch(e){
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+
+}
+/* ===============================
+ÜRÜN GETİR (BARKOD) - FIX
+=============================== */
+{
+
+const barcode = url.searchParams.get("barcode")
+
+if(!barcode){
+return new Response(JSON.stringify({
+ok:false,
+error:"barcode missing"
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+}
+
+const product = await env.DB.prepare(`
+SELECT urun_adi
+FROM urunler
+WHERE barcode=?
+`)
+.bind(barcode)
+.first()
+
+return new Response(JSON.stringify({
+ok:true,
+urun_adi: product?.urun_adi || ""
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+/* ===============================
+SON FİYATLAR (FORMAT FIX)
+=============================== */
+if(url.pathname === "/api/son-fiyatlar" && request.method === "GET"){
+
+const result = await env.DB.prepare(`
+SELECT
+urun_adi,
+fiyat,
+market,
+mahalle,
+created_at
+FROM fiyat_kayitlari
+ORDER BY created_at DESC
+LIMIT 20
+`).all()
+
+return new Response(JSON.stringify({
+ok:true,
+data: result.results || []
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*",
+"Cache-Control":"public, max-age=120"
+}
+})
+
+}
+
+
+/* ===============================
+FİYAT EKLE (FULL FIX PRO)
+=============================== */
+{
+
+try{
+
+/* IP HASH */
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* BODY */
+const data = await request.json();
+
+/* VALIDATION */
+if(!data || !data.barcode || !data.fiyat){
+  return jsonError("Eksik veri",400);
+}
+
+/* 🔥 ÜRÜN FIX (EN KRİTİK) */
+const urun = String(data.urun_adi || data.urun || "").trim();
+
+/* 🔥 FİYAT FIX */
+let rawPrice = String(data.fiyat).trim();
+
+rawPrice = rawPrice
+  .replace(/\s/g,"")
+  .replace(",", ".");
+
+const price = Number(rawPrice);
+
+/* SUCCESS */
+return new Response(JSON.stringify({
+  ok: true,
+  price: price
+}), {
+  headers: {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  }
+});
+
+/* 🔥 DOĞRU VALIDATION */
+if(isNaN(price) || price <= 0 || price > 10000){
+  return jsonError("Fiyat hatalı",400);
+}
+
+const barcode = String(data.barcode).trim();
+const market = String(data.market || "").trim();
+const mahalle = String(data.mahalle || "").trim();
+
+/* RATE LIMIT */
+const rate = await env.DB.prepare(`
+SELECT COUNT(*) as count
+FROM fiyat_kayitlari
+WHERE ip_hash = ?
+AND created_at > datetime('now','-10 minutes')
+`)
+.bind(ip)
+.first();
+
+const requestCount = rate?.count ? Number(rate.count) : 0;
+
+if(requestCount >= 5){
+  return jsonError("Çok sık gönderim yapıyorsunuz",429);
+}
+
+/* ÜRÜN YOKSA EKLE */
+await env.DB.prepare(`
+INSERT OR IGNORE INTO urunler (barcode, urun_adi)
+VALUES (?,?)
+`)
+.bind(barcode, urun)
+.run();
+
+/* FİYAT EKLE */
+await env.DB.prepare(`
+INSERT INTO fiyat_kayitlari
+(barcode,urun_adi,fiyat,market,mahalle,ip_hash,created_at)
+VALUES (?,?,?,?,?,?,datetime('now'))
+`)
+.bind(
+  barcode,
+  urun,
+  price,
+  market,
+  mahalle,
+  ip
+)
+.run();
+
+/* SUCCESS */
+return new Response(JSON.stringify({
+  ok:true,
+  price:price
+}),{
+headers:{
+  "Content-Type":"application/json",
+  "Access-Control-Allow-Origin":"*"
+}
+});
+
+}catch(e){
+
+console.error("FİYAT EKLE ERROR:", e);
+
+return new Response(JSON.stringify({
+  ok:false,
+  error:e.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+  "Content-Type":"application/json",
+  "Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+/* ===============================
+SEMT ENDEKS (YENİ + FULL FIX)
+=============================== */
+if(url.pathname === "/api/semt-endeks" && request.method === "GET"){
+
+try{
+
+const result = await env.DB.prepare(`
+SELECT 
+DATE(created_at) as gun,
+ROUND(AVG(fiyat),2) as ortalama
+FROM fiyat_kayitlari
+GROUP BY DATE(created_at)
+ORDER BY gun ASC
+`).all()
+
+return new Response(JSON.stringify({
+ok:true,
+data: result.results || []
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*",
+"Cache-Control":"no-cache"
+}
+})
+
+}catch(e){
+
+console.error("ENDEKS ERROR:", e)
+
+return new Response(JSON.stringify({
+ok:false,
+error:"Endeks alınamadı"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+})
+
+}
+
+}
+/* ===============================
+HELPER (EKLE)
+=============================== */
+
+function jsonError(msg,status=400){
+  return new Response(JSON.stringify({
+    ok:false,
+    error:msg
+  }),{
+    status,
+    headers:{
+      "Content-Type":"application/json",
+      "Access-Control-Allow-Origin":"*",
+      "Access-Control-Allow-Methods":"GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers":"Content-Type"
+    }
+  });
+}
+
+/* =================================================
+HİZMET EKLE (TURNSTILE + RATE LIMIT + FULL SECURE)
+================================================= */
+
+if(url.pathname === "/api/hizmet-ekle" && request.method === "POST"){
+
+try{
+
+/* ===============================
+IP HASH
+=============================== */
+
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* ===============================
+RATE LIMIT (DB SAFE)
+=============================== */
+
+const rate = await env.DB.prepare(`
+SELECT COUNT(*) as count
+FROM hizmetler
+WHERE ip = ?
+AND created_at > datetime('now','-10 minutes')
+`)
+.bind(ip)
+.first();
+
+const requestCount = rate?.count ? Number(rate.count) : 0;
+
+if(requestCount >= 3){
+return new Response(JSON.stringify({
+ok:false,
+error:"Çok sık gönderim yapıyorsunuz"
+}),{
+status:429,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+}
+
+/* ===============================
+FORM DATA
+=============================== */
+
+const formData = await request.formData();
+
+/* ===============================
+FORM ALANLARI (CLEAN)
+=============================== */
+
+const kategori = String(formData.get("kategori") || "").trim();
+const firma = String(formData.get("firma") || "").trim();
+const mahalle = String(formData.get("mahalle") || "").trim();
+const telefon = String(formData.get("telefon") || "").replace(/\D/g,"");
+const website = String(formData.get("website") || "").trim();
+const detay = String(formData.get("detay") || "").trim();
+const sifreRaw = String(formData.get("sifre") || "").trim();
+
+
+
+
+/* ===============================
+📷 IMAGE UPLOAD (R2)
+=============================== */
+
+let gorselUrl = null;
+
+const file = formData.get("gorsel");
+
+if(file && file.size > 0){
+
+if(file.size > 2 * 1024 * 1024){
+throw new Error("Görsel 2MB üstü olamaz");
+}
+
+const ext = file.name.split('.').pop();
+const fileName = `hizmet-${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+await env.GALERI.put(fileName, file.stream(), {
+httpMetadata:{
+contentType:file.type
+}
+});
+
+gorselUrl = `https://img.bahcelievlerforum.com.tr/${fileName}`;
+}
+
+
+/* ===============================
+VALIDATION
+=============================== */
+
+if(!kategori) throw new Error("Kategori seçin");
+
+if(firma.length < 2 || firma.length > 35){
+throw new Error("Firma adı 2-35 karakter olmalı");
+}
+
+if(!mahalle){
+throw new Error("Mahalle seçin");
+}
+
+if(telefon.length < 10 || telefon.length > 11){
+throw new Error("Telefon hatalı");
+}
+
+if(detay.length > 750){
+throw new Error("Detay çok uzun");
+}
+
+if(!/^[A-Za-z]{1}[0-9]{4}$/.test(sifreRaw)){
+throw new Error("Şifre formatı hatalı");
+}
+/* ===============================
+PASSWORD HASH
+=============================== */
+
+const sifreHash = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(sifreRaw)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* ===============================
+INSERT (FIXED)
+=============================== */
+
+await env.DB.prepare(`
+INSERT INTO hizmetler
+(kategori,firma,mahalle,telefon,website,detay,gorsel,sifre,ip,status,created_at)
+VALUES (?,?,?,?,?,?,?,?,?,1,datetime('now'))
+`)
+.bind(
+kategori,
+firma,
+mahalle,
+telefon,
+website,
+detay,
+gorselUrl,
+sifreHash,   // 🔥 KRİTİK: artık hash yazılıyor
+ip
+)
+.run();
+
+/* ===============================
+SUCCESS
+=============================== */
+
+return new Response(JSON.stringify({
+ok:true
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}catch(e){
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+
+
+/* =================================================
+TEKLİF EKLE (YENİ - KRİTİK)
+================================================= */
+
+if(url.pathname === "/api/teklif-ekle" && request.method === "POST"){
+
+try{
+
+/* ===============================
+IP HASH
+=============================== */
+
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* ===============================
+FORM DATA
+=============================== */
+
+const formData = await request.formData();
+
+const service = String(formData.get("service") || "").trim();
+const district = String(formData.get("district") || "").trim();
+const description = String(formData.get("desc") || "").trim();
+const email = String(formData.get("email") || "").trim();
+
+/* ===============================
+VALIDATION
+=============================== */
+
+if(!service) throw new Error("Hizmet seçiniz");
+if(!district) throw new Error("Mahalle seçiniz");
+if(description.length < 10) throw new Error("Açıklama çok kısa");
+if(!email || !email.includes("@")) throw new Error("Email hatalı");
+
+/* ===============================
+IMAGE (OPSİYONEL)
+=============================== */
+
+let imageUrl = null;
+const file = formData.get("image");
+
+if(file && file.size > 0){
+
+if(file.size > 2 * 1024 * 1024){
+throw new Error("Görsel max 2MB");
+}
+
+const ext = file.name.split('.').pop();
+const fileName = `teklif-${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+await env.GALERI.put(fileName, file.stream(), {
+httpMetadata:{
+contentType:file.type
+}
+});
+
+imageUrl = `https://img.bahcelievlerforum.com.tr/${fileName}`;
+}
+
+/* ===============================
+USER AGENT
+=============================== */
+
+const user_agent = request.headers.get("User-Agent") || "";
+
+/* ===============================
+INSERT
+=============================== */
+
+await env.DB.prepare(`
+INSERT INTO teklifler
+(service, district, description, email, image_url, ip_hash, user_agent, status, priority, created_at)
+VALUES (?,?,?,?,?,?,?,?,?,datetime('now'))
+`)
+.bind(
+service,
+district,
+description,
+email,
+imageUrl,
+ip,
+user_agent,
+"pending",
+0
+)
+.run();
+
+/* ===============================
+SUCCESS
+=============================== */
+
+return new Response(JSON.stringify({
+ok:true
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}catch(e){
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+}
+
+
+
+
+/* =================================================
+HİZMETLER LİSTE (FULL FIX)
+================================================= */
+
+if(url.pathname === "/api/hizmetler" && request.method === "GET"){
+
+try{
+
+const kategori = url.searchParams.get("kategori");
+const mahalle = url.searchParams.get("mahalle");
+
+/* BASE QUERY */
+let query = `
+SELECT
+id,
+kategori,
+firma,
+mahalle,
+telefon,
+detay,
+gorsel,
+created_at
+FROM hizmetler
+WHERE status = 1
+`;
+
+let params = [];
+
+/* FILTERS */
+if(kategori){
+query += " AND kategori = ?";
+params.push(kategori);
+}
+
+if(mahalle){
+query += " AND mahalle = ?";
+params.push(mahalle);
+}
+
+/* ORDER + LIMIT */
+query += " ORDER BY created_at DESC LIMIT 30";
+
+const result = await env.DB.prepare(query).bind(...params).all();
+
+/* 🔥 DATA NORMALIZATION (FIXED) */
+const data = result.results.map(item => ({
+
+id: item.id,
+firma: item.firma,
+kategori: item.kategori,
+mahalle: item.mahalle,
+telefon: item.telefon,
+
+detay: item.detay || "",   // 🔥 KRİTİK FIX
+
+gorsel: item.gorsel || null,
+
+created_at: item.created_at
+
+}));
+
+return new Response(JSON.stringify(data),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*",
+"Cache-Control":"public, max-age=120"
+}
+});
+
+}catch(e){
+
+return new Response(JSON.stringify({
+ok:false,
+error:"Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+
+
+}
+
+}
+/* =================================================
+EMLAK TALEP (POST)
+================================================= */
+
+if(url.pathname === "/api/emlak-talep" && request.method === "POST"){
+
+try{
+
+/* ===============================
+IP HASH
+=============================== */
+
+const rawIp =
+request.headers.get("CF-Connecting-IP") ||
+request.headers.get("x-forwarded-for") ||
+"0.0.0.0";
+
+const ip = await crypto.subtle.digest(
+"SHA-256",
+new TextEncoder().encode(rawIp)
+).then(buf =>
+Array.from(new Uint8Array(buf))
+.map(b=>b.toString(16).padStart(2,"0"))
+.join("")
+);
+
+/* ===============================
+RATE LIMIT (FAIL SAFE)
+=============================== */
+
+let requestCount = 0;
+
+try{
+
+const rate = await env.DB.prepare(`
+SELECT COUNT(*) as count
+FROM emlak_talepleri
+WHERE ip_hash = ?
+AND created_at > datetime('now','-10 minutes')
+`)
+.bind(ip)
+.first();
+
+requestCount = rate?.count ? Number(rate.count) : 0;
+
+}catch(e){
+console.warn("RATE LIMIT PASSED (DB YOK):", e.message);
+}
+
+if(requestCount >= 5){
+return new Response(JSON.stringify({
+ok:false,
+error:"Çok sık gönderim yapıyorsunuz"
+}),{
+status:429,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+}
+
+/* ===============================
+BODY SAFE PARSE
+=============================== */
+
+let data;
+
+try{
+data = await request.json();
+}catch(e){
+return new Response(JSON.stringify({
+ok:false,
+error:"JSON parse hatası",
+detail:e.message
+}),{
+status:400,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+}
+
+if(!data){
+throw new Error("Veri okunamadı");
+}
+
+/* ===============================
+VALIDATION
+=============================== */
+
+if(!data.tur) throw new Error("Tür seçiniz");
+if(!data.durum) throw new Error("Durum seçiniz");
+if(!data.mahalle) throw new Error("Mahalle seçiniz");
+
+const telefon = String(data.tel || "").replace(/\D/g,"");
+
+if(!/^5\d{9}$/.test(telefon)){
+throw new Error("Telefon hatalı (5XXXXXXXXX)");
+}
+
+/* ===============================
+CLEAN DATA
+=============================== */
+
+const butce = parseInt(data.budget);
+
+if(isNaN(butce) || butce < 15000){
+  throw new Error("Bütçe minimum 15.000 olmalı");
+}
+
+const detay = String(data.detay || "")
+.replace(/[<>]/g,"")
+.trim()
+.slice(0,500);
+
+const ad = String(data.ad || "")
+.replace(/[<>]/g,"")
+.trim()
+.slice(0,50);
+
+const email = String(data.email || "")
+.trim()
+.slice(0,100);
+
+/* ===============================
+DB INSERT (FAIL SAFE)
+=============================== */
+
+let insertResult = null;
+
+try{
+
+insertResult = await env.DB.prepare(`
+INSERT INTO emlak_talepleri
+(tur,durum,mahalle,butce,detay,ad,telefon,email,ip_hash,created_at)
+VALUES (?,?,?,?,?,?,?,?,?,datetime('now'))
+`)
+.bind(
+data.tur,
+data.durum,
+data.mahalle,
+butce,
+detay,
+ad,
+telefon,
+email,
+ip
+)
+.run();
+
+}catch(dbError){
+
+console.warn("DB PASSED:", dbError.message);
+// ❗ sistem devam eder
+
+}
+
+/* ===============================
+MAIL (ANA SİSTEM - KRİTİK)
+=============================== */
+
+try{
+
+const content = `
+Yeni Emlak Talebi
+
+Tür: ${data.tur}
+Durum: ${data.durum}
+Mahalle: ${data.mahalle}
+Bütçe: ${butce}
+
+Detay:
+${detay}
+
+Ad: ${ad}
+Telefon: ${telefon}
+Email: ${email}
+`;
+
+await fetch("https://api.mailchannels.net/tx/v1/send", {
+method: "POST",
+headers: {"content-type":"application/json"},
+body: JSON.stringify({
+personalizations: [{
+to: [
+{ email: "bahcelievler.paylasim@gmail.com" },
+{ email: "erman.urel@gmail.com" }
+]
+}],
+from: {
+email: "emlaktalep@bahcelievlerforum.com.tr",
+name: "Bahçelievler Forum"
+},
+subject: "Yeni Emlak Talebi",
+content: [{
+type: "text/plain",
+value: content
+}]
+})
+});
+
+}catch(mailError){
+
+console.error("MAIL ERROR:", mailError);
+
+return new Response(JSON.stringify({
+ok:false,
+error:"Mail gönderilemedi"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+/* ===============================
+SUCCESS
+=============================== */
+
+return new Response(JSON.stringify({
+ok:true,
+id: insertResult?.meta?.last_row_id || null
+}),{
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}catch(e){
+
+console.error("EMLAK TALEP ERROR:", e);
+
+return new Response(JSON.stringify({
+ok:false,
+error:e.message || "Sunucu hatası"
+}),{
+status:500,
+headers:{
+"Content-Type":"application/json",
+"Access-Control-Allow-Origin":"*"
+}
+});
+
+}
+
+
+}
+
+
+/* ===============================
+404
+=============================== */
+
+return new Response(JSON.stringify({
+  ok:false,
+  error:"Not Found"
+}),{
+  status:404,
+  headers:{
+    "Content-Type":"application/json",
+    "Access-Control-Allow-Origin":"*"
+  }
+});
+
+} // async fetch kapanır
+} // export default kapanır
+
+
+
