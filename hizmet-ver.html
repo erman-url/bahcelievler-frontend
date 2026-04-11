@@ -273,10 +273,6 @@ DETAY MODAL (PREMIUM APP STYLE)
 
 </div>
 
-<!-- GLOBAL -->
-<div id="globalFooter"></div>
-
-
 <!-- 🔥 LOCAL DEV FIX -->
 <script>
 if(location.hostname === "127.0.0.1" || location.hostname === "localhost"){
@@ -298,8 +294,6 @@ if(location.hostname === "127.0.0.1" || location.hostname === "localhost"){
   if(widget) widget.remove();
 }
 </script>
-
-
 
 <script>
 
@@ -461,7 +455,8 @@ if(!tokenInput && (location.hostname === "127.0.0.1" || location.hostname === "l
   tokenInput = { value: "dev-token" };
 }
 
-const token = tokenInput?.value; token = document.querySelector('[name="cf-turnstile-response"]')?.value;
+const token = tokenInput?.value; 
+
 
 if(!token){
 alert("Doğrulama başarısız. Lütfen tekrar deneyin.");
