@@ -129,36 +129,49 @@ transition:.2s;
 opacity:1;
 pointer-events:auto;
 }
-
-/* 🔥 GERÇEK SHEET */
+/* 🔥 GERÇEK SHEET - FULL STABLE */
 .modal-content{
-width:100%;
-max-width:900px;
+  width:100%;
+  max-width:900px;
 
-height:calc(100vh - 80px); /* 🔥 kesin çözüm */
-max-height:100vh;
+  height:calc(100dvh - 80px); /* 🔥 vh → dvh FIX */
+  max-height:100dvh;
 
-background:white;
+  background:white;
 
-border-radius:24px 24px 0 0;
+  border-radius:24px 24px 0 0;
 
-/* 🔥 PREMIUM ÇERÇEVE */
-box-shadow:
-0 -10px 40px rgba(0,0,0,.25),
-0 0 0 1px rgba(255,255,255,.3) inset;
+  /* 🔥 PREMIUM ÇERÇEVE */
+  box-shadow:
+  0 -10px 40px rgba(0,0,0,.25),
+  0 0 0 1px rgba(255,255,255,.3) inset;
 
-overflow:hidden;
-display:flex;
-flex-direction:column;
+  /* 🔥 taşma önleme */
+  overflow:hidden;
 
-animation:sheetUp .25s ease;
+  /* 🔥 layout stabil */
+  display:flex;
+  flex-direction:column;
+
+  box-sizing:border-box;
+
+  /* 🔥 iOS safe area */
+  padding-bottom:env(safe-area-inset-bottom);
+
+  /* 🔥 performans */
+  will-change:transform;
+
+  animation:sheetUp .25s ease;
 }
 
 @keyframes sheetUp{
-from{transform:translateY(100%);}
-to{transform:translateY(0);}
+  from{
+    transform:translate3d(0,100%,0);
+  }
+  to{
+    transform:translate3d(0,0,0);
+  }
 }
-
 /* ===============================
 DETAY MODAL
 =============================== */
@@ -271,10 +284,9 @@ FORM MODAL
 =============================== */
 
 .form-modal{
-height:calc(100vh - 80px);
-display:flex;
-flex-direction:column;
+  height:calc(100dvh - 80px);
 }
+
 
 .sheet-handle{
 width:40px;
@@ -293,7 +305,7 @@ padding:10px 16px;
 .form-area{
 flex:1;
 overflow:auto;
-padding:10px 16px 120px;
+ padding:10px 16px 20px;
 display:flex;
 flex-direction:column;
 gap:14px;
@@ -307,18 +319,17 @@ border:1px solid #d7dce5;
 
 /* SUBMIT */
 .submit-btn{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-width:90%;
-max-width:500px;
-background:#16a34a;
-color:white;
-padding:16px;
-border-radius:14px;
-font-weight:800;
-z-index:10;
+  position:sticky;
+  bottom:0;
+
+  width:100%;
+  max-width:100%;
+
+  left:auto;
+  transform:none;
+
+  margin-top:auto;
+  z-index:10;
 }
 /* ===============================
 PREMIUM HEADER FINAL (PRO FIX)
@@ -407,4 +418,15 @@ font-size:20px;
 box-shadow:
 0 6px 16px rgba(0,0,0,.25),
 inset 0 1px 0 rgba(255,255,255,.3);
+}
+
+select{
+  appearance:none;
+  -webkit-appearance:none;
+  background-color:#fff;
+}
+
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
 }
