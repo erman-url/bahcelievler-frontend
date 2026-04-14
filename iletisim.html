@@ -587,25 +587,103 @@ Hayır. Bahçelievler Forum; mahalle dayanışmasını ve yerel bilgi paylaşım
 </div>
 </div>`;
 }
-
 if(type==="contact"){
 c.innerHTML=`
 <div class="info-panel contact-box">
 
 <h2>Bize Yazın</h2>
 
-<input placeholder="Ad Soyad">
+<form id="contactForm">
 
-<input placeholder="E-posta">
+<input name="name" placeholder="Ad Soyad" required>
 
-<textarea placeholder="Mesajınızı yazabilirsiniz"></textarea>
+<input name="email" type="email" placeholder="E-posta" required>
 
-<button>Mesaj Gönder</button>
+<textarea name="message" placeholder="Mesajınızı yazabilirsiniz" required></textarea>
 
-</div>`;
+<button type="submit">Mesaj Gönder</button>
+
+</form>
+
+</div>
+`;
+
+initContactForm(); // 🔥 kritik
 }
 
 window.scrollTo({top:c.offsetTop-30,behavior:"smooth"});
+
+}
+
+/* ===============================
+CONTACT FORM INIT (GLOBAL)
+=============================== */
+function initContactForm(){
+
+const form = document.getElementById("contactForm");
+if(!form) return;
+
+form.addEventListener("submit", async function(e){
+
+e.preventDefault();
+
+const btn = form.querySelector("button");
+
+if(btn.classList.contains("loading")) return;
+
+btn.classList.add("loading");
+btn.innerText = "Gönderiliyor...";
+
+const data = {
+name: form.name.value.trim(),
+email: form.email.value.trim(),
+message: form.message.value.trim()
+};
+
+/* VALIDATION */
+if(!data.name || !data.email || !data.message){
+alert("Tüm alanları doldurun");
+btn.classList.remove("loading");
+btn.innerText = "Mesaj Gönder";
+return;
+}
+
+try{
+
+const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/contact", {
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body: JSON.stringify(data)
+});
+
+let result;
+
+try{
+result = await res.json();
+}catch{
+throw new Error("Sunucu cevabı okunamadı");
+}
+
+if(!res.ok || !result.ok){
+throw new Error(result?.error || "Gönderilemedi");
+}
+
+alert("Mesajınız başarıyla iletildi ✔");
+form.reset();
+
+}catch(err){
+
+console.error("CONTACT ERROR:", err);
+alert("Hata: " + (err.message || "Bilinmeyen hata"));
+
+}finally{
+
+btn.classList.remove("loading");
+btn.innerText = "Mesaj Gönder";
+
+}
+
+});
 
 }
 
