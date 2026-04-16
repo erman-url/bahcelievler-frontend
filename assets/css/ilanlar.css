@@ -283,3 +283,78 @@ RULES PREMIUM CHECK
 .rules-content:active{
   transform:scale(0.97);
 }
+
+/* ===============================
+GLOBAL MOBILE FIX (KRİTİK)
+=============================== */
+
+html, body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden; /* 🔥 EN ÖNEMLİ */
+}
+
+/* ===============================
+WRAPPER FIX
+=============================== */
+
+.page-wrapper,
+#mainContent{
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+}
+
+/* ===============================
+GRID FIX (TAŞMA ENGEL)
+=============================== */
+
+.quick-grid,
+.ads-grid{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+/* ===============================
+CARD FIX
+=============================== */
+
+.quick-card,
+.ad-card{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+/* ===============================
+IMAGE FIX
+=============================== */
+
+img{
+  max-width:100%;
+  height:auto;
+  display:block;
+}
+
+/* ===============================
+INPUT / SELECT FIX
+=============================== */
+
+input,
+select,
+textarea,
+button{
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+/* ===============================
+MODAL FIX
+=============================== */
+
+.ad-modal-content{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
