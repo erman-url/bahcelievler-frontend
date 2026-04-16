@@ -830,6 +830,90 @@ TEXT (OKUNURLUK FIX)
   min-height:90px;
 }
 
+/* ===============================
+COOKIE PRO UI (APP STYLE)
+=============================== */
+
+.cookie-bar{
+  position:fixed;
+  left:50%;
+  bottom:90px;
+  transform:translate(-50%, 20px);
+
+  width:92%;
+  max-width:520px;
+
+  background:rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+
+  border-radius:18px;
+  padding:14px;
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+
+  border:1px solid rgba(255,255,255,0.4);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+
+  z-index:999;
+}
+
+.cookie-bar.show{
+  opacity:1;
+  transform:translate(-50%, 0);
+  pointer-events:auto;
+}
+
+.cookie-inner{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.cookie-text{
+  font-size:13px;
+  line-height:1.4;
+  color:#1e293b;
+}
+
+.cookie-actions{
+  display:flex;
+  gap:8px;
+}
+
+.cookie-actions button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* accept */
+.btn-accept{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;
+  box-shadow:0 6px 16px rgba(37,99,235,0.3);
+}
+
+/* reject */
+.btn-reject{
+  background:#e5e7eb;
+  color:#111;
+}
+
+/* tap effect */
+.cookie-actions button:active{
+  transform:scale(0.95);
+}
+
 </style>
 
 </head>
@@ -908,8 +992,6 @@ TEXT (OKUNURLUK FIX)
     <p class="hero-sub">Deneyimlerini paylaş, önerilerini ilet herkes duysun.</p>
   </div>
 </div>
-
-
 
 </section>
 
@@ -995,6 +1077,78 @@ TEXT (OKUNURLUK FIX)
     <p id="modalContent"></p>
   </div>
 </div>
+
+
+<div id="cookieBar" class="cookie-bar">
+  <div class="cookie-inner">
+    <div class="cookie-text">
+      Deneyiminizi geliştirmek için çerez kullanıyoruz.
+    </div>
+    <div class="cookie-actions">
+      <button class="btn-accept" onclick="acceptCookies()">Kabul Et</button>
+      <button class="btn-reject" onclick="rejectCookies()">Reddet</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ===============================
+COOKIE SYSTEM PRO
+=============================== */
+
+const COOKIE_KEY = "cookieConsent";
+
+function showCookieBar(){
+  const el = document.getElementById("cookieBar");
+  if(!el) return;
+
+  setTimeout(()=>{
+    el.classList.add("show");
+  },300);
+}
+
+function hideCookieBar(){
+  const el = document.getElementById("cookieBar");
+  if(!el) return;
+
+  el.classList.remove("show");
+
+  setTimeout(()=>{
+    el.style.display = "none";
+  },300);
+}
+
+function acceptCookies(){
+  localStorage.setItem(COOKIE_KEY, "accepted");
+  hideCookieBar();
+}
+
+function rejectCookies(){
+  localStorage.setItem(COOKIE_KEY, "rejected");
+  hideCookieBar();
+}
+
+function initCookieBar(){
+
+  const status = localStorage.getItem(COOKIE_KEY);
+
+  if(!status){
+    const el = document.getElementById("cookieBar");
+    el.style.display = "block";
+    showCookieBar();
+  }
+
+}
+
+/* SAFE INIT */
+if(document.readyState !== "loading"){
+  initCookieBar();
+}else{
+  document.addEventListener("DOMContentLoaded", initCookieBar);
+}
+</script>
+
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/dashboard.js" defer></script>
