@@ -151,7 +151,7 @@
 
     <textarea id="adDesc" placeholder="Açıklama (max 500 karakter)"></textarea>
 
-    <input type="file" id="adImages" multiple>
+   <input type="file" id="adImages" multiple accept="image/*">
 
     <input type="text" id="adContact" placeholder="İletişim">
 
@@ -425,7 +425,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(openBtn && modal){
     openBtn.onclick = ()=>{
       modal.classList.add("active");
-      document.body.style.overflow = "hidden"; // scroll lock
+      document.body.style.overflow = "hidden";
     };
   }
 
@@ -453,11 +453,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     });
   }
 
-  /* güvenlik: buton yoksa çık */
   if(!btn) return;
 
 /* ===============================
-SUBMIT (FULL FIX)
+SUBMIT (FULL FIX PRO)
 =============================== */
 btn.onclick = async ()=>{
 
@@ -497,46 +496,89 @@ btn.onclick = async ()=>{
     if(!category) throw "Kategori seç";
     if(!district) throw "Mahalle seç";
 
- if(!delete_token || delete_token.length < 3){
-  throw "Şifre min 3 karakter";
-}
+    if(!delete_token || delete_token.length < 3){
+      throw "Şifre min 3 karakter";
+    }
 
-const rulesAccepted = document.getElementById("rulesCheck")?.checked;
+    const rulesAccepted = document.getElementById("rulesCheck")?.checked;
 
-if(!rulesAccepted){
-  throw "Lütfen ilan kurallarını kabul edin";
-}
+    if(!rulesAccepted){
+      throw "Lütfen ilan kurallarını kabul edin";
+    }
 
-    /* 🔥 IMAGE BASE64 + DEBUG */
+    /* 🔥 IMAGE SYSTEM (PRO + SAFE) */
     const files = document.getElementById("adImages")?.files || [];
 
+    if(files.length > 3){
+      alert("En fazla 3 foto yükleyebilirsiniz");
+      throw "Foto limit aşıldı";
+    }
+
+    if(!/^@[a-zA-Z0-9_]{4,}$/.test(contact)){
+      throw "Geçerli Telegram username gir (@username)";
+    }
+
+    /* 🔥 COMPRESS + BASE64 */
     const toBase64 = file => new Promise(res=>{
+
       if(!file) return res("");
 
-      if(file.size > 2*1024*1024){
-        alert("Max 2MB");
-        return res("");
+      if(file.size > 5 * 1024 * 1024){
+        return res("__ERROR__");
       }
 
-      const r = new FileReader();
-      r.onload = ()=>res(r.result||"");
-      r.onerror = ()=>res("");
-      r.readAsDataURL(file);
+      const reader = new FileReader();
+      const img = new Image();
+
+      reader.onload = e=>{
+        img.src = e.target.result;
+      };
+
+      img.onload = ()=>{
+
+        const canvas = document.createElement("canvas");
+
+        const maxWidth = 1200;
+        const scale = Math.min(1, maxWidth / img.width);
+
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const type = file.type === "image/png" ? "image/png" : "image/jpeg";
+        const compressed = canvas.toDataURL(type, 0.7);
+
+        res(compressed);
+      };
+
+      /* 🔴 KRİTİK FIX */
+      img.onerror = ()=>{
+        res("");
+      };
+
+      reader.onerror = ()=>res("");
+      reader.readAsDataURL(file);
+
     });
 
-    let image_url="",image_url_2="",image_url_3="";
+    /* 🔥 IMAGES */
+    let image_url = "", image_url_2 = "", image_url_3 = "";
 
     if(files[0]){
       image_url = await toBase64(files[0]);
-      console.log("UPLOAD IMG1:", image_url?.slice(0,50));
+      if(image_url === "__ERROR__") throw "Fotoğraf 5MB'dan büyük olamaz";
     }
 
     if(files[1]){
       image_url_2 = await toBase64(files[1]);
+      if(image_url_2 === "__ERROR__") throw "Fotoğraf 5MB'dan büyük olamaz";
     }
 
     if(files[2]){
       image_url_3 = await toBase64(files[2]);
+      if(image_url_3 === "__ERROR__") throw "Fotoğraf 5MB'dan büyük olamaz";
     }
 
     const payload = {
@@ -550,9 +592,9 @@ if(!rulesAccepted){
       delete_token,
       image_url,
       image_url_2,
-      image_url_3
+      image_url_3,
+      rulesAccepted
     };
-
 
     btn.disabled = true;
     btn.innerText = "Gönderiliyor...";
@@ -576,8 +618,10 @@ if(!rulesAccepted){
     location.reload();
 
   }catch(err){
+
     console.log("SUBMIT ERROR:", err);
-    alert(err);
+    alert(typeof err === "string" ? err : "Bir hata oluştu");
+
     btn.disabled = false;
     btn.innerText = "İLANI YAYINLA";
   }
@@ -585,68 +629,6 @@ if(!rulesAccepted){
 };
 
 });
-
-/* ===============================
-FILTER SYSTEM
-=============================== */
-
-function toggleFilter(){
-  const panel = document.getElementById("filterPanel");
-  if(!panel) return;
-
-  panel.style.display =
-    panel.style.display === "none" ? "grid" : "none";
-}
-
-document.addEventListener("change",(e)=>{
-  if(
-    e.target.id === "filterCategory" ||
-    e.target.id === "filterDistrict"
-  ){
-    applyFilter();
-  }
-});
-
-function applyFilter(){
-
-  if(!Array.isArray(ALL_ADS)) return;
-
-  let filtered = [...ALL_ADS];
-
-  const cat = document.getElementById("filterCategory")?.value;
-  const dist = document.getElementById("filterDistrict")?.value;
-
-  if(cat){
-    filtered = filtered.filter(a => a.category === cat);
-  }
-
-  if(dist){
-    filtered = filtered.filter(a => a.district === dist);
-  }
-
-  renderAds(filtered);
-}
-
-function resetFilter(){
-
-  const cat = document.getElementById("filterCategory");
-  const dist = document.getElementById("filterDistrict");
-
-  if(cat) cat.value = "";
-  if(dist) dist.value = "";
-
-  renderAds(ALL_ADS);
-}
-
-function openRulesModal(){
-  document.getElementById("rulesModal").style.display = "flex";
-  document.body.style.overflow = "hidden";
-}
-
-function closeRulesModal(){
-  document.getElementById("rulesModal").style.display = "none";
-  document.body.style.overflow = "auto";
-}
 
 </script>
 
