@@ -415,6 +415,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   const openBtn = document.getElementById("openAdModal");
   const closeBtn = document.getElementById("closeAdModal");
   const rulesCheck = document.getElementById("rulesCheck");
+  const fCat = document.getElementById("filterCategory");
+const fDist = document.getElementById("filterDistrict");
+
 
   if(openBtn && modal){
     openBtn.onclick = ()=>{
@@ -446,6 +449,59 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(!btn) return;
 
  
+
+ /* ===============================
+FILTER SYSTEM (FULL WORKING)
+=============================== */
+
+let CURRENT_FILTER = {
+  category: "",
+  district: ""
+};
+
+/* PANEL TOGGLE */
+function toggleFilter(type){
+  const panel = document.getElementById("filterPanel");
+  if(!panel) return;
+
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+
+/* APPLY FILTER */
+function applyFilters(){
+
+  const cat = document.getElementById("filterCategory")?.value || "";
+  const dist = document.getElementById("filterDistrict")?.value || "";
+
+  CURRENT_FILTER.category = cat;
+  CURRENT_FILTER.district = dist;
+
+  let filtered = ALL_ADS;
+
+  if(cat){
+    filtered = filtered.filter(x => x.category === cat);
+  }
+
+  if(dist){
+    filtered = filtered.filter(x => x.district === dist);
+  }
+
+  renderAds(filtered);
+}
+
+/* RESET */
+function resetFilter(){
+
+  CURRENT_FILTER = { category:"", district:"" };
+
+  const cat = document.getElementById("filterCategory");
+  const dist = document.getElementById("filterDistrict");
+
+  if(cat) cat.value = "";
+  if(dist) dist.value = "";
+
+  renderAds(ALL_ADS);
+}
 
 /* ===============================
 SUBMIT (FULL FIX PRO STABLE)
@@ -636,34 +692,37 @@ btn.onclick = async ()=>{
     if(!res.ok || !result?.ok){
       throw result?.error || "İlan eklenemedi";
     }
+/* ===============================
+SUCCESS
+=============================== */
 
-    /* ===============================
-    SUCCESS
-    =============================== */
+alert("İlan eklendi ✔");
 
-    alert("İlan eklendi ✔");
+// 🔥 UX FIX (soft refresh)
+try{
+  document.getElementById("adModal").classList.remove("active");
+  document.body.style.overflow = "auto";
+  loadAds(); // reload yerine veri yenile
+}catch{
+  location.reload(); // fallback
+}
 
-    // 🔥 UX FIX (reload yerine soft refresh istersen burayı değiştir)
-    location.reload();
+}catch(err){
 
-  }catch(err){
+  console.log("SUBMIT ERROR:", err);
 
-    console.log("SUBMIT ERROR:", err);
+  alert(typeof err === "string" ? err : "Bir hata oluştu");
 
-    alert(typeof err === "string" ? err : "Bir hata oluştu");
-
-    btn.disabled = false;
-    btn.innerText = "İLANI YAYINLA";
-  }
+  btn.disabled = false;
+  btn.innerText = "İLANI YAYINLA";
+}
 
 };
 
- });
-
-
+});
 
 /* ===============================
-RULES MODAL FIX
+RULES MODAL (GLOBAL)
 =============================== */
 function openRulesModal(){
   const modal = document.getElementById("rulesModal");
@@ -683,53 +742,18 @@ function closeRulesModal(){
 
 
 /* ===============================
-FILTER SYSTEM (BASIC WORKING)
+SAFE INIT (FILTER EVENTS)
 =============================== */
 
-function toggleFilter(type){
+document.addEventListener("DOMContentLoaded",()=>{
 
-  const panel = document.getElementById("filterPanel");
-  if(!panel) return;
+  const fCat = document.getElementById("filterCategory");
+  const fDist = document.getElementById("filterDistrict");
 
-  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  if(fCat) fCat.addEventListener("change", applyFilters);
+  if(fDist) fDist.addEventListener("change", applyFilters);
 
-  // aktif filtreyi highlight et (opsiyonel)
-  console.log("Filter:", type);
-}
-
-/* ===============================
-RESET FILTER
-=============================== */
-
-function resetFilter(){
-
-  document.getElementById("filterCategory").value = "";
-  document.getElementById("filterDistrict").value = "";
-
-  renderAds(ALL_ADS);
-
-}
-
-document.getElementById("filterCategory").onchange = applyFilters;
-document.getElementById("filterDistrict").onchange = applyFilters;
-
-function applyFilters(){
-
-  const cat = document.getElementById("filterCategory").value;
-  const dist = document.getElementById("filterDistrict").value;
-
-  let filtered = ALL_ADS;
-
-  if(cat){
-    filtered = filtered.filter(x => x.category === cat);
-  }
-
-  if(dist){
-    filtered = filtered.filter(x => x.district === dist);
-  }
-
-  renderAds(filtered);
-}
+});
 
 </script>
 
