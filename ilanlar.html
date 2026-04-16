@@ -145,7 +145,7 @@
 
     <select id="adCondition">
       <option value="">Durum</option>
-      <option>2. El</option>
+      <option>2.El</option>
       <option>Yeni</option>
     </select>
 
@@ -631,10 +631,12 @@ function resetFilter(){
 
 function openRulesModal(){
   document.getElementById("rulesModal").style.display = "flex";
+  document.body.style.overflow = "hidden";
 }
 
 function closeRulesModal(){
   document.getElementById("rulesModal").style.display = "none";
+  document.body.style.overflow = "auto";
 }
 
 </script>
