@@ -66,6 +66,10 @@ body{
   padding:10px;
 }
 
+body{
+  background:#f5f7fb;
+}
+
 .ad-title{
   font-size:0.85rem;
   font-weight:600;
@@ -113,6 +117,8 @@ AD MODAL
   border-radius: 16px;
   max-height: 90vh;
   overflow-y: auto;
+    box-shadow:0 25px 60px rgba(0,0,0,0.2);
+
 }
 
 .ad-modal-header{
@@ -350,12 +356,6 @@ button{
 /* ===============================
 MODAL FIX
 =============================== */
-
-.ad-modal-content{
-  width:100%;
-  max-width:500px; /* 🔥 geri getir */
-  box-sizing:border-box;
-}
 
 /* 🔥 PAGE CENTER FIX */
 .page-wrapper{
