@@ -5,8 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>İlanlar | Bahçelievler Forum</title>
-
 <!-- SEO -->
 <title>Bahçelievler İlanlar | Satılık, Kiralık, 2. El | Bahçelievler Forum</title>
 <meta name="description" content="Bahçelievler'de satılık, kiralık ve 2. el ilanları keşfet. Emlak, vasıta ve elektronik ilanlar tek platformda. Hemen ilan ver veya fırsatları yakala.">
@@ -403,8 +401,10 @@ function renderAds(data){
 
   grid.innerHTML = html;
 }
+
+
 /* ===============================
-INIT
+INIT (ZORUNLU)
 =============================== */
 document.addEventListener("DOMContentLoaded",()=>{
 
@@ -412,15 +412,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   const modal = document.getElementById("adModal");
   const btn = document.getElementById("submitAdBtn");
-
   const openBtn = document.getElementById("openAdModal");
   const closeBtn = document.getElementById("closeAdModal");
-
   const rulesCheck = document.getElementById("rulesCheck");
-
-  /* ===============================
-  MODAL OPEN / CLOSE
-  =============================== */
 
   if(openBtn && modal){
     openBtn.onclick = ()=>{
@@ -443,10 +437,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   });
 
-  /* ===============================
-  RULES CHECK → BUTTON AKTİF
-  =============================== */
-
   if(rulesCheck && btn){
     rulesCheck.addEventListener("change", ()=>{
       btn.disabled = !rulesCheck.checked;
@@ -455,8 +445,10 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   if(!btn) return;
 
+ 
+
 /* ===============================
-SUBMIT (FULL FIX PRO)
+SUBMIT (FULL FIX PRO STABLE)
 =============================== */
 btn.onclick = async ()=>{
 
@@ -474,12 +466,17 @@ btn.onclick = async ()=>{
     const contact = document.getElementById("adContact")?.value.trim();
     const delete_token = document.getElementById("deleteCode")?.value;
 
+    /* 🔥 PRICE PARSE SAFE */
     let rawPrice = rawInput.trim()
       .replace(/\s/g,"")
       .replace(/\./g,"")
       .replace(",", ".");
 
     const price = Number(rawPrice);
+
+    /* ===============================
+    VALIDATION
+    =============================== */
 
     if(!title || title.length < 3) throw "Başlık kısa";
     if(title.length > 50) throw "Başlık çok uzun";
@@ -500,13 +497,20 @@ btn.onclick = async ()=>{
       throw "Şifre min 3 karakter";
     }
 
+    if(!/^@[a-zA-Z0-9_]{4,}$/.test(contact)){
+      throw "Geçerli Telegram username gir (@username)";
+    }
+
     const rulesAccepted = document.getElementById("rulesCheck")?.checked;
 
     if(!rulesAccepted){
       throw "Lütfen ilan kurallarını kabul edin";
     }
 
-    /* 🔥 IMAGE SYSTEM (PRO + SAFE) */
+    /* ===============================
+    IMAGE SYSTEM
+    =============================== */
+
     const files = document.getElementById("adImages")?.files || [];
 
     if(files.length > 3){
@@ -514,11 +518,6 @@ btn.onclick = async ()=>{
       throw "Foto limit aşıldı";
     }
 
-    if(!/^@[a-zA-Z0-9_]{4,}$/.test(contact)){
-      throw "Geçerli Telegram username gir (@username)";
-    }
-
-    /* 🔥 COMPRESS + BASE64 */
     const toBase64 = file => new Promise(res=>{
 
       if(!file) return res("");
@@ -536,34 +535,44 @@ btn.onclick = async ()=>{
 
       img.onload = ()=>{
 
-        const canvas = document.createElement("canvas");
+        try{
 
-        const maxWidth = 1200;
-        const scale = Math.min(1, maxWidth / img.width);
+          const canvas = document.createElement("canvas");
 
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
+          const maxWidth = 1200;
+          const scale = Math.min(1, maxWidth / img.width);
 
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
 
-        const type = file.type === "image/png" ? "image/png" : "image/jpeg";
-        const compressed = canvas.toDataURL(type, 0.7);
+          const ctx = canvas.getContext("2d");
 
-        res(compressed);
+          if(!ctx) return res("");
+
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const type = file.type === "image/png" ? "image/png" : "image/jpeg";
+          const compressed = canvas.toDataURL(type, 0.7);
+
+          res(compressed);
+
+        }catch(e){
+          res("");
+        }
       };
 
-      /* 🔴 KRİTİK FIX */
-      img.onerror = ()=>{
-        res("");
-      };
+      /* 🔴 FREEZE FIX */
+      img.onerror = ()=> res("");
 
-      reader.onerror = ()=>res("");
+      reader.onerror = ()=> res("");
       reader.readAsDataURL(file);
 
     });
 
-    /* 🔥 IMAGES */
+    /* ===============================
+    IMAGE ASSIGN
+    =============================== */
+
     let image_url = "", image_url_2 = "", image_url_3 = "";
 
     if(files[0]){
@@ -581,6 +590,10 @@ btn.onclick = async ()=>{
       if(image_url_3 === "__ERROR__") throw "Fotoğraf 5MB'dan büyük olamaz";
     }
 
+    /* ===============================
+    PAYLOAD
+    =============================== */
+
     const payload = {
       title,
       price,
@@ -596,6 +609,10 @@ btn.onclick = async ()=>{
       rulesAccepted
     };
 
+    /* ===============================
+    REQUEST
+    =============================== */
+
     btn.disabled = true;
     btn.innerText = "Gönderiliyor...";
 
@@ -608,18 +625,31 @@ btn.onclick = async ()=>{
       }
     );
 
-    const result = await res.json();
+    let result = null;
+
+    try{
+      result = await res.json();
+    }catch{
+      throw "Sunucu cevabı okunamadı";
+    }
 
     if(!res.ok || !result?.ok){
       throw result?.error || "İlan eklenemedi";
     }
 
-    alert("İlan eklendi");
+    /* ===============================
+    SUCCESS
+    =============================== */
+
+    alert("İlan eklendi ✔");
+
+    // 🔥 UX FIX (reload yerine soft refresh istersen burayı değiştir)
     location.reload();
 
   }catch(err){
 
     console.log("SUBMIT ERROR:", err);
+
     alert(typeof err === "string" ? err : "Bir hata oluştu");
 
     btn.disabled = false;
@@ -628,7 +658,7 @@ btn.onclick = async ()=>{
 
 };
 
-});
+ });
 
 </script>
 
