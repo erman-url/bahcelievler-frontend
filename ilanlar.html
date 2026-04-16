@@ -682,6 +682,55 @@ function closeRulesModal(){
 }
 
 
+/* ===============================
+FILTER SYSTEM (BASIC WORKING)
+=============================== */
+
+function toggleFilter(type){
+
+  const panel = document.getElementById("filterPanel");
+  if(!panel) return;
+
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+
+  // aktif filtreyi highlight et (opsiyonel)
+  console.log("Filter:", type);
+}
+
+/* ===============================
+RESET FILTER
+=============================== */
+
+function resetFilter(){
+
+  document.getElementById("filterCategory").value = "";
+  document.getElementById("filterDistrict").value = "";
+
+  renderAds(ALL_ADS);
+
+}
+
+document.getElementById("filterCategory").onchange = applyFilters;
+document.getElementById("filterDistrict").onchange = applyFilters;
+
+function applyFilters(){
+
+  const cat = document.getElementById("filterCategory").value;
+  const dist = document.getElementById("filterDistrict").value;
+
+  let filtered = ALL_ADS;
+
+  if(cat){
+    filtered = filtered.filter(x => x.category === cat);
+  }
+
+  if(dist){
+    filtered = filtered.filter(x => x.district === dist);
+  }
+
+  renderAds(filtered);
+}
+
 </script>
 
 <script src="assets/js/core.js" defer></script>
