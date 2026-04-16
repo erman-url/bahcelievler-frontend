@@ -638,7 +638,6 @@ name: form.name.value.trim(),
 email: form.email.value.trim(),
 message: form.message.value.trim()
 };
-
 /* VALIDATION */
 if(!data.name || !data.email || !data.message){
 alert("Tüm alanları doldurun");
@@ -662,8 +661,6 @@ body: JSON.stringify({
   from_name: data.name,
   reply_to: data.email,
   redirect: false,
-
-  botcheck: bot,
 
   subject: "Bahçelievler Forum - İletişim"
 })
