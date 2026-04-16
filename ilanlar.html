@@ -157,10 +157,74 @@
 
     <input type="password" id="deleteCode" placeholder="Silme Şifresi">
 
-    <button id="submitAdBtn" class="submit-btn">İLANI YAYINLA</button>
+<div style="margin-top:10px; font-size:12px;">
+
+  <label style="display:flex; align-items:center; gap:6px;">
+    <input type="checkbox" id="rulesCheck">
+    <span>
+      <a href="#" onclick="openRulesModal(); return false;">
+        İlan kurallarını okudum ve kabul ediyorum
+      </a>
+    </span>
+  </label>
+
+</div>
+
+    <button id="submitAdBtn" class="submit-btn" disabled>İLANI YAYINLA</button>
 
   </div>
 </div>
+
+<div id="rulesModal" style="
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.6);
+display:none;
+z-index:9999;
+align-items:center;
+justify-content:center;
+padding:16px;
+">
+
+  <div style="
+    background:#fff;
+    border-radius:16px;
+    padding:16px;
+    max-width:500px;
+    width:100%;
+    max-height:80vh;
+    overflow:auto;
+  ">
+
+    <div style="font-weight:700; margin-bottom:10px;">
+      İlan Kuralları
+    </div>
+
+    <div style="font-size:13px; line-height:1.5;">
+
+      <p><b>1.</b> İlan veren kullanıcı iletişim bilgisi sağlamalıdır.</p>
+      <p><b>2.</b> Küfür, yasa dışı içerik ve tehlikeli ürünler yasaktır.</p>
+      <p><b>3.</b> Platform yalnızca aracıdır.</p>
+      <p><b>4.</b> Oluşabilecek zararlardan platform sorumlu değildir.</p>
+      <p><b>5.</b> KVKK kapsamında hassas veri paylaşılmamalıdır.</p>
+
+    </div>
+
+    <button onclick="closeRulesModal()" style="
+      margin-top:12px;
+      width:100%;
+      padding:10px;
+      background:#2563eb;
+      color:#fff;
+      border:none;
+      border-radius:10px;
+    ">
+      Kapat
+    </button>
+
+  </div>
+</div>
+
 <script>
 
 /* ===============================
@@ -286,7 +350,6 @@ function renderAds(data){
       ad.image_url || ad.image_url_2 || ad.image_url_3
     );
 
-    console.log("DB IMAGE:", ad.image_url?.slice?.(0,50));
 
     const premium = Number(ad.price) > 500000 ? 
     `<div style="
@@ -331,7 +394,6 @@ function renderAds(data){
 
   grid.innerHTML = html;
 }
-
 /* ===============================
 INIT
 =============================== */
@@ -345,20 +407,44 @@ document.addEventListener("DOMContentLoaded",()=>{
   const openBtn = document.getElementById("openAdModal");
   const closeBtn = document.getElementById("closeAdModal");
 
+  const rulesCheck = document.getElementById("rulesCheck");
+
+  /* ===============================
+  MODAL OPEN / CLOSE
+  =============================== */
+
   if(openBtn && modal){
-    openBtn.onclick = ()=> modal.classList.add("active");
+    openBtn.onclick = ()=>{
+      modal.classList.add("active");
+      document.body.style.overflow = "hidden"; // scroll lock
+    };
   }
 
   if(closeBtn && modal){
-    closeBtn.onclick = ()=> modal.classList.remove("active");
+    closeBtn.onclick = ()=>{
+      modal.classList.remove("active");
+      document.body.style.overflow = "auto";
+    };
   }
 
   window.addEventListener("click",(e)=>{
     if(e.target === modal){
       modal.classList.remove("active");
+      document.body.style.overflow = "auto";
     }
   });
 
+  /* ===============================
+  RULES CHECK → BUTTON AKTİF
+  =============================== */
+
+  if(rulesCheck && btn){
+    rulesCheck.addEventListener("change", ()=>{
+      btn.disabled = !rulesCheck.checked;
+    });
+  }
+
+  /* güvenlik: buton yoksa çık */
   if(!btn) return;
 
 /* ===============================
@@ -402,8 +488,15 @@ btn.onclick = async ()=>{
     if(!category) throw "Kategori seç";
     if(!district) throw "Mahalle seç";
 
-    if(!delete_token || delete_token.length < 3)
-      throw "Şifre min 3 karakter";
+ if(!delete_token || delete_token.length < 3){
+  throw "Şifre min 3 karakter";
+}
+
+const rulesAccepted = document.getElementById("rulesCheck")?.checked;
+
+if(!rulesAccepted){
+  throw "Lütfen ilan kurallarını kabul edin";
+}
 
     /* 🔥 IMAGE BASE64 + DEBUG */
     const files = document.getElementById("adImages")?.files || [];
@@ -451,7 +544,6 @@ btn.onclick = async ()=>{
       image_url_3
     };
 
-    console.log("PAYLOAD:", payload);
 
     btn.disabled = true;
     btn.innerText = "Gönderiliyor...";
@@ -535,6 +627,14 @@ function resetFilter(){
   if(dist) dist.value = "";
 
   renderAds(ALL_ADS);
+}
+
+function openRulesModal(){
+  document.getElementById("rulesModal").style.display = "flex";
+}
+
+function closeRulesModal(){
+  document.getElementById("rulesModal").style.display = "none";
 }
 
 </script>
