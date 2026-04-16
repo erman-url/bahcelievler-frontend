@@ -93,27 +93,26 @@ AD MODAL
 =============================== */
 
 .ad-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.5);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
 }
 
 .ad-modal.active{
-  display:flex;
+  display: flex;
 }
 
 .ad-modal-content{
-  width:95%;
-  max-width:500px;
-  max-height:90vh;
-  overflow:auto;
-  background:#fff;
-  border-radius:18px;
-  padding:16px;
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 16px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .ad-modal-header{
@@ -298,7 +297,6 @@ html, body{
 WRAPPER FIX
 =============================== */
 
-.page-wrapper,
 #mainContent{
   width:100%;
   max-width:100%;
@@ -355,6 +353,14 @@ MODAL FIX
 
 .ad-modal-content{
   width:100%;
-  max-width:100%;
+  max-width:500px; /* 🔥 geri getir */
   box-sizing:border-box;
 }
+
+/* 🔥 PAGE CENTER FIX */
+.page-wrapper{
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+}
+
