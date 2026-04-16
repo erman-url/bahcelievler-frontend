@@ -95,7 +95,6 @@ body{
 /* ===============================
 AD MODAL
 =============================== */
-
 .ad-modal{
   position: fixed;
   inset: 0;
@@ -104,6 +103,8 @@ AD MODAL
   justify-content: center;
   padding: 16px;
   z-index: 9999;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
 }
 
 .ad-modal.active{
@@ -115,10 +116,9 @@ AD MODAL
   max-width: 500px;
   background: #fff;
   border-radius: 16px;
-  max-height: 90vh;
+  max-height: calc(100vh - 40px);
   overflow-y: auto;
-    box-shadow:0 25px 60px rgba(0,0,0,0.2);
-
+  box-shadow:0 25px 60px rgba(0,0,0,0.2);
 }
 
 .ad-modal-header{
