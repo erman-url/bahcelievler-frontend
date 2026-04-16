@@ -93,33 +93,70 @@ body{
 }
 
 /* ===============================
-AD MODAL
+AD MODAL (FULL FIX PRO)
 =============================== */
+
 .ad-modal{
   position: fixed;
   inset: 0;
   display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
   z-index: 9999;
+
   background: rgba(0,0,0,0.4);
   backdrop-filter: blur(4px);
+
+  align-items: flex-end; /* 🔥 kritik değişim */
+  justify-content: center;
 }
 
 .ad-modal.active{
   display: flex;
 }
 
+/* 🔥 BOTTOM SHEET */
 .ad-modal-content{
   width: 100%;
-  max-width: 500px;
+  max-width: 680px;
+
   background: #fff;
-  border-radius: 16px;
-  max-height: calc(100vh - 40px);
+
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+
+  max-height: 92vh;
   overflow-y: auto;
-  box-shadow:0 25px 60px rgba(0,0,0,0.2);
+
+  padding: 16px;
+
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.25);
+
+  animation: modalSlideUp 0.25s ease;
 }
+
+/* 🔥 HANDLE (premium hissi) */
+.ad-modal-content::before{
+  content:"";
+  display:block;
+  width:40px;
+  height:4px;
+  background:#cbd5e1;
+  border-radius:4px;
+  margin:0 auto 10px;
+}
+
+/* 🔥 ANIMATION */
+@keyframes modalSlideUp{
+  from{
+    transform: translateY(100%);
+  }
+  to{
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+HEADER
+=============================== */
 
 .ad-modal-header{
   display:flex;
@@ -128,6 +165,10 @@ AD MODAL
   margin-bottom:12px;
   font-weight:700;
 }
+
+/* ===============================
+FORM
+=============================== */
 
 #adModal input,
 #adModal select,
@@ -139,6 +180,10 @@ AD MODAL
   border:1px solid #ddd;
   font-size:14px;
 }
+
+/* ===============================
+BUTTON
+=============================== */
 
 .submit-btn{
   width:100%;
