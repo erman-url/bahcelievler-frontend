@@ -464,6 +464,4 @@ if(document.readyState === "loading"){
     setTimeout(BF.init,0);
 }
 
-
-
 })();
