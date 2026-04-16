@@ -595,10 +595,10 @@ c.innerHTML=`
 
 <form id="contactForm">
 
+<input type="checkbox" name="botcheck" style="display:none;">
+
 <input name="name" placeholder="Ad Soyad" required>
-
 <input name="email" type="email" placeholder="E-posta" required>
-
 <textarea name="message" placeholder="Mesajınızı yazabilirsiniz" required></textarea>
 
 <button type="submit">Mesaj Gönder</button>
@@ -614,7 +614,6 @@ initContactForm(); // 🔥 kritik
 window.scrollTo({top:c.offsetTop-30,behavior:"smooth"});
 
 }
-
 /* ===============================
 CONTACT FORM INIT (GLOBAL)
 =============================== */
@@ -650,22 +649,30 @@ return;
 
 try{
 
-const res = await fetch("https://bahcelievler-api.erman-urel.workers.dev/api/contact", {
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body: JSON.stringify(data)
+const res = await fetch("https://api.web3forms.com/submit", {
+method: "POST",
+headers: { "Content-Type":"application/json" },
+body: JSON.stringify({
+  access_key: "605368bc-de07-4145-a9dc-d105454e3c2e",
+
+  name: data.name,
+  email: data.email,
+  message: data.message,
+
+  from_name: data.name,
+  reply_to: data.email,
+  redirect: false,
+
+  botcheck: bot,
+
+  subject: "Bahçelievler Forum - İletişim"
+})
 });
 
-let result;
+const result = await res.json();
 
-try{
-result = await res.json();
-}catch{
-throw new Error("Sunucu cevabı okunamadı");
-}
-
-if(!res.ok || !result.ok){
-throw new Error(result?.error || "Gönderilemedi");
+if(!result.success){
+throw new Error(result.message || "Gönderilemedi");
 }
 
 alert("Mesajınız başarıyla iletildi ✔");
