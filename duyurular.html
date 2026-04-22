@@ -246,9 +246,6 @@ function safeImage(url){
   return "";
 }
 
-/* ===============================
-LOAD DUYURULAR
-=============================== */
 
 async function loadDuyurular(){
 
@@ -257,21 +254,26 @@ async function loadDuyurular(){
 
   try{
 
-    const res = await fetch(
-      "https://bahcelievler-api.erman-urel.workers.dev/api/duyurular",
-      { cache:"no-store" }
-    );
+    // 🔥 İKİ API AYNI ANDA
+    const [dbRes, bedasRes] = await Promise.all([
+      fetch("https://bahcelievler-api.erman-urel.workers.dev/api/duyurular"),
+      fetch("https://bahcelievler-api.erman-urel.workers.dev/api/bedas-duyurular")
+    ]);
 
-    if(!res.ok){
+    if(!dbRes.ok || !bedasRes.ok){
       throw "API error";
     }
 
-    const data = await res.json();
+    const dbData = await dbRes.json();
+    const bedasData = await bedasRes.json();
 
-    console.log("DUYURU DATA:", data);
+    // 🔥 BİRLEŞTİR
+    const data = [...bedasData, ...dbData].sort(
+  (a,b) => new Date(b.created_at) - new Date(a.created_at)
+);
 
     if(!Array.isArray(data) || data.length === 0){
-      box.innerHTML = `<div class="empty-box">Henüz duyuru yok</div>`;
+      box.innerHTML = `<div class="empty-box">Duyuru yok</div>`;
       return;
     }
 
@@ -287,6 +289,7 @@ async function loadDuyurular(){
         ${img ? `<img src="${img}" class="duyuru-image" alt="${escapeHTML(d.title)}">` : ""}
 
         <div class="duyuru-title">
+          ${d.source === "bedas" ? "⚡ " : ""}
           ${escapeHTML(d.title)}
         </div>
 
@@ -317,13 +320,12 @@ async function loadDuyurular(){
 
 }
 
-/* ===============================
-INIT
-=============================== */
-
 document.addEventListener("DOMContentLoaded", loadDuyurular);
 
+
+
 </script>
+
 
 <script src="assets/js/core.js" defer></script>
 <script src="assets/js/footerLegal.js" defer></script>
