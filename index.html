@@ -403,15 +403,10 @@ TRACK (SLIDER CORE)
 .news-track{
   display:flex;
 
-  overflow-x:auto;                /* 🔥 scroll aktif */
-  scroll-snap-type: x mandatory;  /* 🔥 snap zorunlu */
-  scroll-behavior:smooth;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
 
-  -webkit-overflow-scrolling: touch;
-
-  gap:0;
-
-  transform:none !important;      /* 🔥 eski slider fix */
+  transform:translateX(0);
 }
 /* ===============================
 CARD (CENTER SNAP FIX)
@@ -431,9 +426,7 @@ CARD (CENTER SNAP FIX)
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
   border:1px solid rgba(0,0,0,0.05);
 
-  /* 🔥 MERKEZ SNAP */
-  scroll-snap-align:center;
-  scroll-snap-stop:always;
+ 
 
   /* 🔥 TAM ORTALAMA */
   margin:0 auto;
