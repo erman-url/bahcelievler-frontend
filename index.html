@@ -413,9 +413,8 @@ TRACK (SLIDER CORE)
 
   transform:none !important;      /* 🔥 eski slider fix */
 }
-
 /* ===============================
-CARD
+CARD (CENTER SNAP FIX)
 =============================== */
 
 .news-card{
@@ -432,11 +431,17 @@ CARD
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
   border:1px solid rgba(0,0,0,0.05);
 
+  /* 🔥 MERKEZ SNAP */
+  scroll-snap-align:center;
+  scroll-snap-stop:always;
+
+  /* 🔥 TAM ORTALAMA */
+  margin:0 auto;
+
   /* 🔥 mobil performans */
   transform:translateZ(0);
+  backface-visibility:hidden;
 }
-
-
 /* ===============================
 BADGE
 =============================== */
@@ -477,9 +482,10 @@ MOBILE OPTIMIZATION
 
 @media (max-width:600px){
 
-  .news-slider{
-    padding:0 10px;
-  }
+.news-slider{
+  overflow:hidden;
+  width:100%;
+}
 
   .news-card .content{
     font-size:13px;
