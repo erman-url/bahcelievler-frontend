@@ -408,8 +408,9 @@ TRACK (SLIDER CORE)
 
   transform:translateX(0);
 }
+
 /* ===============================
-CARD (CENTER SNAP FIX)
+CARD (JS SLIDER UYUMLU)
 =============================== */
 
 .news-card{
@@ -419,6 +420,9 @@ CARD (CENTER SNAP FIX)
   flex-shrink:0;
   position:relative;
 
+  display:flex;
+  flex-direction:column;
+
   background:#fff;
   border-radius:16px;
   overflow:hidden;
@@ -426,14 +430,12 @@ CARD (CENTER SNAP FIX)
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
   border:1px solid rgba(0,0,0,0.05);
 
- 
-
-  /* 🔥 TAM ORTALAMA */
-  margin:0 auto;
-
-  /* 🔥 mobil performans */
+  /* 🔥 performans + flicker fix */
   transform:translateZ(0);
   backface-visibility:hidden;
+
+  /* 🔥 kritik: ortalama ve snap tamamen kaldırıldı */
+  margin:0;
 }
 /* ===============================
 BADGE
