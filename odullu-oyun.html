@@ -2,20 +2,11 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Mühürlü Geçit Oyunu | Bahçelievler Forum</title>
 
-<meta name="description" content="Mühürlü Geçit oyununu oyna, doğru kodu çöz ve ödülü kazan. Bahçelievler Forum mobil oyun.">
-<meta name="keywords" content="ödüllü oyun, şifre oyunu, mobil oyun, bahçelievler forum oyun">
-
-<meta name="robots" content="index,follow">
-<link rel="canonical" href="https://bahcelievlerforum.com/odullu-oyun.html">
-
 <meta name="theme-color" content="#070a12">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 
@@ -30,7 +21,7 @@ background:#070a12;
 font-family:system-ui;
 }
 
-/* BACK BUTTON */
+/* BACK */
 .back-btn{
 position:fixed;
 top:12px;
@@ -44,13 +35,10 @@ border-radius:10px;
 cursor:pointer;
 }
 
-/* FULLSCREEN */
+/* SCENE */
 .scene{
 position:fixed;
 inset:0;
-width:100%;
-height:100%;
-overflow:hidden;
 }
 
 /* DOOR */
@@ -65,6 +53,45 @@ height:100%;
 object-fit:cover;
 }
 
+/* 🔥 YAKINDA BANNER */
+.coming-banner{
+position:absolute;
+top:18%;
+left:50%;
+transform:translateX(-50%);
+width:70%;
+padding:14px;
+text-align:center;
+font-size:22px;
+font-weight:900;
+letter-spacing:2px;
+color:#fff;
+border-radius:14px;
+
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(8px);
+
+border:1px solid rgba(255,255,255,0.15);
+
+box-shadow:
+0 0 25px rgba(255,200,100,0.25),
+inset 0 0 10px rgba(255,255,255,0.15);
+
+z-index:6;
+}
+
+.coming-banner span{
+background:linear-gradient(90deg,#facc15,#fff,#facc15);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+animation:shine 3s linear infinite;
+}
+
+@keyframes shine{
+0%{background-position:-200px;}
+100%{background-position:200px;}
+}
+
 /* LOCK */
 .lock{
 position:absolute;
@@ -72,7 +99,6 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 width:clamp(180px,28vw,260px);
-aspect-ratio:1/1;
 z-index:5;
 }
 
@@ -101,7 +127,6 @@ color:#e8c36a;
 width:25%;
 text-align:center;
 font-size:22px;
-cursor:pointer;
 }
 
 /* PARTICLES */
@@ -111,153 +136,118 @@ inset:0;
 pointer-events:none;
 }
 
+/* 🦔 KİRPİ */
+#kirpiWrap{
+position:absolute;
+bottom:5px;
+right:-200px;
+display:flex;
+flex-direction:column-reverse;
+align-items:center;
+z-index:7;
+pointer-events:none;
+will-change:transform,left,right;
+}
+
+/* 🔥 BALON FULL FIX */
+#kirpiBubble{
+position:relative;
+margin-top:8px;
+
+padding:10px 14px;
+font-size:13px;
+font-weight:800;
+
+color:#111;
+background:rgba(255,255,255,0.95); /* FIX */
+
+border-radius:14px;
+
+box-shadow:
+0 10px 25px rgba(0,0,0,.35),
+0 0 0 1px rgba(0,0,0,.08);
+
+opacity:0;
+transform:translateY(10px);
+transition:.3s ease;
+
+white-space:nowrap;
+}
+
+/* 🔥 TEK OK (duplicate silindi, override edildi) */
+#kirpiBubble:after{
+content:"";
+position:absolute;
+top:-6px;
+left:50%;
+transform:translateX(-50%);
+border-width:6px;
+border-style:solid;
+border-color:transparent transparent white transparent;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="back-btn" onclick="goBack()">←</div>
+<div class="back-btn" onclick="location.href='online-oyunlar.html'">←</div>
 
 <div class="scene">
 
 <canvas id="orbs"></canvas>
 
-<div class="door" id="door">
+<div class="door">
+
 <img src="assets/images/door.jpg">
+
+<!-- 🔥 YAKINDA -->
+<div class="coming-banner">
+<span>YAKINDA</span>
+</div>
+
+<!-- 🦔 KİRPİ -->
+<div id="kirpiWrap">
+  <img src="assets/images/kirpix.png" id="kirpi">
+  <div id="kirpiBubble">Şifreyi Çöz Ödülü Kazan</div>
+</div>
 
 <div class="lock" id="lock">
 <img src="assets/images/lock.png">
 
 <div class="code-ring">
-<div class="digit">0</div>
-<div class="digit">0</div>
-<div class="digit">0</div>
-<div class="digit">0</div>
+<div class="digit">•</div>
+<div class="digit">•</div>
+<div class="digit">•</div>
+<div class="digit">•</div>
 </div>
 
 </div>
+
 </div>
 
 </div>
 
 <script>
 
-/* BACK */
-function goBack(){
-location.href="online-oyunlar.html";
-}
-
-/* VH FIX */
-function setVH(){
-let vh=window.innerHeight*0.01;
-document.documentElement.style.setProperty('--vh',vh+"px");
-}
-setVH();
-window.addEventListener("resize",setVH);
-
 /* AUDIO */
 let mainSound=new Audio("assets/audio/main_sound.mp3");
-let basSound=new Audio("assets/audio/bas_sound.mp3");
-let wrongSound=new Audio("assets/audio/wrongsound.mp3");
-
 mainSound.loop=true;
-mainSound.volume=0.6;
 
-let audioStarted=false;
-function initAudio(){
-if(audioStarted) return;
+document.addEventListener("click",()=>{
 mainSound.play();
-audioStarted=true;
-}
-document.addEventListener("click",initAudio);
-document.addEventListener("touchstart",initAudio);
+},{once:true});
 
-/* CODE SYSTEM */
-let code=[0,0,0,0];
-const correctCode="4729";
-
-function render(){
-document.querySelectorAll(".digit").forEach((el,i)=>{
-el.textContent=code[i];
-});
-}
-render();
-
-function check(){
-if(code.join("")===correctCode){
-alert("🎉 Açıldı!");
-}else{
-wrongSound.currentTime=0;
-wrongSound.play();
-}
+/* ŞİFRE */
+function getSecret(){
+const encoded = "OTI3NA==";
+const decoded = atob(encoded);
+return decoded.split("").reverse().join("");
 }
 
-/* INPUT */
-const isMobile='ontouchstart' in window;
-
-document.querySelectorAll(".digit").forEach((el,index)=>{
-
-let startY=0;
-let moved=false;
-
-if(isMobile){
-
-el.addEventListener("touchstart",(e)=>{
-startY=e.touches[0].clientY;
-moved=false;
-},{passive:true});
-
-el.addEventListener("touchmove",(e)=>{
-let diff=e.touches[0].clientY-startY;
-
-if(Math.abs(diff)>25){
-e.preventDefault();
-moved=true;
-
-if(diff<0) code[index]=(code[index]+1)%10;
-else code[index]=(code[index]-1+10)%10;
-
-basSound.currentTime=0;
-basSound.play();
-render();
-
-startY=e.touches[0].clientY;
-}
-},{passive:false});
-
-el.addEventListener("touchend",()=>{
-if(!moved){
-code[index]=(code[index]+1)%10;
-basSound.play();
-render();
-}
-});
-
-}else{
-
-el.addEventListener("wheel",(e)=>{
-e.preventDefault();
-
-if(e.deltaY>0) code[index]=(code[index]+1)%10;
-else code[index]=(code[index]-1+10)%10;
-
-render();
-});
-
-}
-
-});
-
-/* LOCK CLICK */
-let isDragging=false;
-
-document.querySelectorAll(".digit").forEach(el=>{
-el.addEventListener("touchmove",()=>isDragging=true);
-el.addEventListener("touchend",()=>setTimeout(()=>isDragging=false,50));
-});
-
+/* LOCK */
 document.getElementById("lock").addEventListener("click",()=>{
-if(!isDragging) check();
+alert("🔒 Oyun çok yakında aktif olacak");
 });
 
 /* PARTICLES */
@@ -299,6 +289,59 @@ if(p.y<0||p.y>canvas.height)p.dy*=-1;
 requestAnimationFrame(animate);
 }
 animate();
+
+/* 🦔 KİRPİ */
+let kirpiPlayed = false;
+
+function startKirpi(){
+
+if(kirpiPlayed) return;
+kirpiPlayed = true;
+
+const wrap = document.getElementById("kirpiWrap");
+const bubble = document.getElementById("kirpiBubble");
+
+if(!wrap) return;
+
+const delay = Math.random() * 4000 + 2000;
+
+setTimeout(()=>{
+
+/* 🔥 ORTA FIX */
+wrap.style.left = "50%";
+wrap.style.right = "auto";
+wrap.style.transform = "translateX(-50%)";
+
+setTimeout(()=>{
+
+bubble.style.opacity = "1";
+bubble.style.transform = "translateY(0)";
+
+setTimeout(()=>{
+
+bubble.style.opacity = "0";
+
+setTimeout(()=>{
+
+/* 🔥 TAM ÇIKIŞ FIX */
+wrap.style.transform = "translateX(-150vw)";
+
+/* 🔥 TEMİZLE */
+setTimeout(()=>{
+wrap.style.display="none";
+},1600);
+
+},300);
+
+},5000);
+
+},1200);
+
+},delay);
+
+}
+
+document.addEventListener("DOMContentLoaded", startKirpi);
 
 </script>
 
