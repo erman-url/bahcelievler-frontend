@@ -87,3 +87,4 @@
 [+] SUCCESS v%a.%b.93 
 [+] SUCCESS v%a.%b.94 
 [+] SUCCESS v%a.%b.95 
+[+] SUCCESS v%a.%b.96 
