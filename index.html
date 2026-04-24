@@ -399,18 +399,19 @@ NEWS - SINGLE SLIDER MODE
 TRACK (SLIDER CORE)
 =============================== */
 
+/* TRACK */
 .news-track{
   display:flex;
 
-  transition:transform .45s cubic-bezier(.22,1,.36,1);
-  will-change: transform;
+  overflow-x:auto;                /* 🔥 scroll aktif */
+  scroll-snap-type: x mandatory;  /* 🔥 snap zorunlu */
+  scroll-behavior:smooth;
 
-  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 
-  /* 🔥 kritik stabilite */
-  transform: translateX(0);          /* başlangıç fix */
-  backface-visibility: hidden;      /* flicker engeller */
-  perspective: 1000px;              /* GPU fix */
+  gap:0;
+
+  transform:none !important;      /* 🔥 eski slider fix */
 }
 
 /* ===============================
