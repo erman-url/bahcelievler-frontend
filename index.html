@@ -914,6 +914,111 @@ COOKIE PRO UI (APP STYLE)
   transform:scale(0.95);
 }
 
+/* ===============================
+COUNTDOWN PREMIUM
+=============================== */
+
+.event-countdown{
+  margin:16px;
+  padding:18px;
+  border-radius:22px;
+
+  background:
+    linear-gradient(135deg,#1e40af,#2563eb),
+    radial-gradient(circle at top right, rgba(255,255,255,.12), transparent);
+
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.25);
+
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+}
+
+/* üst ışık efekti */
+.event-countdown::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,.15),
+    transparent
+  );
+
+  opacity:.6;
+  pointer-events:none;
+}
+
+/* header */
+.event-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.5px;
+
+  opacity:.95;
+}
+
+.event-header i{
+  font-size:16px;
+  background:rgba(255,255,255,.2);
+  padding:6px;
+  border-radius:8px;
+}
+
+/* alt başlık */
+.event-sub{
+  font-size:12px;
+  opacity:.8;
+  margin-top:4px;
+  margin-bottom:14px;
+}
+
+/* timer */
+.event-timer{
+  display:flex;
+  gap:10px;
+}
+
+/* kutular */
+.time-box{
+  flex:1;
+
+  background:rgba(255,255,255,.15);
+  backdrop-filter: blur(6px);
+
+  border-radius:14px;
+  padding:10px;
+
+  text-align:center;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.3),
+    0 4px 12px rgba(0,0,0,.15);
+
+  transition:.2s;
+}
+
+.time-box span{
+  display:block;
+  font-size:18px;
+  font-weight:800;
+}
+
+/* hover (desktop) */
+@media(min-width:900px){
+  .time-box:hover{
+    transform:translateY(-3px);
+  }
+}
+
 </style>
 
 </head>
@@ -1016,7 +1121,13 @@ COOKIE PRO UI (APP STYLE)
 
 <!-- COUNTDOWN -->
 <section class="event-countdown">
-<div class="event-header">KURBAN BAYRAMI KALAN SÜRE</div>
+
+  <div class="event-header">
+    <i class="fa-solid fa-moon"></i>
+    <span>KURBAN BAYRAMI</span>
+  </div>
+
+  <div class="event-sub">Kalan Süre</div>
 <div class="event-timer">
 <div class="time-box"><span id="days">0</span>Gün</div>
 <div class="time-box"><span id="hours">0</span>Saat</div>
