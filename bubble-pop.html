@@ -23,7 +23,7 @@ width:100%;
 height:100%;
 overflow:hidden;
 font-family:-apple-system,system-ui;
-background:#1abc9c;
+background:#8ec5e8;
 }
 
 /* SHAKE */
@@ -158,7 +158,7 @@ text-shadow:
 }
 
 /* AÇIKLAMA METNİ */
-.overlay div{
+.overlay > div:not(.bubble-bg){
 position:relative;
 z-index:2;
 color:#ffffff;
@@ -218,6 +218,13 @@ display:none;
 </div>
 
 <div id="startScreen" class="overlay">
+    <div class="bubble-bg">
+<div class="bubble" style="left:10%; width:80px; height:80px; animation-duration:12s;"></div>
+<div class="bubble" style="left:30%; width:120px; height:120px; animation-duration:18s;"></div>
+<div class="bubble" style="left:60%; width:60px; height:60px; animation-duration:10s;"></div>
+<div class="bubble" style="left:80%; width:100px; height:100px; animation-duration:16s;"></div>
+<div class="bubble" style="left:50%; width:140px; height:140px; animation-duration:20s;"></div>
+</div>
 <div class="title">Bubble Pop</div>
 
 <div style="color:#fff; max-width:300px; text-align:center; margin-bottom:20px; font-size:14px;">
