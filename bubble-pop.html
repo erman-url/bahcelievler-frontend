@@ -260,8 +260,16 @@ audioPool.push(a);
 let audioIndex = 0;
 
 
+let lastSoundTime = 0;
 
 function popSound(){
+let now = performance.now();
+
+/* 🔥 kritik limit */
+if(now - lastSoundTime < 50) return;
+
+lastSoundTime = now;
+
 let s = audioPool[audioIndex];
 
 if(!s.paused){
@@ -399,7 +407,9 @@ if(dx*dx+dy*dy<b.r*b.r){
 
 if(b.isBoss){
 b.hp--;
-popSound();
+if(!b.isBoss || b.hp % 3 === 0){
+  popSound();
+}
 
 if(b.hp<=0){
 explode(b.x,b.y);
