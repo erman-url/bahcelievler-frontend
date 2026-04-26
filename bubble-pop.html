@@ -164,9 +164,11 @@ let balloons=[],particles=[];
 let score=0,time=120;
 let running=false,speed=1,combo=0,pool=0;
 
-/* 🔥 BOSS STATE */
-let bossCounter=0;
+/* 🔥 YENİ BOSS STATE */
+let bossActive=false;
+let bossSpawned=0;
 let bossMiss=0;
+let spawnTick=0;
 
 /* 🔥 SLOW MOTION */
 let timeScale=1;
@@ -233,20 +235,30 @@ life:20
 function spawn(){
 if(balloons.length>6) return;
 
-bossCounter++;
+spawnTick++;
 
-let isBoss=false;
+let canSpawnBoss =
+!bossActive &&
+bossSpawned < 2 &&
+spawnTick % 12 === 0;
 
-if(bossCounter>=2){
-isBoss=true;
-bossCounter=0;
+if(canSpawnBoss){
+let r=50;
+let x=Math.random()*(W-2*r)+r;
+let s=0.7;
+
+balloons.push(new Balloon(x,-r,r,s,true));
+
+bossActive=true;
+bossSpawned++;
+return;
 }
 
-let r=isBoss?45:20+Math.random()*10;
+let r=20+Math.random()*10;
 let x=Math.random()*(W-2*r)+r;
-let s=isBoss?0.8:1.2+Math.random()*1.2;
+let s=1.2+Math.random()*1.2;
 
-balloons.push(new Balloon(x,-r,r,s,isBoss));
+balloons.push(new Balloon(x,-r,r,s,false));
 }
 
 /* HIT */
@@ -264,6 +276,7 @@ popSound(200);
 if(b.hp<=0){
 explode(b.x,b.y);
 score+=20;
+bossActive=false;
 balloons.splice(i,1);
 }
 }else{
@@ -312,10 +325,11 @@ b.draw();
 if(b.y>H){
 
 if(b.isBoss){
+bossActive=false;
 bossMiss++;
 
 if(bossMiss===1){
-alert("Büyük balonu kaçırdın! Bir tane daha kaçarsa oyun biter!");
+alert("Büyük balonu kaçırdın! Tekrar kaçırırsan oyun biter!");
 }else{
 endGame("Boss kaçtı!");
 return;
@@ -348,7 +362,7 @@ spawn();
 requestAnimationFrame(loop);
 }
 
-/* 🔴 DANGER */
+/* DANGER */
 function drawDanger(){
 let intensity=(pool-70)/30;
 document.getElementById("danger").style.background=
@@ -386,8 +400,11 @@ score=0;time=120;
 balloons=[];particles=[];
 running=true;speed=1;combo=0;
 pool=0;
+
+bossActive=false;
+bossSpawned=0;
 bossMiss=0;
-bossCounter=0;
+spawnTick=0;
 
 updateUI();
 startTimer();
