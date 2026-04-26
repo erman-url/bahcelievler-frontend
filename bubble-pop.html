@@ -405,11 +405,12 @@ let dx=x-b.x, dy=y-b.y;
 
 if(dx*dx+dy*dy<b.r*b.r){
 
+/* 🔴 BOSS */
 if(b.isBoss){
 b.hp--;
-if(!b.isBoss){
-  popSound();
-}else if(b.hp % 4 === 0){
+
+/* sadece belirli aralıkta ses */
+if(b.hp % 4 === 0){
   popSound();
 }
 
@@ -419,6 +420,8 @@ score+=50;
 bossActive=false;
 balloons.splice(i,1);
 }
+
+/* 🔵 NORMAL */
 }else{
 popSound();
 explode(b.x,b.y);
@@ -431,6 +434,8 @@ return;
 }
 }
 }
+
+
 
 /* LOOP */
 function loop(){
