@@ -266,7 +266,7 @@ function popSound(){
 let now = performance.now();
 
 /* 🔥 kritik limit */
-if(now - lastSoundTime < 50) return;
+if(now - lastSoundTime < 70) return;
 
 lastSoundTime = now;
 
@@ -407,7 +407,9 @@ if(dx*dx+dy*dy<b.r*b.r){
 
 if(b.isBoss){
 b.hp--;
-if(!b.isBoss || b.hp % 3 === 0){
+if(!b.isBoss){
+  popSound();
+}else if(b.hp % 4 === 0){
   popSound();
 }
 
