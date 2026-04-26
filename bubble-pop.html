@@ -21,7 +21,6 @@ font-family:-apple-system,system-ui;
 background:#1abc9c;
 }
 
-/* SHAKE */
 .shake{
 animation:shake .3s infinite;
 }
@@ -165,6 +164,10 @@ let balloons=[],particles=[];
 let score=0,time=120;
 let running=false,speed=1,combo=0,pool=0;
 
+/* 🔥 BOSS STATE */
+let bossCounter=0;
+let bossMiss=0;
+
 /* 🔥 SLOW MOTION */
 let timeScale=1;
 function slowMo(){
@@ -174,22 +177,39 @@ setTimeout(()=>timeScale=1,300);
 
 /* BALLOON */
 class Balloon{
-constructor(x,y,r,s){
+constructor(x,y,r,s,isBoss=false){
 this.x=x; this.y=y;
 this.r=r; this.s=s;
 this.offset=Math.random()*100;
+
+this.isBoss=isBoss;
+this.hp=isBoss?30:1;
 }
 draw(){
 let g=ctx.createRadialGradient(
 this.x-this.r/3,this.y-this.r/3,this.r*0.2,
 this.x,this.y,this.r
 );
+
+if(this.isBoss){
+g.addColorStop(0,"#fff");
+g.addColorStop(1,"#e74c3c");
+}else{
 g.addColorStop(0,"#fff");
 g.addColorStop(1,"#3498db");
+}
+
 ctx.fillStyle=g;
 ctx.beginPath();
 ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
 ctx.fill();
+
+if(this.isBoss){
+ctx.fillStyle="#fff";
+ctx.font="bold 16px Arial";
+ctx.textAlign="center";
+ctx.fillText(this.hp,this.x,this.y+5);
+}
 }
 update(){
 this.y+=this.s*speed*timeScale;
@@ -212,10 +232,21 @@ life:20
 /* SPAWN */
 function spawn(){
 if(balloons.length>6) return;
-let r=20+Math.random()*10;
+
+bossCounter++;
+
+let isBoss=false;
+
+if(bossCounter>=2){
+isBoss=true;
+bossCounter=0;
+}
+
+let r=isBoss?45:20+Math.random()*10;
 let x=Math.random()*(W-2*r)+r;
-let s=1.2+Math.random()*1.2;
-balloons.push(new Balloon(x,-r,r,s));
+let s=isBoss?0.8:1.2+Math.random()*1.2;
+
+balloons.push(new Balloon(x,-r,r,s,isBoss));
 }
 
 /* HIT */
@@ -226,15 +257,26 @@ let dx=x-b.x, dy=y-b.y;
 
 if(dx*dx+dy*dy<b.r*b.r){
 
+if(b.isBoss){
+b.hp--;
+popSound(200);
+
+if(b.hp<=0){
+explode(b.x,b.y);
+score+=20;
+balloons.splice(i,1);
+}
+}else{
 popSound(300+combo*30);
 explode(b.x,b.y);
-
 score+=1+Math.floor(combo*0.2);
 combo++;
 
-if(combo>=5) slowMo(); // 🔥
+if(combo>=5) slowMo();
 
 balloons.splice(i,1);
+}
+
 updateUI();
 return;
 }
@@ -248,7 +290,6 @@ if(!running)return;
 
 ctx.clearRect(0,0,W,H);
 
-/* 🔥 GERİLİM */
 if(pool>=70){
 speed=1.3;
 tensionPitch=1.25;
@@ -269,11 +310,23 @@ b.update();
 b.draw();
 
 if(b.y>H){
-balloons.splice(i,1);
 
+if(b.isBoss){
+bossMiss++;
+
+if(bossMiss===1){
+alert("Büyük balonu kaçırdın! Bir tane daha kaçarsa oyun biter!");
+}else{
+endGame("Boss kaçtı!");
+return;
+}
+
+}else{
 pool+=10;
 if(pool>100) pool=100;
+}
 
+balloons.splice(i,1);
 updateUI();
 
 if(pool>=100){
@@ -283,7 +336,6 @@ return;
 }
 }
 
-/* particles */
 particles.forEach((p,i)=>{
 p.x+=p.vx;
 p.y+=p.vy;
@@ -296,7 +348,7 @@ spawn();
 requestAnimationFrame(loop);
 }
 
-/* 🔴 DANGER GLOW */
+/* 🔴 DANGER */
 function drawDanger(){
 let intensity=(pool-70)/30;
 document.getElementById("danger").style.background=
@@ -334,6 +386,8 @@ score=0;time=120;
 balloons=[];particles=[];
 running=true;speed=1;combo=0;
 pool=0;
+bossMiss=0;
+bossCounter=0;
 
 updateUI();
 startTimer();
