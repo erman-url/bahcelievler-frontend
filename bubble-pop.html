@@ -248,8 +248,9 @@ Kaçırırsan dikkat et, ikinci hatada oyun biter!
 <script>
 
 /* AUDIO */
-const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-let tensionPitch=1, tensionBoost=0;
+const popAudio = new Audio("assets/audio/bubble-pop.mp3");
+popAudio.preload = "auto";
+
 
 function popSound(freq){
 const o=ctxAudio.createOscillator();
@@ -259,6 +260,12 @@ o.frequency.value=freq*tensionPitch;
 g.gain.value=0.08+tensionBoost;
 o.start();
 o.stop(ctxAudio.currentTime+0.08);
+}
+
+function popSound(){
+let s = popAudio.cloneNode(); // aynı anda birden fazla çalabilsin
+s.volume = 0.4;
+s.play();
 }
 
 /* CANVAS */
@@ -385,7 +392,7 @@ if(dx*dx+dy*dy<b.r*b.r){
 
 if(b.isBoss){
 b.hp--;
-popSound(200);
+popSound();
 
 if(b.hp<=0){
 explode(b.x,b.y);
@@ -394,7 +401,7 @@ bossActive=false;
 balloons.splice(i,1);
 }
 }else{
-popSound(300);
+popSound();
 explode(b.x,b.y);
 score+=10;
 balloons.splice(i,1);
@@ -504,6 +511,7 @@ poolEl.style.width=pool+"%";
 function startGame(){
 document.getElementById("startScreen").style.display="none";
 document.getElementById("gameOver").style.display="none";
+popAudio.play().then(()=>popAudio.pause());
 
 score=0;time=120;
 balloons=[];particles=[];
