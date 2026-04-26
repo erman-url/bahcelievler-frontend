@@ -248,16 +248,31 @@ Kaçırırsan dikkat et, ikinci hatada oyun biter!
 <script>
 
 /* AUDIO */
-const popAudio = new Audio("assets/audio/bubble-pop.mp3");
-popAudio.preload = "auto";
+const AUDIO_POOL_SIZE = 5;
+const audioPool = [];
 
+for(let i=0;i<AUDIO_POOL_SIZE;i++){
+let a = new Audio("assets/audio/bubble-pop.mp3");
+a.preload = "auto";
+audioPool.push(a);
+}
+
+let audioIndex = 0;
 
 
 
 function popSound(){
-let s = popAudio.cloneNode();
+let s = audioPool[audioIndex];
+
+if(!s.paused){
+  s.pause();
+}
+
+s.currentTime = 0;
 s.volume = 0.4;
 s.play().catch(()=>{});
+
+audioIndex = (audioIndex + 1) % AUDIO_POOL_SIZE;
 }
 
 /* CANVAS */
@@ -499,7 +514,7 @@ poolEl.style.width=pool+"%";
 function startGame(){
 document.getElementById("startScreen").style.display="none";
 document.getElementById("gameOver").style.display="none";
-popAudio.play().then(()=>popAudio.pause());
+audioPool[0].play().then(()=>audioPool[0].pause());
 
 score=0;time=120;
 balloons=[];particles=[];
